@@ -18,6 +18,14 @@ void main() async {
       DeviceOrientation.portraitDown,
     ]);
 
+    // Set modern transparent system UI overlay
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
+
     // Drift is initialized lazily
 
 

@@ -8,13 +8,13 @@ class VoltButton extends StatelessWidget {
   final double? height;
 
   const VoltButton({
-    Key? key,
+    super.key,
     required this.label,
     this.onPressed,
     this.loading = false,
     this.padding,
     this.height,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +34,7 @@ class VoltButton extends StatelessWidget {
               )
             : MaterialButton(
                 onPressed: onPressed,
-                padding: EdgeInsets.symmetric(
-                  horizontal: padding ?? 16,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: padding ?? 16),
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -44,7 +42,10 @@ class VoltButton extends StatelessWidget {
                 child: Center(
                   child: Text(
                     label,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),

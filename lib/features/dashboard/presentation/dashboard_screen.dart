@@ -16,23 +16,31 @@ class DashboardScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EV Companion'),
+        title: const Text('EV Companion', style: TextStyle(fontWeight: FontWeight.w600)),
         centerTitle: true,
         actions: [
-          IconButton(icon: const Icon(LucideIcons.settings), onPressed: () {}),
+          IconButton(
+            icon: const Icon(LucideIcons.settings),
+            onPressed: () {},
+          ),
         ],
       ),
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
                     'Welcome back!',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -1,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -48,73 +56,77 @@ class DashboardScreen extends HookConsumerWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: _buildSummaryCard(context, ridesAsync, chargingAsync),
             ),
           ),
           const SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 32, 16, 16),
+              padding: EdgeInsets.fromLTRB(20, 36, 20, 20),
               child: Text(
-                'Menu',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                'Quick Actions',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
+                ),
               ),
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             sliver: SliverGrid.count(
               crossAxisCount: 2,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
-              childAspectRatio: 1.1,
+              childAspectRatio: 1.15,
               children: [
                 _buildMenuCard(
                   context,
                   title: 'Rides',
                   icon: LucideIcons.bike,
-                  color: Colors.blue,
+                  color: const Color(0xFF3B82F6), // Modern Blue
                   route: '/rides',
                 ),
                 _buildMenuCard(
                   context,
                   title: 'Charging',
                   icon: LucideIcons.batteryCharging,
-                  color: Colors.green,
+                  color: const Color(0xFF10B981), // Modern Green
                   route: '/charging',
                 ),
                 _buildMenuCard(
                   context,
                   title: 'Expenses',
                   icon: LucideIcons.wallet,
-                  color: Colors.orange,
+                  color: const Color(0xFFF59E0B), // Modern Orange
                   route: '/expenses',
                 ),
                 _buildMenuCard(
                   context,
                   title: 'Maintenance',
                   icon: LucideIcons.wrench,
-                  color: Colors.red,
+                  color: const Color(0xFFEF4444), // Modern Red
                   route: '/maintenance',
                 ),
                 _buildMenuCard(
                   context,
                   title: 'Reminders',
                   icon: LucideIcons.bell,
-                  color: Colors.purple,
+                  color: const Color(0xFF8B5CF6), // Modern Purple
                   route: '/reminders',
                 ),
                 _buildMenuCard(
                   context,
                   title: 'Analytics',
                   icon: LucideIcons.barChart3,
-                  color: Colors.teal,
+                  color: const Color(0xFF14B8A6), // Modern Teal
                   route: '/analytics',
                 ),
               ],
             ),
           ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
         ],
       ),
     );
@@ -125,16 +137,32 @@ class DashboardScreen extends HookConsumerWidget {
     AsyncValue ridesAsync,
     AsyncValue chargingAsync,
   ) {
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.tertiary,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 24.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildSummaryStat(
+              context,
               'Total Rides',
               ridesAsync.maybeWhen(
                 data: (rides) => rides.length.toString(),
@@ -143,12 +171,11 @@ class DashboardScreen extends HookConsumerWidget {
             ),
             Container(
               width: 1,
-              height: 40,
-              color: Theme.of(
-                context,
-              ).colorScheme.onPrimaryContainer.withValues(alpha: 0.2),
+              height: 50,
+              color: Colors.white.withValues(alpha: 0.3),
             ),
             _buildSummaryStat(
+              context,
               'Total Charges',
               chargingAsync.maybeWhen(
                 data: (logs) => logs.length.toString(),
@@ -161,15 +188,28 @@ class DashboardScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildSummaryStat(String label, String value) {
+  Widget _buildSummaryStat(BuildContext context, String label, String value) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           value,
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            height: 1.1,
+          ),
         ),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 14)),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white.withValues(alpha: 0.9),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
@@ -181,6 +221,8 @@ class DashboardScreen extends HookConsumerWidget {
     required Color color,
     required String route,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return InkWell(
       onTap: () => context.push(route),
       borderRadius: BorderRadius.circular(24),
@@ -189,15 +231,13 @@ class DashboardScreen extends HookConsumerWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: Theme.of(
-              context,
-            ).colorScheme.outlineVariant.withValues(alpha: 0.5),
+            color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
           ),
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: color.withValues(alpha: isDark ? 0.05 : 0.08),
+              blurRadius: 15,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -210,8 +250,8 @@ class DashboardScreen extends HookConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+                  color: color.withValues(alpha: isDark ? 0.2 : 0.12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(icon, color: color, size: 28),
               ),
@@ -220,6 +260,7 @@ class DashboardScreen extends HookConsumerWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
+                  letterSpacing: -0.3,
                 ),
               ),
             ],

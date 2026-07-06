@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/router.dart' as router;
+import 'core/theme.dart';
 
 class AppWidget extends StatelessWidget {
   final String organization = "VoltLog Engineering";
@@ -12,19 +13,9 @@ class AppWidget extends StatelessWidget {
       routerConfig: router.routerDelegate,
       title: organization,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.green,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            minimumSize: Size(200, 56),
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
     );
   }
 }
