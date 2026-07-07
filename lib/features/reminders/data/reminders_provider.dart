@@ -23,13 +23,36 @@ class Reminders extends _$Reminders {
 
     final db = ref.watch(databaseProvider);
     return db.select(db.remindersTable).watch().map((rows) {
-      return rows.map((row) => row.toDomain()).toList();
+      final reminders = rows.map((row) => row.toDomain()).toList();
+      reminders.sort((a, b) {
+        if (a.isCompleted != b.isCompleted) {
+          return a.isCompleted ? 1 : -1;
+        }
+        if (a.targetDate != null && b.targetDate != null) {
+          return a.targetDate!.compareTo(b.targetDate!);
+        }
+        if (a.targetOdometer != null && b.targetOdometer != null) {
+          return a.targetOdometer!.compareTo(b.targetOdometer!);
+        }
+        return 0;
+      });
+      return reminders;
     });
   }
 
   Future<void> addReminder(Reminder reminder) async {
     final db = ref.watch(databaseProvider);
     await db.into(db.remindersTable).insert(reminder.toCompanion());
+  }
+
+  Future<void> updateReminder(Reminder reminder) async {
+    final db = ref.watch(databaseProvider);
+    await db.update(db.remindersTable).replace(reminder.toCompanion());
+  }
+
+  Future<void> removeReminder(String id) async {
+    final db = ref.watch(databaseProvider);
+    await (db.delete(db.remindersTable)..where((t) => t.id.equals(id))).go();
   }
 
   Future<void> markCompleted(String id) async {

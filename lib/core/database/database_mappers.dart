@@ -6,6 +6,7 @@ import '../../features/expenses/domain/expense.dart';
 import '../../features/maintenance/domain/maintenance_log.dart';
 import '../../features/reminders/domain/reminder.dart';
 import '../../features/bikes/domain/bike.dart';
+import '../../features/documents/domain/document.dart';
 import 'app_database.dart';
 
 extension RideDataMapper on RidesTableData {
@@ -140,6 +141,10 @@ extension ReminderDataMapper on RemindersTableData {
       targetOdometer: targetOdometer,
       isCompleted: isCompleted,
       isNotified: isNotified,
+      type: type,
+      note: note,
+      isActive: isActive,
+      bikeId: bikeId,
     );
   }
 }
@@ -154,6 +159,10 @@ extension ReminderMapper on Reminder {
       targetOdometer: Value(targetOdometer),
       isCompleted: Value(isCompleted),
       isNotified: Value(isNotified),
+      type: Value(type),
+      note: Value(note),
+      isActive: Value(isActive),
+      bikeId: Value(bikeId),
     );
   }
 }
@@ -212,6 +221,34 @@ extension BikeMapper on Bike {
       tyreInfo: Value(tyreInfo),
       customNotes: Value(customNotes),
       photoPath: Value(photoPath),
+    );
+  }
+}
+
+extension DocumentDataMapper on DocumentsTableData {
+  Document toDomain() {
+    return Document(
+      id: id,
+      name: name,
+      category: category,
+      filePath: filePath,
+      uploadDate: uploadDate,
+      notes: notes,
+      bikeId: bikeId,
+    );
+  }
+}
+
+extension DocumentMapper on Document {
+  DocumentsTableCompanion toCompanion() {
+    return DocumentsTableCompanion(
+      id: id != null ? Value(id!) : const Value.absent(),
+      name: Value(name),
+      category: Value(category),
+      filePath: Value(filePath),
+      uploadDate: Value(uploadDate),
+      notes: Value(notes),
+      bikeId: Value(bikeId),
     );
   }
 }

@@ -22,6 +22,14 @@ import '../features/rides/presentation/ride_details_screen.dart';
 import '../features/rides/domain/ride.dart';
 import '../features/charging/presentation/charge_details_screen.dart';
 import '../features/charging/domain/charge_log.dart';
+import '../features/documents/presentation/documents_screen.dart';
+import '../features/documents/presentation/document_add_screen.dart';
+import '../features/documents/presentation/document_preview_screen.dart';
+import '../features/documents/domain/document.dart';
+import '../features/reminders/presentation/reminder_add_edit_screen.dart';
+import '../features/reminders/domain/reminder.dart';
+import '../features/reports/presentation/reports_screen.dart';
+import '../features/analytics/presentation/statistics_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -115,6 +123,38 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/reminders',
       builder: (context, state) => const RemindersScreen(),
+      routes: [
+        GoRoute(
+          path: 'add',
+          builder: (context, state) => const ReminderAddEditScreen(),
+        ),
+        GoRoute(
+          path: 'edit',
+          builder: (context, state) => ReminderAddEditScreen(reminder: state.extra as Reminder),
+        ),
+      ]
+    ),
+    GoRoute(
+      path: '/documents',
+      builder: (context, state) => const DocumentsScreen(),
+      routes: [
+        GoRoute(
+          path: 'add',
+          builder: (context, state) => const DocumentAddScreen(),
+        ),
+        GoRoute(
+          path: 'preview',
+          builder: (context, state) => DocumentPreviewScreen(document: state.extra as Document),
+        ),
+      ]
+    ),
+    GoRoute(
+      path: '/reports',
+      builder: (context, state) => const ReportsScreen(),
+    ),
+    GoRoute(
+      path: '/statistics',
+      builder: (context, state) => const StatisticsScreen(),
     ),
     GoRoute(
       path: '/profile',

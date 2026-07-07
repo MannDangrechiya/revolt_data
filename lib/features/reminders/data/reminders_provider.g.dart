@@ -33,7 +33,7 @@ final class RemindersProvider
   Reminders create() => Reminders();
 }
 
-String _$remindersHash() => r'6b340a503f7e06e8af879e4d59873062a64e6e14';
+String _$remindersHash() => r'6807cad8a3d28eec9daa2d579a28f53caa07432b';
 
 abstract class _$Reminders extends $StreamNotifier<List<Reminder>> {
   Stream<List<Reminder>> build();
