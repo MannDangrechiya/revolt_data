@@ -67,13 +67,33 @@ class AnalyticsScreen extends HookConsumerWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
-        children: const [
-          MonthlyMileageChart(),
-          SizedBox(height: 16),
-          EfficiencyChart(),
-          SizedBox(height: 16),
-          ExpenseBreakdownChart(),
-          SizedBox(height: 32),
+        children: [
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(child: Icon(Icons.battery_charging_full)),
+              title: const Text('Battery Analytics'),
+              subtitle: const Text('Health, range, and charge cycles'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/battery-analytics'),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(child: Icon(Icons.bolt)),
+              title: const Text('Efficiency Analysis'),
+              subtitle: const Text('Distance per charge and costs'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/efficiency'),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const MonthlyMileageChart(),
+          const SizedBox(height: 16),
+          const EfficiencyChart(),
+          const SizedBox(height: 16),
+          const ExpenseBreakdownChart(),
+          const SizedBox(height: 32),
         ],
       ),
     );

@@ -187,6 +187,17 @@ class RemindersTable extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class BatteryHealthSnapshotsTable extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get date => dateTime()();
+  RealColumn get healthPercent => real()();
+  RealColumn get rangeAtFullCharge => real()();
+  IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(tables: [
   BikesTable,
   RidesTable,
@@ -195,6 +206,7 @@ class RemindersTable extends Table {
   MaintenanceLogsTable,
   DocumentsTable,
   RemindersTable,
+  BatteryHealthSnapshotsTable,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -202,7 +214,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -266,6 +278,9 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(remindersTable, remindersTable.note);
         await m.addColumn(remindersTable, remindersTable.isActive);
         await m.addColumn(remindersTable, remindersTable.bikeId);
+      }
+      if (from < 3) {
+        await m.createTable(batteryHealthSnapshotsTable);
       }
     },
     beforeOpen: (details) async {

@@ -8,14 +8,14 @@ enum ExpenseCategory {
   electricity,
   @JsonValue('service')
   service,
-  @JsonValue('tires')
-  tires,
+  @JsonValue('tyres')
+  tyres,
   @JsonValue('insurance')
   insurance,
   @JsonValue('accessories')
   accessories,
-  @JsonValue('other')
-  other,
+  @JsonValue('miscellaneous')
+  miscellaneous,
   @JsonValue('parking')
   parking,
   @JsonValue('washing')

@@ -13,10 +13,32 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final date = useState(DateTime.now());
-    final component = useState(MaintenanceComponent.tires);
+    final component = useState(MaintenanceComponent.other);
     final descriptionController = useTextEditingController();
     final odoController = useTextEditingController();
     final costController = useTextEditingController();
+    
+    // New fields
+    final serviceCenterController = useTextEditingController();
+    final partsReplacedController = useTextEditingController(); // Simplified: just a text field for comma separated for now
+    final labourCostController = useTextEditingController();
+    final technicianController = useTextEditingController();
+    final notesController = useTextEditingController();
+    final warrantyClaim = useState(false);
+    
+    // Next service
+    final serviceIntervalController = useTextEditingController();
+
+    // Checklist
+    final chkTyres = useState(false);
+    final chkBrakes = useState(false);
+    final chkBattery = useState(false);
+    final chkSuspension = useState(false);
+    final chkMotor = useState(false);
+    final chkLights = useState(false);
+    final chkHorn = useState(false);
+    final chkSoftwareUpdate = useState(false);
+    final chkGeneralInspection = useState(false);
 
     final isSubmitting = useState(false);
 
@@ -25,13 +47,36 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
       isSubmitting.value = true;
 
       try {
+        double currentOdo = double.parse(odoController.text);
+        double? nextDueOdo;
+        if (serviceIntervalController.text.isNotEmpty) {
+           nextDueOdo = currentOdo + double.parse(serviceIntervalController.text);
+        }
+
         final log = MaintenanceLog(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           date: date.value,
           component: component.value,
           description: descriptionController.text,
-          odometerReading: double.parse(odoController.text),
+          odometerReading: currentOdo,
           cost: double.parse(costController.text),
+          serviceCenter: serviceCenterController.text.isEmpty ? null : serviceCenterController.text,
+          partsReplaced: partsReplacedController.text.isEmpty ? null : partsReplacedController.text,
+          labourCost: labourCostController.text.isEmpty ? null : double.parse(labourCostController.text),
+          technician: technicianController.text.isEmpty ? null : technicianController.text,
+          notes: notesController.text.isEmpty ? null : notesController.text,
+          warrantyClaim: warrantyClaim.value,
+          nextServiceDueOdometer: nextDueOdo,
+          
+          tyres: chkTyres.value,
+          brakes: chkBrakes.value,
+          battery: chkBattery.value,
+          suspension: chkSuspension.value,
+          motor: chkMotor.value,
+          lights: chkLights.value,
+          horn: chkHorn.value,
+          softwareUpdate: chkSoftwareUpdate.value,
+          generalInspection: chkGeneralInspection.value,
         );
 
         await ref.read(maintenanceLogsProvider.notifier).addLog(log);
@@ -82,7 +127,7 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
             const Divider(),
             DropdownButtonFormField<MaintenanceComponent>(
               initialValue: component.value,
-              decoration: const InputDecoration(labelText: 'Component', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Primary Component', border: OutlineInputBorder()),
               items: MaintenanceComponent.values.map((c) => DropdownMenuItem(value: c, child: Text(c.name.toUpperCase()))).toList(),
               onChanged: (v) {
                 if (v != null) component.value = v;
@@ -91,7 +136,7 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
             const SizedBox(height: 16),
             TextFormField(
               controller: descriptionController,
-              decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Description / Title', border: OutlineInputBorder()),
               validator: (v) => v == null || v.isEmpty ? 'Required' : null,
             ),
             const SizedBox(height: 16),
@@ -113,7 +158,7 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
                 Expanded(
                   child: TextFormField(
                     controller: costController,
-                    decoration: const InputDecoration(labelText: 'Cost (\$)', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(labelText: 'Total Cost (\$)', border: OutlineInputBorder()),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Required';
@@ -123,6 +168,72 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: labourCostController,
+                    decoration: const InputDecoration(labelText: 'Labour Cost (\$)', border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: serviceIntervalController,
+                    decoration: const InputDecoration(labelText: 'Next Service In (km)', border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: serviceCenterController,
+              decoration: const InputDecoration(labelText: 'Service Center', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: technicianController,
+              decoration: const InputDecoration(labelText: 'Technician Name', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: partsReplacedController,
+              decoration: const InputDecoration(labelText: 'Parts Replaced (comma separated)', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Warranty Claim'),
+              value: warrantyClaim.value,
+              onChanged: (v) => warrantyClaim.value = v,
+            ),
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text('Checklist', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+            Wrap(
+              spacing: 8,
+              children: [
+                FilterChip(label: const Text('Tyres'), selected: chkTyres.value, onSelected: (v) => chkTyres.value = v),
+                FilterChip(label: const Text('Brakes'), selected: chkBrakes.value, onSelected: (v) => chkBrakes.value = v),
+                FilterChip(label: const Text('Battery'), selected: chkBattery.value, onSelected: (v) => chkBattery.value = v),
+                FilterChip(label: const Text('Suspension'), selected: chkSuspension.value, onSelected: (v) => chkSuspension.value = v),
+                FilterChip(label: const Text('Motor'), selected: chkMotor.value, onSelected: (v) => chkMotor.value = v),
+                FilterChip(label: const Text('Lights'), selected: chkLights.value, onSelected: (v) => chkLights.value = v),
+                FilterChip(label: const Text('Horn'), selected: chkHorn.value, onSelected: (v) => chkHorn.value = v),
+                FilterChip(label: const Text('Software Update'), selected: chkSoftwareUpdate.value, onSelected: (v) => chkSoftwareUpdate.value = v),
+                FilterChip(label: const Text('General Inspection'), selected: chkGeneralInspection.value, onSelected: (v) => chkGeneralInspection.value = v),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: notesController,
+              decoration: const InputDecoration(labelText: 'Notes', border: OutlineInputBorder()),
+              maxLines: 3,
             ),
             const SizedBox(height: 32),
             ElevatedButton(

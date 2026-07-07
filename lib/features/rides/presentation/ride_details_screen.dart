@@ -67,7 +67,7 @@ class RideDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      Expanded(child: _buildMetricCard(context, 'Distance', '${ride.distance.toStringAsFixed(1)} km', LucideIcons.route)),
+                      Expanded(child: _buildMetricCard(context, 'Distance', '${ride.distance.toStringAsFixed(1)} km', LucideIcons.navigation)),
                       const SizedBox(width: 16),
                       Expanded(child: _buildMetricCard(context, 'Battery Used', '${ride.batteryConsumed}%', LucideIcons.batteryMedium)),
                     ],

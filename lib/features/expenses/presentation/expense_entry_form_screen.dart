@@ -20,6 +20,7 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
     final category = useState(ExpenseCategory.service);
     final amountController = useTextEditingController();
     final notesController = useTextEditingController();
+    final descriptionController = useTextEditingController();
     final receiptPhoto = useState<String?>(null);
 
     Future<void> pickReceipt() async {
@@ -46,6 +47,7 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
           category: category.value,
           amount: double.parse(amountController.text),
           notes: notesController.text.isEmpty ? null : notesController.text,
+          description: descriptionController.text.isEmpty ? null : descriptionController.text,
           receiptPhotoPath: receiptPhoto.value,
         );
 
@@ -113,6 +115,11 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
                 if (double.tryParse(v) == null) return 'Invalid amount';
                 return null;
               },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: descriptionController,
+              decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             TextFormField(

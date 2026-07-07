@@ -31,10 +31,10 @@ Map<String, dynamic> _$ExpenseToJson(_Expense instance) => <String, dynamic>{
 const _$ExpenseCategoryEnumMap = {
   ExpenseCategory.electricity: 'electricity',
   ExpenseCategory.service: 'service',
-  ExpenseCategory.tires: 'tires',
+  ExpenseCategory.tyres: 'tyres',
   ExpenseCategory.insurance: 'insurance',
   ExpenseCategory.accessories: 'accessories',
-  ExpenseCategory.other: 'other',
+  ExpenseCategory.miscellaneous: 'miscellaneous',
   ExpenseCategory.parking: 'parking',
   ExpenseCategory.washing: 'washing',
   ExpenseCategory.cleaning: 'cleaning',

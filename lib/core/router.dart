@@ -12,6 +12,8 @@ import '../features/maintenance/presentation/maintenance_screen.dart';
 import '../features/maintenance/presentation/maintenance_entry_form_screen.dart';
 import '../features/reminders/presentation/reminders_screen.dart';
 import '../features/analytics/presentation/analytics_screen.dart';
+import '../features/analytics/presentation/battery_analytics_screen.dart';
+import '../features/analytics/presentation/efficiency_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
 import '../features/bikes/presentation/bike_profile_screen.dart';
@@ -85,6 +87,14 @@ final routerDelegate = GoRouter(
           ],
         ),
       ],
+    ),
+    GoRoute(
+      path: '/battery-analytics',
+      builder: (context, state) => const BatteryAnalyticsScreen(),
+    ),
+    GoRoute(
+      path: '/efficiency',
+      builder: (context, state) => const EfficiencyScreen(),
     ),
     GoRoute(
       path: '/expenses',

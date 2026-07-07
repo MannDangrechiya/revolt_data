@@ -6839,6 +6839,391 @@ class RemindersTableCompanion extends UpdateCompanion<RemindersTableData> {
   }
 }
 
+class $BatteryHealthSnapshotsTableTable extends BatteryHealthSnapshotsTable
+    with
+        TableInfo<
+          $BatteryHealthSnapshotsTableTable,
+          BatteryHealthSnapshotsTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BatteryHealthSnapshotsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _healthPercentMeta = const VerificationMeta(
+    'healthPercent',
+  );
+  @override
+  late final GeneratedColumn<double> healthPercent = GeneratedColumn<double>(
+    'health_percent',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rangeAtFullChargeMeta = const VerificationMeta(
+    'rangeAtFullCharge',
+  );
+  @override
+  late final GeneratedColumn<double> rangeAtFullCharge =
+      GeneratedColumn<double>(
+        'range_at_full_charge',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _bikeIdMeta = const VerificationMeta('bikeId');
+  @override
+  late final GeneratedColumn<int> bikeId = GeneratedColumn<int>(
+    'bike_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES bikes_table (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    healthPercent,
+    rangeAtFullCharge,
+    bikeId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'battery_health_snapshots_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BatteryHealthSnapshotsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('health_percent')) {
+      context.handle(
+        _healthPercentMeta,
+        healthPercent.isAcceptableOrUnknown(
+          data['health_percent']!,
+          _healthPercentMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_healthPercentMeta);
+    }
+    if (data.containsKey('range_at_full_charge')) {
+      context.handle(
+        _rangeAtFullChargeMeta,
+        rangeAtFullCharge.isAcceptableOrUnknown(
+          data['range_at_full_charge']!,
+          _rangeAtFullChargeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_rangeAtFullChargeMeta);
+    }
+    if (data.containsKey('bike_id')) {
+      context.handle(
+        _bikeIdMeta,
+        bikeId.isAcceptableOrUnknown(data['bike_id']!, _bikeIdMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BatteryHealthSnapshotsTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BatteryHealthSnapshotsTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      healthPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}health_percent'],
+      )!,
+      rangeAtFullCharge: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}range_at_full_charge'],
+      )!,
+      bikeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bike_id'],
+      ),
+    );
+  }
+
+  @override
+  $BatteryHealthSnapshotsTableTable createAlias(String alias) {
+    return $BatteryHealthSnapshotsTableTable(attachedDatabase, alias);
+  }
+}
+
+class BatteryHealthSnapshotsTableData extends DataClass
+    implements Insertable<BatteryHealthSnapshotsTableData> {
+  final String id;
+  final DateTime date;
+  final double healthPercent;
+  final double rangeAtFullCharge;
+  final int? bikeId;
+  const BatteryHealthSnapshotsTableData({
+    required this.id,
+    required this.date,
+    required this.healthPercent,
+    required this.rangeAtFullCharge,
+    this.bikeId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date'] = Variable<DateTime>(date);
+    map['health_percent'] = Variable<double>(healthPercent);
+    map['range_at_full_charge'] = Variable<double>(rangeAtFullCharge);
+    if (!nullToAbsent || bikeId != null) {
+      map['bike_id'] = Variable<int>(bikeId);
+    }
+    return map;
+  }
+
+  BatteryHealthSnapshotsTableCompanion toCompanion(bool nullToAbsent) {
+    return BatteryHealthSnapshotsTableCompanion(
+      id: Value(id),
+      date: Value(date),
+      healthPercent: Value(healthPercent),
+      rangeAtFullCharge: Value(rangeAtFullCharge),
+      bikeId: bikeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bikeId),
+    );
+  }
+
+  factory BatteryHealthSnapshotsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BatteryHealthSnapshotsTableData(
+      id: serializer.fromJson<String>(json['id']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      healthPercent: serializer.fromJson<double>(json['healthPercent']),
+      rangeAtFullCharge: serializer.fromJson<double>(json['rangeAtFullCharge']),
+      bikeId: serializer.fromJson<int?>(json['bikeId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'date': serializer.toJson<DateTime>(date),
+      'healthPercent': serializer.toJson<double>(healthPercent),
+      'rangeAtFullCharge': serializer.toJson<double>(rangeAtFullCharge),
+      'bikeId': serializer.toJson<int?>(bikeId),
+    };
+  }
+
+  BatteryHealthSnapshotsTableData copyWith({
+    String? id,
+    DateTime? date,
+    double? healthPercent,
+    double? rangeAtFullCharge,
+    Value<int?> bikeId = const Value.absent(),
+  }) => BatteryHealthSnapshotsTableData(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    healthPercent: healthPercent ?? this.healthPercent,
+    rangeAtFullCharge: rangeAtFullCharge ?? this.rangeAtFullCharge,
+    bikeId: bikeId.present ? bikeId.value : this.bikeId,
+  );
+  BatteryHealthSnapshotsTableData copyWithCompanion(
+    BatteryHealthSnapshotsTableCompanion data,
+  ) {
+    return BatteryHealthSnapshotsTableData(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      healthPercent: data.healthPercent.present
+          ? data.healthPercent.value
+          : this.healthPercent,
+      rangeAtFullCharge: data.rangeAtFullCharge.present
+          ? data.rangeAtFullCharge.value
+          : this.rangeAtFullCharge,
+      bikeId: data.bikeId.present ? data.bikeId.value : this.bikeId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BatteryHealthSnapshotsTableData(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('healthPercent: $healthPercent, ')
+          ..write('rangeAtFullCharge: $rangeAtFullCharge, ')
+          ..write('bikeId: $bikeId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, date, healthPercent, rangeAtFullCharge, bikeId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BatteryHealthSnapshotsTableData &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.healthPercent == this.healthPercent &&
+          other.rangeAtFullCharge == this.rangeAtFullCharge &&
+          other.bikeId == this.bikeId);
+}
+
+class BatteryHealthSnapshotsTableCompanion
+    extends UpdateCompanion<BatteryHealthSnapshotsTableData> {
+  final Value<String> id;
+  final Value<DateTime> date;
+  final Value<double> healthPercent;
+  final Value<double> rangeAtFullCharge;
+  final Value<int?> bikeId;
+  final Value<int> rowid;
+  const BatteryHealthSnapshotsTableCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.healthPercent = const Value.absent(),
+    this.rangeAtFullCharge = const Value.absent(),
+    this.bikeId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BatteryHealthSnapshotsTableCompanion.insert({
+    required String id,
+    required DateTime date,
+    required double healthPercent,
+    required double rangeAtFullCharge,
+    this.bikeId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       date = Value(date),
+       healthPercent = Value(healthPercent),
+       rangeAtFullCharge = Value(rangeAtFullCharge);
+  static Insertable<BatteryHealthSnapshotsTableData> custom({
+    Expression<String>? id,
+    Expression<DateTime>? date,
+    Expression<double>? healthPercent,
+    Expression<double>? rangeAtFullCharge,
+    Expression<int>? bikeId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (healthPercent != null) 'health_percent': healthPercent,
+      if (rangeAtFullCharge != null) 'range_at_full_charge': rangeAtFullCharge,
+      if (bikeId != null) 'bike_id': bikeId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BatteryHealthSnapshotsTableCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? date,
+    Value<double>? healthPercent,
+    Value<double>? rangeAtFullCharge,
+    Value<int?>? bikeId,
+    Value<int>? rowid,
+  }) {
+    return BatteryHealthSnapshotsTableCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      healthPercent: healthPercent ?? this.healthPercent,
+      rangeAtFullCharge: rangeAtFullCharge ?? this.rangeAtFullCharge,
+      bikeId: bikeId ?? this.bikeId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (healthPercent.present) {
+      map['health_percent'] = Variable<double>(healthPercent.value);
+    }
+    if (rangeAtFullCharge.present) {
+      map['range_at_full_charge'] = Variable<double>(rangeAtFullCharge.value);
+    }
+    if (bikeId.present) {
+      map['bike_id'] = Variable<int>(bikeId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BatteryHealthSnapshotsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('healthPercent: $healthPercent, ')
+          ..write('rangeAtFullCharge: $rangeAtFullCharge, ')
+          ..write('bikeId: $bikeId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -6852,6 +7237,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MaintenanceLogsTableTable(this);
   late final $DocumentsTableTable documentsTable = $DocumentsTableTable(this);
   late final $RemindersTableTable remindersTable = $RemindersTableTable(this);
+  late final $BatteryHealthSnapshotsTableTable batteryHealthSnapshotsTable =
+      $BatteryHealthSnapshotsTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6864,6 +7251,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     maintenanceLogsTable,
     documentsTable,
     remindersTable,
+    batteryHealthSnapshotsTable,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -6908,6 +7296,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('reminders_table', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'bikes_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('battery_health_snapshots_table', kind: UpdateKind.delete),
+      ],
     ),
   ]);
 }
@@ -7085,6 +7482,34 @@ final class $$BikesTableTableReferences
     ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_remindersTableRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $BatteryHealthSnapshotsTableTable,
+    List<BatteryHealthSnapshotsTableData>
+  >
+  _batteryHealthSnapshotsTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.batteryHealthSnapshotsTable,
+        aliasName: $_aliasNameGenerator(
+          db.bikesTable.id,
+          db.batteryHealthSnapshotsTable.bikeId,
+        ),
+      );
+
+  $$BatteryHealthSnapshotsTableTableProcessedTableManager
+  get batteryHealthSnapshotsTableRefs {
+    final manager = $$BatteryHealthSnapshotsTableTableTableManager(
+      $_db,
+      $_db.batteryHealthSnapshotsTable,
+    ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _batteryHealthSnapshotsTableRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -7357,6 +7782,35 @@ class $$BikesTableTableFilterComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<bool> batteryHealthSnapshotsTableRefs(
+    Expression<bool> Function(
+      $$BatteryHealthSnapshotsTableTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$BatteryHealthSnapshotsTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.batteryHealthSnapshotsTable,
+          getReferencedColumn: (t) => t.bikeId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$BatteryHealthSnapshotsTableTableFilterComposer(
+                $db: $db,
+                $table: $db.batteryHealthSnapshotsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -7724,6 +8178,35 @@ class $$BikesTableTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> batteryHealthSnapshotsTableRefs<T extends Object>(
+    Expression<T> Function(
+      $$BatteryHealthSnapshotsTableTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$BatteryHealthSnapshotsTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.batteryHealthSnapshotsTable,
+          getReferencedColumn: (t) => t.bikeId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$BatteryHealthSnapshotsTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.batteryHealthSnapshotsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$BikesTableTableTableManager
@@ -7746,6 +8229,7 @@ class $$BikesTableTableTableManager
             bool maintenanceLogsTableRefs,
             bool documentsTableRefs,
             bool remindersTableRefs,
+            bool batteryHealthSnapshotsTableRefs,
           })
         > {
   $$BikesTableTableTableManager(_$AppDatabase db, $BikesTableTable table)
@@ -7871,6 +8355,7 @@ class $$BikesTableTableTableManager
                 maintenanceLogsTableRefs = false,
                 documentsTableRefs = false,
                 remindersTableRefs = false,
+                batteryHealthSnapshotsTableRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -7881,6 +8366,8 @@ class $$BikesTableTableTableManager
                     if (maintenanceLogsTableRefs) db.maintenanceLogsTable,
                     if (documentsTableRefs) db.documentsTable,
                     if (remindersTableRefs) db.remindersTable,
+                    if (batteryHealthSnapshotsTableRefs)
+                      db.batteryHealthSnapshotsTable,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -8011,6 +8498,27 @@ class $$BikesTableTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (batteryHealthSnapshotsTableRefs)
+                        await $_getPrefetchedData<
+                          BikesTableData,
+                          $BikesTableTable,
+                          BatteryHealthSnapshotsTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$BikesTableTableReferences
+                              ._batteryHealthSnapshotsTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$BikesTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).batteryHealthSnapshotsTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.bikeId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -8038,6 +8546,7 @@ typedef $$BikesTableTableProcessedTableManager =
         bool maintenanceLogsTableRefs,
         bool documentsTableRefs,
         bool remindersTableRefs,
+        bool batteryHealthSnapshotsTableRefs,
       })
     >;
 typedef $$RidesTableTableCreateCompanionBuilder =
@@ -11355,6 +11864,360 @@ typedef $$RemindersTableTableProcessedTableManager =
       RemindersTableData,
       PrefetchHooks Function({bool bikeId})
     >;
+typedef $$BatteryHealthSnapshotsTableTableCreateCompanionBuilder =
+    BatteryHealthSnapshotsTableCompanion Function({
+      required String id,
+      required DateTime date,
+      required double healthPercent,
+      required double rangeAtFullCharge,
+      Value<int?> bikeId,
+      Value<int> rowid,
+    });
+typedef $$BatteryHealthSnapshotsTableTableUpdateCompanionBuilder =
+    BatteryHealthSnapshotsTableCompanion Function({
+      Value<String> id,
+      Value<DateTime> date,
+      Value<double> healthPercent,
+      Value<double> rangeAtFullCharge,
+      Value<int?> bikeId,
+      Value<int> rowid,
+    });
+
+final class $$BatteryHealthSnapshotsTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $BatteryHealthSnapshotsTableTable,
+          BatteryHealthSnapshotsTableData
+        > {
+  $$BatteryHealthSnapshotsTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $BikesTableTable _bikeIdTable(_$AppDatabase db) =>
+      db.bikesTable.createAlias(
+        $_aliasNameGenerator(
+          db.batteryHealthSnapshotsTable.bikeId,
+          db.bikesTable.id,
+        ),
+      );
+
+  $$BikesTableTableProcessedTableManager? get bikeId {
+    final $_column = $_itemColumn<int>('bike_id');
+    if ($_column == null) return null;
+    final manager = $$BikesTableTableTableManager(
+      $_db,
+      $_db.bikesTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_bikeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$BatteryHealthSnapshotsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $BatteryHealthSnapshotsTableTable> {
+  $$BatteryHealthSnapshotsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get healthPercent => $composableBuilder(
+    column: $table.healthPercent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get rangeAtFullCharge => $composableBuilder(
+    column: $table.rangeAtFullCharge,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$BikesTableTableFilterComposer get bikeId {
+    final $$BikesTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.bikeId,
+      referencedTable: $db.bikesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$BikesTableTableFilterComposer(
+            $db: $db,
+            $table: $db.bikesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$BatteryHealthSnapshotsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $BatteryHealthSnapshotsTableTable> {
+  $$BatteryHealthSnapshotsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get healthPercent => $composableBuilder(
+    column: $table.healthPercent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get rangeAtFullCharge => $composableBuilder(
+    column: $table.rangeAtFullCharge,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$BikesTableTableOrderingComposer get bikeId {
+    final $$BikesTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.bikeId,
+      referencedTable: $db.bikesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$BikesTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.bikesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$BatteryHealthSnapshotsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BatteryHealthSnapshotsTableTable> {
+  $$BatteryHealthSnapshotsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<double> get healthPercent => $composableBuilder(
+    column: $table.healthPercent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get rangeAtFullCharge => $composableBuilder(
+    column: $table.rangeAtFullCharge,
+    builder: (column) => column,
+  );
+
+  $$BikesTableTableAnnotationComposer get bikeId {
+    final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.bikeId,
+      referencedTable: $db.bikesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$BikesTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.bikesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$BatteryHealthSnapshotsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BatteryHealthSnapshotsTableTable,
+          BatteryHealthSnapshotsTableData,
+          $$BatteryHealthSnapshotsTableTableFilterComposer,
+          $$BatteryHealthSnapshotsTableTableOrderingComposer,
+          $$BatteryHealthSnapshotsTableTableAnnotationComposer,
+          $$BatteryHealthSnapshotsTableTableCreateCompanionBuilder,
+          $$BatteryHealthSnapshotsTableTableUpdateCompanionBuilder,
+          (
+            BatteryHealthSnapshotsTableData,
+            $$BatteryHealthSnapshotsTableTableReferences,
+          ),
+          BatteryHealthSnapshotsTableData,
+          PrefetchHooks Function({bool bikeId})
+        > {
+  $$BatteryHealthSnapshotsTableTableTableManager(
+    _$AppDatabase db,
+    $BatteryHealthSnapshotsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BatteryHealthSnapshotsTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$BatteryHealthSnapshotsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$BatteryHealthSnapshotsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<double> healthPercent = const Value.absent(),
+                Value<double> rangeAtFullCharge = const Value.absent(),
+                Value<int?> bikeId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BatteryHealthSnapshotsTableCompanion(
+                id: id,
+                date: date,
+                healthPercent: healthPercent,
+                rangeAtFullCharge: rangeAtFullCharge,
+                bikeId: bikeId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime date,
+                required double healthPercent,
+                required double rangeAtFullCharge,
+                Value<int?> bikeId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BatteryHealthSnapshotsTableCompanion.insert(
+                id: id,
+                date: date,
+                healthPercent: healthPercent,
+                rangeAtFullCharge: rangeAtFullCharge,
+                bikeId: bikeId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$BatteryHealthSnapshotsTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({bikeId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (bikeId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.bikeId,
+                                referencedTable:
+                                    $$BatteryHealthSnapshotsTableTableReferences
+                                        ._bikeIdTable(db),
+                                referencedColumn:
+                                    $$BatteryHealthSnapshotsTableTableReferences
+                                        ._bikeIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$BatteryHealthSnapshotsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BatteryHealthSnapshotsTableTable,
+      BatteryHealthSnapshotsTableData,
+      $$BatteryHealthSnapshotsTableTableFilterComposer,
+      $$BatteryHealthSnapshotsTableTableOrderingComposer,
+      $$BatteryHealthSnapshotsTableTableAnnotationComposer,
+      $$BatteryHealthSnapshotsTableTableCreateCompanionBuilder,
+      $$BatteryHealthSnapshotsTableTableUpdateCompanionBuilder,
+      (
+        BatteryHealthSnapshotsTableData,
+        $$BatteryHealthSnapshotsTableTableReferences,
+      ),
+      BatteryHealthSnapshotsTableData,
+      PrefetchHooks Function({bool bikeId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -11373,4 +12236,10 @@ class $AppDatabaseManager {
       $$DocumentsTableTableTableManager(_db, _db.documentsTable);
   $$RemindersTableTableTableManager get remindersTable =>
       $$RemindersTableTableTableManager(_db, _db.remindersTable);
+  $$BatteryHealthSnapshotsTableTableTableManager
+  get batteryHealthSnapshotsTable =>
+      $$BatteryHealthSnapshotsTableTableTableManager(
+        _db,
+        _db.batteryHealthSnapshotsTable,
+      );
 }
