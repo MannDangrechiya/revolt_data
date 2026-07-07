@@ -29,7 +29,7 @@ class EfficiencyStats {
 @riverpod
 Future<EfficiencyStats> efficiencyStats(EfficiencyStatsRef ref) async {
   final rides = await ref.watch(ridesProvider.future);
-  final charges = await ref.watch(chargeLogsProvider.future);
+  final charges = await ref.watch(chargingLogsProvider.future);
   final expenses = await ref.watch(expensesProvider.future);
 
   double totalDistance = 0.0;

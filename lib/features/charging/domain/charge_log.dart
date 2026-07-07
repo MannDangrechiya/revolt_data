@@ -44,6 +44,8 @@ abstract class ChargeLog with _$ChargeLog {
     String? chargerType,
     String? chargingMethod,
     double? electricityPrice,
+    String? providerName,
+    double? maxChargingPowerKw,
     @Default([]) List<String> photoPaths,
     int? bikeId,
   }) = _ChargeLog;

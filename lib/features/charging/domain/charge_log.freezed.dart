@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChargeLog {
 
- String get id; DateTime get date; double get durationMinutes; double get kwhAdded; double get cost; PaymentMethod get paymentMethod; LocationType get locationType; int get startBattery; int get endBattery; String? get locationName; String? get notes; DateTime? get startTime; DateTime? get endTime; String? get chargerType; String? get chargingMethod; double? get electricityPrice; List<String> get photoPaths; int? get bikeId;
+ String get id; DateTime get date; double get durationMinutes; double get kwhAdded; double get cost; PaymentMethod get paymentMethod; LocationType get locationType; int get startBattery; int get endBattery; String? get locationName; String? get notes; DateTime? get startTime; DateTime? get endTime; String? get chargerType; String? get chargingMethod; double? get electricityPrice; String? get providerName; double? get maxChargingPowerKw; List<String> get photoPaths; int? get bikeId;
 /// Create a copy of ChargeLog
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ChargeLogCopyWith<ChargeLog> get copyWith => _$ChargeLogCopyWithImpl<ChargeLog>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChargeLog&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.kwhAdded, kwhAdded) || other.kwhAdded == kwhAdded)&&(identical(other.cost, cost) || other.cost == cost)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.locationType, locationType) || other.locationType == locationType)&&(identical(other.startBattery, startBattery) || other.startBattery == startBattery)&&(identical(other.endBattery, endBattery) || other.endBattery == endBattery)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.chargerType, chargerType) || other.chargerType == chargerType)&&(identical(other.chargingMethod, chargingMethod) || other.chargingMethod == chargingMethod)&&(identical(other.electricityPrice, electricityPrice) || other.electricityPrice == electricityPrice)&&const DeepCollectionEquality().equals(other.photoPaths, photoPaths)&&(identical(other.bikeId, bikeId) || other.bikeId == bikeId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChargeLog&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.kwhAdded, kwhAdded) || other.kwhAdded == kwhAdded)&&(identical(other.cost, cost) || other.cost == cost)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.locationType, locationType) || other.locationType == locationType)&&(identical(other.startBattery, startBattery) || other.startBattery == startBattery)&&(identical(other.endBattery, endBattery) || other.endBattery == endBattery)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.chargerType, chargerType) || other.chargerType == chargerType)&&(identical(other.chargingMethod, chargingMethod) || other.chargingMethod == chargingMethod)&&(identical(other.electricityPrice, electricityPrice) || other.electricityPrice == electricityPrice)&&(identical(other.providerName, providerName) || other.providerName == providerName)&&(identical(other.maxChargingPowerKw, maxChargingPowerKw) || other.maxChargingPowerKw == maxChargingPowerKw)&&const DeepCollectionEquality().equals(other.photoPaths, photoPaths)&&(identical(other.bikeId, bikeId) || other.bikeId == bikeId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,date,durationMinutes,kwhAdded,cost,paymentMethod,locationType,startBattery,endBattery,locationName,notes,startTime,endTime,chargerType,chargingMethod,electricityPrice,const DeepCollectionEquality().hash(photoPaths),bikeId);
+int get hashCode => Object.hashAll([runtimeType,id,date,durationMinutes,kwhAdded,cost,paymentMethod,locationType,startBattery,endBattery,locationName,notes,startTime,endTime,chargerType,chargingMethod,electricityPrice,providerName,maxChargingPowerKw,const DeepCollectionEquality().hash(photoPaths),bikeId]);
 
 @override
 String toString() {
-  return 'ChargeLog(id: $id, date: $date, durationMinutes: $durationMinutes, kwhAdded: $kwhAdded, cost: $cost, paymentMethod: $paymentMethod, locationType: $locationType, startBattery: $startBattery, endBattery: $endBattery, locationName: $locationName, notes: $notes, startTime: $startTime, endTime: $endTime, chargerType: $chargerType, chargingMethod: $chargingMethod, electricityPrice: $electricityPrice, photoPaths: $photoPaths, bikeId: $bikeId)';
+  return 'ChargeLog(id: $id, date: $date, durationMinutes: $durationMinutes, kwhAdded: $kwhAdded, cost: $cost, paymentMethod: $paymentMethod, locationType: $locationType, startBattery: $startBattery, endBattery: $endBattery, locationName: $locationName, notes: $notes, startTime: $startTime, endTime: $endTime, chargerType: $chargerType, chargingMethod: $chargingMethod, electricityPrice: $electricityPrice, providerName: $providerName, maxChargingPowerKw: $maxChargingPowerKw, photoPaths: $photoPaths, bikeId: $bikeId)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ChargeLogCopyWith<$Res>  {
   factory $ChargeLogCopyWith(ChargeLog value, $Res Function(ChargeLog) _then) = _$ChargeLogCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime date, double durationMinutes, double kwhAdded, double cost, PaymentMethod paymentMethod, LocationType locationType, int startBattery, int endBattery, String? locationName, String? notes, DateTime? startTime, DateTime? endTime, String? chargerType, String? chargingMethod, double? electricityPrice, List<String> photoPaths, int? bikeId
+ String id, DateTime date, double durationMinutes, double kwhAdded, double cost, PaymentMethod paymentMethod, LocationType locationType, int startBattery, int endBattery, String? locationName, String? notes, DateTime? startTime, DateTime? endTime, String? chargerType, String? chargingMethod, double? electricityPrice, String? providerName, double? maxChargingPowerKw, List<String> photoPaths, int? bikeId
 });
 
 
@@ -65,7 +65,7 @@ class _$ChargeLogCopyWithImpl<$Res>
 
 /// Create a copy of ChargeLog
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? date = null,Object? durationMinutes = null,Object? kwhAdded = null,Object? cost = null,Object? paymentMethod = null,Object? locationType = null,Object? startBattery = null,Object? endBattery = null,Object? locationName = freezed,Object? notes = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? chargerType = freezed,Object? chargingMethod = freezed,Object? electricityPrice = freezed,Object? photoPaths = null,Object? bikeId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? date = null,Object? durationMinutes = null,Object? kwhAdded = null,Object? cost = null,Object? paymentMethod = null,Object? locationType = null,Object? startBattery = null,Object? endBattery = null,Object? locationName = freezed,Object? notes = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? chargerType = freezed,Object? chargingMethod = freezed,Object? electricityPrice = freezed,Object? providerName = freezed,Object? maxChargingPowerKw = freezed,Object? photoPaths = null,Object? bikeId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
@@ -83,6 +83,8 @@ as DateTime?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: ca
 as DateTime?,chargerType: freezed == chargerType ? _self.chargerType : chargerType // ignore: cast_nullable_to_non_nullable
 as String?,chargingMethod: freezed == chargingMethod ? _self.chargingMethod : chargingMethod // ignore: cast_nullable_to_non_nullable
 as String?,electricityPrice: freezed == electricityPrice ? _self.electricityPrice : electricityPrice // ignore: cast_nullable_to_non_nullable
+as double?,providerName: freezed == providerName ? _self.providerName : providerName // ignore: cast_nullable_to_non_nullable
+as String?,maxChargingPowerKw: freezed == maxChargingPowerKw ? _self.maxChargingPowerKw : maxChargingPowerKw // ignore: cast_nullable_to_non_nullable
 as double?,photoPaths: null == photoPaths ? _self.photoPaths : photoPaths // ignore: cast_nullable_to_non_nullable
 as List<String>,bikeId: freezed == bikeId ? _self.bikeId : bikeId // ignore: cast_nullable_to_non_nullable
 as int?,
@@ -170,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime date,  double durationMinutes,  double kwhAdded,  double cost,  PaymentMethod paymentMethod,  LocationType locationType,  int startBattery,  int endBattery,  String? locationName,  String? notes,  DateTime? startTime,  DateTime? endTime,  String? chargerType,  String? chargingMethod,  double? electricityPrice,  List<String> photoPaths,  int? bikeId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime date,  double durationMinutes,  double kwhAdded,  double cost,  PaymentMethod paymentMethod,  LocationType locationType,  int startBattery,  int endBattery,  String? locationName,  String? notes,  DateTime? startTime,  DateTime? endTime,  String? chargerType,  String? chargingMethod,  double? electricityPrice,  String? providerName,  double? maxChargingPowerKw,  List<String> photoPaths,  int? bikeId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChargeLog() when $default != null:
-return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.cost,_that.paymentMethod,_that.locationType,_that.startBattery,_that.endBattery,_that.locationName,_that.notes,_that.startTime,_that.endTime,_that.chargerType,_that.chargingMethod,_that.electricityPrice,_that.photoPaths,_that.bikeId);case _:
+return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.cost,_that.paymentMethod,_that.locationType,_that.startBattery,_that.endBattery,_that.locationName,_that.notes,_that.startTime,_that.endTime,_that.chargerType,_that.chargingMethod,_that.electricityPrice,_that.providerName,_that.maxChargingPowerKw,_that.photoPaths,_that.bikeId);case _:
   return orElse();
 
 }
@@ -191,10 +193,10 @@ return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.c
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime date,  double durationMinutes,  double kwhAdded,  double cost,  PaymentMethod paymentMethod,  LocationType locationType,  int startBattery,  int endBattery,  String? locationName,  String? notes,  DateTime? startTime,  DateTime? endTime,  String? chargerType,  String? chargingMethod,  double? electricityPrice,  List<String> photoPaths,  int? bikeId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime date,  double durationMinutes,  double kwhAdded,  double cost,  PaymentMethod paymentMethod,  LocationType locationType,  int startBattery,  int endBattery,  String? locationName,  String? notes,  DateTime? startTime,  DateTime? endTime,  String? chargerType,  String? chargingMethod,  double? electricityPrice,  String? providerName,  double? maxChargingPowerKw,  List<String> photoPaths,  int? bikeId)  $default,) {final _that = this;
 switch (_that) {
 case _ChargeLog():
-return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.cost,_that.paymentMethod,_that.locationType,_that.startBattery,_that.endBattery,_that.locationName,_that.notes,_that.startTime,_that.endTime,_that.chargerType,_that.chargingMethod,_that.electricityPrice,_that.photoPaths,_that.bikeId);case _:
+return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.cost,_that.paymentMethod,_that.locationType,_that.startBattery,_that.endBattery,_that.locationName,_that.notes,_that.startTime,_that.endTime,_that.chargerType,_that.chargingMethod,_that.electricityPrice,_that.providerName,_that.maxChargingPowerKw,_that.photoPaths,_that.bikeId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -211,10 +213,10 @@ return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.c
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime date,  double durationMinutes,  double kwhAdded,  double cost,  PaymentMethod paymentMethod,  LocationType locationType,  int startBattery,  int endBattery,  String? locationName,  String? notes,  DateTime? startTime,  DateTime? endTime,  String? chargerType,  String? chargingMethod,  double? electricityPrice,  List<String> photoPaths,  int? bikeId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime date,  double durationMinutes,  double kwhAdded,  double cost,  PaymentMethod paymentMethod,  LocationType locationType,  int startBattery,  int endBattery,  String? locationName,  String? notes,  DateTime? startTime,  DateTime? endTime,  String? chargerType,  String? chargingMethod,  double? electricityPrice,  String? providerName,  double? maxChargingPowerKw,  List<String> photoPaths,  int? bikeId)?  $default,) {final _that = this;
 switch (_that) {
 case _ChargeLog() when $default != null:
-return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.cost,_that.paymentMethod,_that.locationType,_that.startBattery,_that.endBattery,_that.locationName,_that.notes,_that.startTime,_that.endTime,_that.chargerType,_that.chargingMethod,_that.electricityPrice,_that.photoPaths,_that.bikeId);case _:
+return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.cost,_that.paymentMethod,_that.locationType,_that.startBattery,_that.endBattery,_that.locationName,_that.notes,_that.startTime,_that.endTime,_that.chargerType,_that.chargingMethod,_that.electricityPrice,_that.providerName,_that.maxChargingPowerKw,_that.photoPaths,_that.bikeId);case _:
   return null;
 
 }
@@ -226,7 +228,7 @@ return $default(_that.id,_that.date,_that.durationMinutes,_that.kwhAdded,_that.c
 @JsonSerializable()
 
 class _ChargeLog implements ChargeLog {
-  const _ChargeLog({required this.id, required this.date, required this.durationMinutes, required this.kwhAdded, required this.cost, required this.paymentMethod, required this.locationType, required this.startBattery, required this.endBattery, this.locationName, this.notes, this.startTime, this.endTime, this.chargerType, this.chargingMethod, this.electricityPrice, final  List<String> photoPaths = const [], this.bikeId}): _photoPaths = photoPaths;
+  const _ChargeLog({required this.id, required this.date, required this.durationMinutes, required this.kwhAdded, required this.cost, required this.paymentMethod, required this.locationType, required this.startBattery, required this.endBattery, this.locationName, this.notes, this.startTime, this.endTime, this.chargerType, this.chargingMethod, this.electricityPrice, this.providerName, this.maxChargingPowerKw, final  List<String> photoPaths = const [], this.bikeId}): _photoPaths = photoPaths;
   factory _ChargeLog.fromJson(Map<String, dynamic> json) => _$ChargeLogFromJson(json);
 
 @override final  String id;
@@ -245,6 +247,8 @@ class _ChargeLog implements ChargeLog {
 @override final  String? chargerType;
 @override final  String? chargingMethod;
 @override final  double? electricityPrice;
+@override final  String? providerName;
+@override final  double? maxChargingPowerKw;
  final  List<String> _photoPaths;
 @override@JsonKey() List<String> get photoPaths {
   if (_photoPaths is EqualUnmodifiableListView) return _photoPaths;
@@ -267,16 +271,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChargeLog&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.kwhAdded, kwhAdded) || other.kwhAdded == kwhAdded)&&(identical(other.cost, cost) || other.cost == cost)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.locationType, locationType) || other.locationType == locationType)&&(identical(other.startBattery, startBattery) || other.startBattery == startBattery)&&(identical(other.endBattery, endBattery) || other.endBattery == endBattery)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.chargerType, chargerType) || other.chargerType == chargerType)&&(identical(other.chargingMethod, chargingMethod) || other.chargingMethod == chargingMethod)&&(identical(other.electricityPrice, electricityPrice) || other.electricityPrice == electricityPrice)&&const DeepCollectionEquality().equals(other._photoPaths, _photoPaths)&&(identical(other.bikeId, bikeId) || other.bikeId == bikeId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChargeLog&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.kwhAdded, kwhAdded) || other.kwhAdded == kwhAdded)&&(identical(other.cost, cost) || other.cost == cost)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.locationType, locationType) || other.locationType == locationType)&&(identical(other.startBattery, startBattery) || other.startBattery == startBattery)&&(identical(other.endBattery, endBattery) || other.endBattery == endBattery)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.chargerType, chargerType) || other.chargerType == chargerType)&&(identical(other.chargingMethod, chargingMethod) || other.chargingMethod == chargingMethod)&&(identical(other.electricityPrice, electricityPrice) || other.electricityPrice == electricityPrice)&&(identical(other.providerName, providerName) || other.providerName == providerName)&&(identical(other.maxChargingPowerKw, maxChargingPowerKw) || other.maxChargingPowerKw == maxChargingPowerKw)&&const DeepCollectionEquality().equals(other._photoPaths, _photoPaths)&&(identical(other.bikeId, bikeId) || other.bikeId == bikeId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,date,durationMinutes,kwhAdded,cost,paymentMethod,locationType,startBattery,endBattery,locationName,notes,startTime,endTime,chargerType,chargingMethod,electricityPrice,const DeepCollectionEquality().hash(_photoPaths),bikeId);
+int get hashCode => Object.hashAll([runtimeType,id,date,durationMinutes,kwhAdded,cost,paymentMethod,locationType,startBattery,endBattery,locationName,notes,startTime,endTime,chargerType,chargingMethod,electricityPrice,providerName,maxChargingPowerKw,const DeepCollectionEquality().hash(_photoPaths),bikeId]);
 
 @override
 String toString() {
-  return 'ChargeLog(id: $id, date: $date, durationMinutes: $durationMinutes, kwhAdded: $kwhAdded, cost: $cost, paymentMethod: $paymentMethod, locationType: $locationType, startBattery: $startBattery, endBattery: $endBattery, locationName: $locationName, notes: $notes, startTime: $startTime, endTime: $endTime, chargerType: $chargerType, chargingMethod: $chargingMethod, electricityPrice: $electricityPrice, photoPaths: $photoPaths, bikeId: $bikeId)';
+  return 'ChargeLog(id: $id, date: $date, durationMinutes: $durationMinutes, kwhAdded: $kwhAdded, cost: $cost, paymentMethod: $paymentMethod, locationType: $locationType, startBattery: $startBattery, endBattery: $endBattery, locationName: $locationName, notes: $notes, startTime: $startTime, endTime: $endTime, chargerType: $chargerType, chargingMethod: $chargingMethod, electricityPrice: $electricityPrice, providerName: $providerName, maxChargingPowerKw: $maxChargingPowerKw, photoPaths: $photoPaths, bikeId: $bikeId)';
 }
 
 
@@ -287,7 +291,7 @@ abstract mixin class _$ChargeLogCopyWith<$Res> implements $ChargeLogCopyWith<$Re
   factory _$ChargeLogCopyWith(_ChargeLog value, $Res Function(_ChargeLog) _then) = __$ChargeLogCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime date, double durationMinutes, double kwhAdded, double cost, PaymentMethod paymentMethod, LocationType locationType, int startBattery, int endBattery, String? locationName, String? notes, DateTime? startTime, DateTime? endTime, String? chargerType, String? chargingMethod, double? electricityPrice, List<String> photoPaths, int? bikeId
+ String id, DateTime date, double durationMinutes, double kwhAdded, double cost, PaymentMethod paymentMethod, LocationType locationType, int startBattery, int endBattery, String? locationName, String? notes, DateTime? startTime, DateTime? endTime, String? chargerType, String? chargingMethod, double? electricityPrice, String? providerName, double? maxChargingPowerKw, List<String> photoPaths, int? bikeId
 });
 
 
@@ -304,7 +308,7 @@ class __$ChargeLogCopyWithImpl<$Res>
 
 /// Create a copy of ChargeLog
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? date = null,Object? durationMinutes = null,Object? kwhAdded = null,Object? cost = null,Object? paymentMethod = null,Object? locationType = null,Object? startBattery = null,Object? endBattery = null,Object? locationName = freezed,Object? notes = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? chargerType = freezed,Object? chargingMethod = freezed,Object? electricityPrice = freezed,Object? photoPaths = null,Object? bikeId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? date = null,Object? durationMinutes = null,Object? kwhAdded = null,Object? cost = null,Object? paymentMethod = null,Object? locationType = null,Object? startBattery = null,Object? endBattery = null,Object? locationName = freezed,Object? notes = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? chargerType = freezed,Object? chargingMethod = freezed,Object? electricityPrice = freezed,Object? providerName = freezed,Object? maxChargingPowerKw = freezed,Object? photoPaths = null,Object? bikeId = freezed,}) {
   return _then(_ChargeLog(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
@@ -322,6 +326,8 @@ as DateTime?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: ca
 as DateTime?,chargerType: freezed == chargerType ? _self.chargerType : chargerType // ignore: cast_nullable_to_non_nullable
 as String?,chargingMethod: freezed == chargingMethod ? _self.chargingMethod : chargingMethod // ignore: cast_nullable_to_non_nullable
 as String?,electricityPrice: freezed == electricityPrice ? _self.electricityPrice : electricityPrice // ignore: cast_nullable_to_non_nullable
+as double?,providerName: freezed == providerName ? _self.providerName : providerName // ignore: cast_nullable_to_non_nullable
+as String?,maxChargingPowerKw: freezed == maxChargingPowerKw ? _self.maxChargingPowerKw : maxChargingPowerKw // ignore: cast_nullable_to_non_nullable
 as double?,photoPaths: null == photoPaths ? _self._photoPaths : photoPaths // ignore: cast_nullable_to_non_nullable
 as List<String>,bikeId: freezed == bikeId ? _self.bikeId : bikeId // ignore: cast_nullable_to_non_nullable
 as int?,

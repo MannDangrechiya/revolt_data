@@ -53,7 +53,7 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
           chargerType: chargerTypeController.text.isEmpty ? null : chargerTypeController.text,
           providerName: providerNameController.text.isEmpty ? null : providerNameController.text,
           maxChargingPowerKw: double.tryParse(maxPowerController.text),
-          chargingSpeedKw: speedController.text.isNotEmpty ? double.parse(speedController.text) : (double.parse(kwhController.text) / (double.parse(durationController.text) / 60)),
+
         );
 
         await ref.read(chargingLogsProvider.notifier).addChargeLog(log);

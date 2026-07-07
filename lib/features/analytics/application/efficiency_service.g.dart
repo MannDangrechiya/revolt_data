@@ -46,4 +46,4 @@ final class EfficiencyStatsProvider
   }
 }
 
-String _$efficiencyStatsHash() => r'c046ad36799ba1096ef98d386886e667168b9556';
+String _$efficiencyStatsHash() => r'2f2b43e6a6e933ecc1da08dd2f94d901f2171532';

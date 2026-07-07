@@ -30,7 +30,7 @@ class BatteryAnalytics {
 @riverpod
 Future<BatteryAnalytics> batteryAnalytics(BatteryAnalyticsRef ref) async {
   final rides = await ref.watch(ridesProvider.future);
-  final charges = await ref.watch(chargeLogsProvider.future);
+  final charges = await ref.watch(chargingLogsProvider.future);
 
   int totalChargeCycles = charges.length;
   int fullCharges = charges.where((c) => c.endBattery == 100).length;

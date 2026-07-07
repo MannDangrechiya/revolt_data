@@ -21,7 +21,7 @@ class BikeEditScreen extends HookConsumerWidget {
     final isLoading = useState(false);
     
     // Bike might be null if creating the first one
-    final bike = currentBikeAsync.valueOrNull;
+    final bike = currentBikeAsync.value;
     final isNew = bike == null;
 
     final nameController = useTextEditingController(text: bike?.name ?? 'My RV400');

@@ -27,6 +27,8 @@ _ChargeLog _$ChargeLogFromJson(Map<String, dynamic> json) => _ChargeLog(
   chargerType: json['chargerType'] as String?,
   chargingMethod: json['chargingMethod'] as String?,
   electricityPrice: (json['electricityPrice'] as num?)?.toDouble(),
+  providerName: json['providerName'] as String?,
+  maxChargingPowerKw: (json['maxChargingPowerKw'] as num?)?.toDouble(),
   photoPaths:
       (json['photoPaths'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -53,6 +55,8 @@ Map<String, dynamic> _$ChargeLogToJson(_ChargeLog instance) =>
       'chargerType': instance.chargerType,
       'chargingMethod': instance.chargingMethod,
       'electricityPrice': instance.electricityPrice,
+      'providerName': instance.providerName,
+      'maxChargingPowerKw': instance.maxChargingPowerKw,
       'photoPaths': instance.photoPaths,
       'bikeId': instance.bikeId,
     };

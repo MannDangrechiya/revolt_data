@@ -17,7 +17,7 @@ class DashboardScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dashboardAsync = ref.watch(dashboardDataNotifierProvider);
+    final dashboardAsync = ref.watch(dashboardDataProvider);
     final bikeAsync = ref.watch(currentBikeProvider);
 
     return Scaffold(
@@ -38,7 +38,7 @@ class DashboardScreen extends HookConsumerWidget {
         ),
         error: (err, stack) => ErrorRetryWidget(
           message: err.toString(),
-          onRetry: () => ref.refresh(dashboardDataNotifierProvider),
+          onRetry: () => ref.refresh(dashboardDataProvider),
         ),
         data: (data) {
           final bikeName = bikeAsync.value?.name ?? 'My RV400';
