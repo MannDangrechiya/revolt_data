@@ -1,0 +1,18 @@
+You are building **VoltLog** – a Flutter EV management app. Tech stack: Flutter, Riverpod (code‑gen), Drift (SQLite), Freezed, GoRouter, GetIt, FlexColorScheme.
+
+Existing codebase is at lib/ with Feature‑First + Clean Architecture. Audit shows:
+- Missing fields in all tables (Ride, Charge, Expense, Maintenance).
+- Missing tables: bikes, documents, reminders.
+- No multi‑bike support (need bikeId FK everywhere).
+- UI is basic, missing premium design, responsive layout, empty/error states.
+- No tests.
+
+Always:
+- Use immutable models with Freezed.
+- Use Drift with converters for lists.
+- Follow Repository pattern.
+- Inject dependencies with GetIt.
+- Use Riverpod providers (autoDispose, family where needed).
+- Add proper validation, loading/empty/error states.
+- Write unit/widget tests where applicable.
+- Keep widgets small, reusable, and documented.
