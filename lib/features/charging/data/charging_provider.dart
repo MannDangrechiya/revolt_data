@@ -5,7 +5,19 @@ import '../../../core/database/database_mappers.dart';
 import '../domain/charge_log.dart';
 import '../domain/charging_anomaly.dart';
 
+import '../domain/charge_filter.dart';
+
 part 'charging_provider.g.dart';
+
+@riverpod
+class ChargeFilterState extends _$ChargeFilterState {
+  @override
+  ChargeFilter build() => const ChargeFilter();
+
+  void updateFilter(ChargeFilter filter) {
+    state = filter;
+  }
+}
 
 @riverpod
 class ChargingLogs extends _$ChargingLogs {
@@ -40,6 +52,46 @@ class ChargingLogs extends _$ChargingLogs {
     final db = ref.watch(databaseProvider);
     await (db.delete(db.chargeLogsTable)..where((t) => t.id.equals(id))).go();
   }
+
+  Future<void> updateChargeLog(ChargeLog log) async {
+    final db = ref.watch(databaseProvider);
+    final anomaly = ChargingAnomaly.checkAnomaly(
+      kwhAdded: log.kwhAdded,
+      durationMinutes: log.durationMinutes,
+      startBattery: log.startBattery,
+      endBattery: log.endBattery,
+    );
+
+    if (anomaly != null && anomaly.isError) {
+      throw Exception(anomaly.message);
+    }
+    
+    await db.update(db.chargeLogsTable).replace(log.toCompanion());
+  }
+}
+
+@riverpod
+Future<List<ChargeLog>> filteredChargeLogs(Ref ref) async {
+  final logs = await ref.watch(chargingLogsProvider.future);
+  final filter = ref.watch(chargeFilterStateProvider);
+
+  return logs.where((log) {
+    if (filter.locationType != null && log.locationType != filter.locationType) return false;
+    if (filter.chargerType != null && log.chargerType != filter.chargerType) return false;
+    if (filter.dateRange != null) {
+      if (log.date.isBefore(filter.dateRange!.start) ||
+          log.date.isAfter(filter.dateRange!.end.add(const Duration(days: 1)))) {
+        return false;
+      }
+    }
+    if (filter.searchQuery != null && filter.searchQuery!.trim().isNotEmpty) {
+      final query = filter.searchQuery!.trim().toLowerCase();
+      final notesMatch = log.notes?.toLowerCase().contains(query) ?? false;
+      final locMatch = log.locationName?.toLowerCase().contains(query) ?? false;
+      if (!notesMatch && !locMatch) return false;
+    }
+    return true;
+  }).toList();
 }
 
 @riverpod

@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
@@ -17,22 +18,39 @@ class RideEntryFormScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final formKey = useMemoized(() => GlobalKey<FormState>());
     
+    final selectedDate = useState(DateTime.now());
+    final startTime = useState<TimeOfDay?>(null);
+    final endTime = useState<TimeOfDay?>(null);
+    
     final startOdoController = useTextEditingController();
     final endOdoController = useTextEditingController();
     final batteryBeforeController = useTextEditingController();
     final batteryAfterController = useTextEditingController();
+    
+    final estRemainingRangeController = useTextEditingController();
+    final avgSpeedController = useTextEditingController();
+    final maxSpeedController = useTextEditingController();
+    final passengerCountController = useTextEditingController(text: '1');
+    
+    final startLocationController = useTextEditingController();
+    final endLocationController = useTextEditingController();
+    
     final notesController = useTextEditingController();
+    final routeNotesController = useTextEditingController();
+    final customTagsController = useTextEditingController();
 
     final rideMode = useState(RideMode.normal);
     final roadCondition = useState(RoadCondition.average);
-    final selectedDate = useState(DateTime.now());
+    final weather = useState<String?>(null);
+    final roadType = useState<String?>(null);
+    final ridePurpose = useState<String?>(null);
+    
     final photoPaths = useState<List<String>>([]);
-
     final isSubmitting = useState(false);
 
     Future<void> pickImage() async {
       final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.camera);
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         final appDir = await getApplicationDocumentsDirectory();
         final fileName = path.basename(pickedFile.path);
@@ -63,6 +81,43 @@ class RideEntryFormScreen extends HookConsumerWidget {
         return;
       }
 
+      DateTime? startDateTime;
+      DateTime? endDateTime;
+      int? durationMinutes;
+
+      if (startTime.value != null) {
+        startDateTime = DateTime(
+          selectedDate.value.year,
+          selectedDate.value.month,
+          selectedDate.value.day,
+          startTime.value!.hour,
+          startTime.value!.minute,
+        );
+      }
+      if (endTime.value != null) {
+         endDateTime = DateTime(
+          selectedDate.value.year,
+          selectedDate.value.month,
+          selectedDate.value.day,
+          endTime.value!.hour,
+          endTime.value!.minute,
+        );
+        
+        // Handle rides spanning past midnight
+        if (startDateTime != null && endDateTime.isBefore(startDateTime)) {
+          endDateTime = endDateTime.add(const Duration(days: 1));
+        }
+      }
+      
+      if (startDateTime != null && endDateTime != null) {
+        durationMinutes = endDateTime.difference(startDateTime).inMinutes;
+      }
+
+      List<String> tags = [];
+      if (customTagsController.text.isNotEmpty) {
+        tags = customTagsController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+      }
+
       isSubmitting.value = true;
       try {
         final ride = Ride(
@@ -76,6 +131,20 @@ class RideEntryFormScreen extends HookConsumerWidget {
           roadCondition: roadCondition.value,
           notes: notesController.text.isEmpty ? null : notesController.text,
           photoPaths: photoPaths.value,
+          startTime: startDateTime,
+          endTime: endDateTime,
+          durationMinutes: durationMinutes,
+          estimatedRemainingRange: double.tryParse(estRemainingRangeController.text),
+          averageSpeed: double.tryParse(avgSpeedController.text),
+          maxSpeed: double.tryParse(maxSpeedController.text),
+          weather: weather.value,
+          roadType: roadType.value,
+          passengerCount: int.tryParse(passengerCountController.text),
+          ridePurpose: ridePurpose.value,
+          startLocation: startLocationController.text.isEmpty ? null : startLocationController.text,
+          endLocation: endLocationController.text.isEmpty ? null : endLocationController.text,
+          routeNotes: routeNotesController.text.isEmpty ? null : routeNotesController.text,
+          customTags: tags,
         );
 
         await ref.read(ridesProvider.notifier).addRide(ride);
@@ -85,7 +154,7 @@ class RideEntryFormScreen extends HookConsumerWidget {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
+            SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
           );
         }
       } finally {
@@ -95,10 +164,11 @@ class RideEntryFormScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Ride Log'),
+        title: const Text('Add Ride Log', style: TextStyle(fontWeight: FontWeight.w600)),
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.check),
+            icon: isSubmitting.value ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(LucideIcons.check),
             onPressed: isSubmitting.value ? null : submit,
           ),
         ],
@@ -106,12 +176,15 @@ class RideEntryFormScreen extends HookConsumerWidget {
       body: Form(
         key: formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           children: [
+            _buildSectionHeader('Date & Time', LucideIcons.clock),
+            const SizedBox(height: 16),
             ListTile(
-              title: const Text('Date'),
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Ride Date'),
               subtitle: Text(selectedDate.value.toString().split(' ')[0]),
-              trailing: const Icon(Icons.calendar_today),
+              leading: const Icon(LucideIcons.calendar),
               onTap: () async {
                 final date = await showDatePicker(
                   context: context,
@@ -119,129 +192,163 @@ class RideEntryFormScreen extends HookConsumerWidget {
                   firstDate: DateTime(2000),
                   lastDate: DateTime.now(),
                 );
-                if (date != null) {
-                  selectedDate.value = date;
-                }
+                if (date != null) selectedDate.value = date;
               },
             ),
-            const Divider(),
-            _buildSectionHeader('Odometer (km)'),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    controller: startOdoController,
-                    decoration: const InputDecoration(labelText: 'Start Odo', border: OutlineInputBorder()),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Required';
-                      final val = double.tryParse(v);
-                      if (val == null) return 'Invalid';
-                      if (val < 0) return 'Must be ≥ 0';
-                      return null;
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Start Time'),
+                    subtitle: Text(startTime.value?.format(context) ?? 'Not set'),
+                    leading: const Icon(LucideIcons.clock3),
+                    onTap: () async {
+                      final time = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+                      if (time != null) startTime.value = time;
                     },
                   ),
                 ),
-                const SizedBox(width: 16),
                 Expanded(
-                  child: TextFormField(
-                    controller: endOdoController,
-                    decoration: const InputDecoration(labelText: 'End Odo', border: OutlineInputBorder()),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Required';
-                      final val = double.tryParse(v);
-                      if (val == null) return 'Invalid';
-                      if (val < 0) return 'Must be ≥ 0';
-                      return null;
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('End Time'),
+                    subtitle: Text(endTime.value?.format(context) ?? 'Not set'),
+                    leading: const Icon(LucideIcons.clock7),
+                    onTap: () async {
+                      final time = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+                      if (time != null) endTime.value = time;
                     },
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            _buildSectionHeader('Battery (%)'),
+            
+            const SizedBox(height: 32),
+            _buildSectionHeader('Distance & Battery', LucideIcons.gauge),
+            const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: batteryBeforeController,
-                    decoration: const InputDecoration(labelText: 'Before', border: OutlineInputBorder()),
-                    keyboardType: TextInputType.number,
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Required';
-                      final val = int.tryParse(v);
-                      if (val == null) return 'Invalid';
-                      if (val < 0 || val > 100) return '0 - 100';
-                      return null;
-                    },
-                  ),
-                ),
+                Expanded(child: TextFormField(controller: startOdoController, decoration: const InputDecoration(labelText: 'Start Odo (km)*'), keyboardType: TextInputType.number, validator: _requiredValidator)),
                 const SizedBox(width: 16),
-                Expanded(
-                  child: TextFormField(
-                    controller: batteryAfterController,
-                    decoration: const InputDecoration(labelText: 'After', border: OutlineInputBorder()),
-                    keyboardType: TextInputType.number,
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Required';
-                      final val = int.tryParse(v);
-                      if (val == null) return 'Invalid';
-                      if (val < 0 || val > 100) return '0 - 100';
-                      return null;
-                    },
-                  ),
-                ),
+                Expanded(child: TextFormField(controller: endOdoController, decoration: const InputDecoration(labelText: 'End Odo (km)*'), keyboardType: TextInputType.number, validator: _requiredValidator)),
               ],
-            ),
-            const SizedBox(height: 24),
-            _buildSectionHeader('Ride Settings'),
-            DropdownButtonFormField<RideMode>(
-              initialValue: rideMode.value,
-              decoration: const InputDecoration(labelText: 'Ride Mode', border: OutlineInputBorder()),
-              items: RideMode.values.map((m) {
-                return DropdownMenuItem(
-                  value: m,
-                  child: Text(m.name.toUpperCase()),
-                );
-              }).toList(),
-              onChanged: (v) {
-                if (v != null) rideMode.value = v;
-              },
             ),
             const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(child: TextFormField(controller: batteryBeforeController, decoration: const InputDecoration(labelText: 'Battery Before (%)*'), keyboardType: TextInputType.number, validator: _requiredValidator)),
+                const SizedBox(width: 16),
+                Expanded(child: TextFormField(controller: batteryAfterController, decoration: const InputDecoration(labelText: 'Battery After (%)*'), keyboardType: TextInputType.number, validator: _requiredValidator)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextFormField(controller: estRemainingRangeController, decoration: const InputDecoration(labelText: 'Est. Remaining Range (km)'), keyboardType: TextInputType.number),
+            
+            const SizedBox(height: 32),
+            _buildSectionHeader('Locations & Route', LucideIcons.mapPin),
+            const SizedBox(height: 16),
+            TextFormField(controller: startLocationController, decoration: const InputDecoration(labelText: 'Start Location')),
+            const SizedBox(height: 12),
+            TextFormField(controller: endLocationController, decoration: const InputDecoration(labelText: 'End Location')),
+            const SizedBox(height: 12),
+            TextFormField(controller: routeNotesController, decoration: const InputDecoration(labelText: 'Route Notes'), maxLines: 2),
+
+            const SizedBox(height: 32),
+            _buildSectionHeader('Ride Details', LucideIcons.info),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<RideMode>(
+              value: rideMode.value,
+              decoration: const InputDecoration(labelText: 'Ride Mode*'),
+              items: RideMode.values.map((m) => DropdownMenuItem(value: m, child: Text(m.name.toUpperCase()))).toList(),
+              onChanged: (v) { if (v != null) rideMode.value = v; },
+            ),
+            const SizedBox(height: 12),
             DropdownButtonFormField<RoadCondition>(
-              initialValue: roadCondition.value,
-              decoration: const InputDecoration(labelText: 'Road Condition', border: OutlineInputBorder()),
-              items: RoadCondition.values.map((c) {
-                return DropdownMenuItem(
-                  value: c,
-                  child: Text(c.name.toUpperCase()),
-                );
-              }).toList(),
-              onChanged: (v) {
-                if (v != null) roadCondition.value = v;
-              },
+              value: roadCondition.value,
+              decoration: const InputDecoration(labelText: 'Road Condition*'),
+              items: RoadCondition.values.map((c) => DropdownMenuItem(value: c, child: Text(c.name.toUpperCase()))).toList(),
+              onChanged: (v) { if (v != null) roadCondition.value = v; },
             ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: notesController,
-              decoration: const InputDecoration(
-                labelText: 'Notes',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: TextFormField(controller: avgSpeedController, decoration: const InputDecoration(labelText: 'Avg Speed (km/h)'), keyboardType: TextInputType.number)),
+                const SizedBox(width: 16),
+                Expanded(child: TextFormField(controller: maxSpeedController, decoration: const InputDecoration(labelText: 'Max Speed (km/h)'), keyboardType: TextInputType.number)),
+              ],
             ),
-            const SizedBox(height: 24),
-            _buildSectionHeader('Photos'),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: weather.value,
+                    decoration: const InputDecoration(labelText: 'Weather'),
+                    items: const [
+                      DropdownMenuItem(value: 'Sunny', child: Text('Sunny')),
+                      DropdownMenuItem(value: 'Cloudy', child: Text('Cloudy')),
+                      DropdownMenuItem(value: 'Rainy', child: Text('Rainy')),
+                      DropdownMenuItem(value: 'Night', child: Text('Night')),
+                    ],
+                    onChanged: (v) => weather.value = v,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: ridePurpose.value,
+                    decoration: const InputDecoration(labelText: 'Purpose'),
+                    items: const [
+                      DropdownMenuItem(value: 'Commute', child: Text('Commute')),
+                      DropdownMenuItem(value: 'Leisure', child: Text('Leisure')),
+                      DropdownMenuItem(value: 'Errand', child: Text('Errand')),
+                      DropdownMenuItem(value: 'Touring', child: Text('Touring')),
+                    ],
+                    onChanged: (v) => ridePurpose.value = v,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: roadType.value,
+                    decoration: const InputDecoration(labelText: 'Road Type'),
+                    items: const [
+                      DropdownMenuItem(value: 'City', child: Text('City')),
+                      DropdownMenuItem(value: 'Highway', child: Text('Highway')),
+                      DropdownMenuItem(value: 'Off-road', child: Text('Off-road')),
+                      DropdownMenuItem(value: 'Mixed', child: Text('Mixed')),
+                    ],
+                    onChanged: (v) => roadType.value = v,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(child: TextFormField(controller: passengerCountController, decoration: const InputDecoration(labelText: 'Passengers'), keyboardType: TextInputType.number)),
+              ],
+            ),
+
+            const SizedBox(height: 32),
+            _buildSectionHeader('Extra', LucideIcons.tag),
+            const SizedBox(height: 16),
+            TextFormField(controller: customTagsController, decoration: const InputDecoration(labelText: 'Tags (comma separated)')),
+            const SizedBox(height: 12),
+            TextFormField(controller: notesController, decoration: const InputDecoration(labelText: 'General Notes'), maxLines: 3),
+            
+            const SizedBox(height: 32),
+            _buildSectionHeader('Photos', LucideIcons.camera),
+            const SizedBox(height: 16),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
                 ...photoPaths.value.map((path) => Stack(
                   children: [
-                    Image.file(File(path), width: 80, height: 80, fit: BoxFit.cover),
+                    ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.file(File(path), width: 80, height: 80, fit: BoxFit.cover)),
                     Positioned(
                       top: 0,
                       right: 0,
@@ -250,7 +357,7 @@ class RideEntryFormScreen extends HookConsumerWidget {
                           photoPaths.value = photoPaths.value.where((p) => p != path).toList();
                         },
                         child: Container(
-                          color: Colors.black54,
+                          decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
                           child: const Icon(Icons.close, color: Colors.white, size: 20),
                         ),
                       ),
@@ -259,33 +366,48 @@ class RideEntryFormScreen extends HookConsumerWidget {
                 )),
                 InkWell(
                   onTap: pickImage,
+                  borderRadius: BorderRadius.circular(12),
                   child: Container(
                     width: 80,
                     height: 80,
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.camera_alt, color: Colors.grey),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(LucideIcons.camera, color: Colors.grey),
                   ),
                 ),
               ],
             ),
+            
             const SizedBox(height: 40),
-            ElevatedButton(
+            FilledButton(
               onPressed: isSubmitting.value ? null : submit,
+              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
               child: const Text('Save Ride Log'),
             ),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 20),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ],
     );
+  }
+
+  String? _requiredValidator(String? value) {
+    if (value == null || value.isEmpty) return 'Required';
+    return null;
   }
 }

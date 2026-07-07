@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/router.dart' as router;
-import 'core/theme.dart';
+import 'core/theme/app_theme.dart';
 
 class AppWidget extends StatelessWidget {
   final String organization = "VoltLog Engineering";

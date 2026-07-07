@@ -14,6 +14,12 @@ import '../features/reminders/presentation/reminders_screen.dart';
 import '../features/analytics/presentation/analytics_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
+import '../features/bikes/presentation/bike_profile_screen.dart';
+import '../features/bikes/presentation/bike_edit_screen.dart';
+import '../features/rides/presentation/ride_details_screen.dart';
+import '../features/rides/domain/ride.dart';
+import '../features/charging/presentation/charge_details_screen.dart';
+import '../features/charging/domain/charge_log.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -44,6 +50,10 @@ final routerDelegate = GoRouter(
                   path: 'add',
                   builder: (context, state) => const RideEntryFormScreen(),
                 ),
+                GoRoute(
+                  path: 'details',
+                  builder: (context, state) => RideDetailsScreen(ride: state.extra as Ride),
+                ),
               ],
             ),
           ],
@@ -57,6 +67,10 @@ final routerDelegate = GoRouter(
                 GoRoute(
                   path: 'add',
                   builder: (context, state) => const ChargeEntryFormScreen(),
+                ),
+                GoRoute(
+                  path: 'details',
+                  builder: (context, state) => ChargeDetailsScreen(log: state.extra as ChargeLog),
                 ),
               ],
             ),
@@ -95,6 +109,14 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileScreen(),
+    ),
+    GoRoute(
+      path: '/bike',
+      builder: (context, state) => const BikeProfileScreen(),
+    ),
+    GoRoute(
+      path: '/bike/edit',
+      builder: (context, state) => const BikeEditScreen(),
     ),
   ],
 );

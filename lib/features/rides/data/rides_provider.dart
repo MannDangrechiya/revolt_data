@@ -52,6 +52,29 @@ class Rides extends _$Rides {
     final db = ref.watch(databaseProvider);
     await db.update(db.ridesTable).replace(ride.toCompanion());
   }
+
+  Future<void> toggleFavorite(String id) async {
+    final db = ref.watch(databaseProvider);
+    final rideRow = await (db.select(db.ridesTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+    if (rideRow != null) {
+      final ride = rideRow.toDomain();
+      await updateRide(ride.copyWith(isFavorite: !ride.isFavorite));
+    }
+  }
+
+  Future<void> duplicateRide(String id) async {
+    final db = ref.watch(databaseProvider);
+    final rideRow = await (db.select(db.ridesTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+    if (rideRow != null) {
+      final ride = rideRow.toDomain();
+      final newRide = ride.copyWith(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        date: DateTime.now(),
+        // Add specific duplicate logic if needed (e.g. resetting some fields)
+      );
+      await addRide(newRide);
+    }
+  }
 }
 
 @riverpod
@@ -71,7 +94,13 @@ Future<List<Ride>> filteredRides(Ref ref) async {
     if (filter.searchQuery != null && filter.searchQuery!.trim().isNotEmpty) {
       final query = filter.searchQuery!.trim().toLowerCase();
       final notesMatch = ride.notes?.toLowerCase().contains(query) ?? false;
-      if (!notesMatch) return false;
+      final tagsMatch = ride.customTags.any((tag) => tag.toLowerCase().contains(query));
+      final locationMatch = (ride.startLocation?.toLowerCase().contains(query) ?? false) ||
+                            (ride.endLocation?.toLowerCase().contains(query) ?? false);
+      if (!notesMatch && !tagsMatch && !locationMatch) return false;
+    }
+    if (filter.isFavorite != null && filter.isFavorite! && !ride.isFavorite) {
+      return false;
     }
     return true;
   }).toList();

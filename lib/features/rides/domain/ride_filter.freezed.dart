@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RideFilter {
 
- RideMode? get rideMode; RoadCondition? get roadCondition; DateTimeRange? get dateRange; String? get searchQuery;
+ RideMode? get rideMode; RoadCondition? get roadCondition; DateTimeRange? get dateRange; String? get searchQuery; bool? get isFavorite;
 /// Create a copy of RideFilter
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RideFilterCopyWith<RideFilter> get copyWith => _$RideFilterCopyWithImpl<RideFil
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RideFilter&&(identical(other.rideMode, rideMode) || other.rideMode == rideMode)&&(identical(other.roadCondition, roadCondition) || other.roadCondition == roadCondition)&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RideFilter&&(identical(other.rideMode, rideMode) || other.rideMode == rideMode)&&(identical(other.roadCondition, roadCondition) || other.roadCondition == roadCondition)&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,rideMode,roadCondition,dateRange,searchQuery);
+int get hashCode => Object.hash(runtimeType,rideMode,roadCondition,dateRange,searchQuery,isFavorite);
 
 @override
 String toString() {
-  return 'RideFilter(rideMode: $rideMode, roadCondition: $roadCondition, dateRange: $dateRange, searchQuery: $searchQuery)';
+  return 'RideFilter(rideMode: $rideMode, roadCondition: $roadCondition, dateRange: $dateRange, searchQuery: $searchQuery, isFavorite: $isFavorite)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $RideFilterCopyWith<$Res>  {
   factory $RideFilterCopyWith(RideFilter value, $Res Function(RideFilter) _then) = _$RideFilterCopyWithImpl;
 @useResult
 $Res call({
- RideMode? rideMode, RoadCondition? roadCondition, DateTimeRange? dateRange, String? searchQuery
+ RideMode? rideMode, RoadCondition? roadCondition, DateTimeRange? dateRange, String? searchQuery, bool? isFavorite
 });
 
 
@@ -62,13 +62,14 @@ class _$RideFilterCopyWithImpl<$Res>
 
 /// Create a copy of RideFilter
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? rideMode = freezed,Object? roadCondition = freezed,Object? dateRange = freezed,Object? searchQuery = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? rideMode = freezed,Object? roadCondition = freezed,Object? dateRange = freezed,Object? searchQuery = freezed,Object? isFavorite = freezed,}) {
   return _then(_self.copyWith(
 rideMode: freezed == rideMode ? _self.rideMode : rideMode // ignore: cast_nullable_to_non_nullable
 as RideMode?,roadCondition: freezed == roadCondition ? _self.roadCondition : roadCondition // ignore: cast_nullable_to_non_nullable
 as RoadCondition?,dateRange: freezed == dateRange ? _self.dateRange : dateRange // ignore: cast_nullable_to_non_nullable
 as DateTimeRange?,searchQuery: freezed == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isFavorite: freezed == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 
@@ -153,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RideMode? rideMode,  RoadCondition? roadCondition,  DateTimeRange? dateRange,  String? searchQuery)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RideMode? rideMode,  RoadCondition? roadCondition,  DateTimeRange? dateRange,  String? searchQuery,  bool? isFavorite)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RideFilter() when $default != null:
-return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQuery);case _:
+return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQuery,_that.isFavorite);case _:
   return orElse();
 
 }
@@ -174,10 +175,10 @@ return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQ
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RideMode? rideMode,  RoadCondition? roadCondition,  DateTimeRange? dateRange,  String? searchQuery)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RideMode? rideMode,  RoadCondition? roadCondition,  DateTimeRange? dateRange,  String? searchQuery,  bool? isFavorite)  $default,) {final _that = this;
 switch (_that) {
 case _RideFilter():
-return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQuery);case _:
+return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQuery,_that.isFavorite);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +195,10 @@ return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQ
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RideMode? rideMode,  RoadCondition? roadCondition,  DateTimeRange? dateRange,  String? searchQuery)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RideMode? rideMode,  RoadCondition? roadCondition,  DateTimeRange? dateRange,  String? searchQuery,  bool? isFavorite)?  $default,) {final _that = this;
 switch (_that) {
 case _RideFilter() when $default != null:
-return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQuery);case _:
+return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQuery,_that.isFavorite);case _:
   return null;
 
 }
@@ -209,13 +210,14 @@ return $default(_that.rideMode,_that.roadCondition,_that.dateRange,_that.searchQ
 
 
 class _RideFilter implements RideFilter {
-  const _RideFilter({this.rideMode, this.roadCondition, this.dateRange, this.searchQuery});
+  const _RideFilter({this.rideMode, this.roadCondition, this.dateRange, this.searchQuery, this.isFavorite});
   
 
 @override final  RideMode? rideMode;
 @override final  RoadCondition? roadCondition;
 @override final  DateTimeRange? dateRange;
 @override final  String? searchQuery;
+@override final  bool? isFavorite;
 
 /// Create a copy of RideFilter
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +229,16 @@ _$RideFilterCopyWith<_RideFilter> get copyWith => __$RideFilterCopyWithImpl<_Rid
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RideFilter&&(identical(other.rideMode, rideMode) || other.rideMode == rideMode)&&(identical(other.roadCondition, roadCondition) || other.roadCondition == roadCondition)&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RideFilter&&(identical(other.rideMode, rideMode) || other.rideMode == rideMode)&&(identical(other.roadCondition, roadCondition) || other.roadCondition == roadCondition)&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,rideMode,roadCondition,dateRange,searchQuery);
+int get hashCode => Object.hash(runtimeType,rideMode,roadCondition,dateRange,searchQuery,isFavorite);
 
 @override
 String toString() {
-  return 'RideFilter(rideMode: $rideMode, roadCondition: $roadCondition, dateRange: $dateRange, searchQuery: $searchQuery)';
+  return 'RideFilter(rideMode: $rideMode, roadCondition: $roadCondition, dateRange: $dateRange, searchQuery: $searchQuery, isFavorite: $isFavorite)';
 }
 
 
@@ -247,7 +249,7 @@ abstract mixin class _$RideFilterCopyWith<$Res> implements $RideFilterCopyWith<$
   factory _$RideFilterCopyWith(_RideFilter value, $Res Function(_RideFilter) _then) = __$RideFilterCopyWithImpl;
 @override @useResult
 $Res call({
- RideMode? rideMode, RoadCondition? roadCondition, DateTimeRange? dateRange, String? searchQuery
+ RideMode? rideMode, RoadCondition? roadCondition, DateTimeRange? dateRange, String? searchQuery, bool? isFavorite
 });
 
 
@@ -264,13 +266,14 @@ class __$RideFilterCopyWithImpl<$Res>
 
 /// Create a copy of RideFilter
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? rideMode = freezed,Object? roadCondition = freezed,Object? dateRange = freezed,Object? searchQuery = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? rideMode = freezed,Object? roadCondition = freezed,Object? dateRange = freezed,Object? searchQuery = freezed,Object? isFavorite = freezed,}) {
   return _then(_RideFilter(
 rideMode: freezed == rideMode ? _self.rideMode : rideMode // ignore: cast_nullable_to_non_nullable
 as RideMode?,roadCondition: freezed == roadCondition ? _self.roadCondition : roadCondition // ignore: cast_nullable_to_non_nullable
 as RoadCondition?,dateRange: freezed == dateRange ? _self.dateRange : dateRange // ignore: cast_nullable_to_non_nullable
 as DateTimeRange?,searchQuery: freezed == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isFavorite: freezed == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 

@@ -9,6 +9,58 @@ part of 'charging_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(ChargeFilterState)
+final chargeFilterStateProvider = ChargeFilterStateProvider._();
+
+final class ChargeFilterStateProvider
+    extends $NotifierProvider<ChargeFilterState, ChargeFilter> {
+  ChargeFilterStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'chargeFilterStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$chargeFilterStateHash();
+
+  @$internal
+  @override
+  ChargeFilterState create() => ChargeFilterState();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ChargeFilter value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ChargeFilter>(value),
+    );
+  }
+}
+
+String _$chargeFilterStateHash() => r'db8b198813da07c9c78042feea0c2fb33d801b68';
+
+abstract class _$ChargeFilterState extends $Notifier<ChargeFilter> {
+  ChargeFilter build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<ChargeFilter, ChargeFilter>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ChargeFilter, ChargeFilter>,
+              ChargeFilter,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(ChargingLogs)
 final chargingLogsProvider = ChargingLogsProvider._();
 
@@ -33,7 +85,7 @@ final class ChargingLogsProvider
   ChargingLogs create() => ChargingLogs();
 }
 
-String _$chargingLogsHash() => r'94b9714e9d486adaaca2ab12e2a6c46cd83be461';
+String _$chargingLogsHash() => r'aaad73c14046820e6eb0a7bd4995a01255311f6a';
 
 abstract class _$ChargingLogs extends $StreamNotifier<List<ChargeLog>> {
   Stream<List<ChargeLog>> build();
@@ -52,6 +104,46 @@ abstract class _$ChargingLogs extends $StreamNotifier<List<ChargeLog>> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(filteredChargeLogs)
+final filteredChargeLogsProvider = FilteredChargeLogsProvider._();
+
+final class FilteredChargeLogsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ChargeLog>>,
+          List<ChargeLog>,
+          FutureOr<List<ChargeLog>>
+        >
+    with $FutureModifier<List<ChargeLog>>, $FutureProvider<List<ChargeLog>> {
+  FilteredChargeLogsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'filteredChargeLogsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$filteredChargeLogsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ChargeLog>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ChargeLog>> create(Ref ref) {
+    return filteredChargeLogs(ref);
+  }
+}
+
+String _$filteredChargeLogsHash() =>
+    r'79ee6ebbd6706d8e71f6e65df54240496e6869a2';
 
 @ProviderFor(totalChargingCost)
 final totalChargingCostProvider = TotalChargingCostProvider._();

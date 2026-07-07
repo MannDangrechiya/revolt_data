@@ -8,20 +8,53 @@ class AppTheme {
   // Define custom typography using Outfit
   static TextTheme get _textTheme {
     return GoogleFonts.outfitTextTheme().copyWith(
-      displayLarge: GoogleFonts.outfit(fontSize: 57, fontWeight: FontWeight.bold),
-      displayMedium: GoogleFonts.outfit(fontSize: 45, fontWeight: FontWeight.bold),
-      displaySmall: GoogleFonts.outfit(fontSize: 36, fontWeight: FontWeight.bold),
-      headlineLarge: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.w700),
-      headlineMedium: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700),
-      headlineSmall: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w600),
+      displayLarge: GoogleFonts.outfit(
+        fontSize: 57,
+        fontWeight: FontWeight.bold,
+      ),
+      displayMedium: GoogleFonts.outfit(
+        fontSize: 45,
+        fontWeight: FontWeight.bold,
+      ),
+      displaySmall: GoogleFonts.outfit(
+        fontSize: 36,
+        fontWeight: FontWeight.bold,
+      ),
+      headlineLarge: GoogleFonts.outfit(
+        fontSize: 32,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineMedium: GoogleFonts.outfit(
+        fontSize: 28,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineSmall: GoogleFonts.outfit(
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+      ),
       titleLarge: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w600),
-      titleMedium: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w600),
+      titleMedium: GoogleFonts.outfit(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
       titleSmall: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w600),
-      bodyLarge: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.normal),
-      bodyMedium: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.normal),
-      bodySmall: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.normal),
+      bodyLarge: GoogleFonts.outfit(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+      ),
+      bodyMedium: GoogleFonts.outfit(
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+      ),
+      bodySmall: GoogleFonts.outfit(
+        fontSize: 12,
+        fontWeight: FontWeight.normal,
+      ),
       labelLarge: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w500),
-      labelMedium: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w500),
+      labelMedium: GoogleFonts.outfit(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+      ),
       labelSmall: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w500),
     );
   }

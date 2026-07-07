@@ -12,5 +12,6 @@ abstract class RideFilter with _$RideFilter {
     RoadCondition? roadCondition,
     DateTimeRange? dateRange,
     String? searchQuery,
+    bool? isFavorite,
   }) = _RideFilter;
 }

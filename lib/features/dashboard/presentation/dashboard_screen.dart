@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 
-import '../../rides/data/rides_provider.dart';
-import '../../charging/data/charging_provider.dart';
+import '../data/dashboard_provider.dart';
+import '../../bikes/data/bike_provider.dart';
+import '../domain/dashboard_data.dart';
 
 class DashboardScreen extends HookConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ridesAsync = ref.watch(ridesProvider);
-    final chargingAsync = ref.watch(chargingLogsProvider);
+    final dashboardAsync = ref.watch(dashboardDataNotifierProvider);
+    final bikeAsync = ref.watch(currentBikeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -25,196 +28,259 @@ class DashboardScreen extends HookConsumerWidget {
           ),
         ],
       ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Welcome back!',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -1,
-                    ),
+      body: dashboardAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error loading dashboard: $err')),
+        data: (data) {
+          final bikeName = bikeAsync.valueOrNull?.name ?? 'My RV400';
+          
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Welcome back!',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                InkWell(
+                                  onTap: () => context.push('/bike'),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        bikeName,
+                                        style: const TextStyle(
+                                          fontSize: 32,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: -1,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Icon(LucideIcons.chevronRight, size: 28),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Text('ODO', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                              Text(
+                                '${data.currentOdometer.toStringAsFixed(1)} km',
+                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      _buildBatteryStatus(context, data.latestBatteryPercentage, data.currentOdometer),
+                      const SizedBox(height: 24),
+                      _buildQuickStatsRow(context, data),
+                      
+                      if (data.upcomingReminder != null) ...[
+                        const SizedBox(height: 24),
+                        _buildUpcomingReminder(context, data.upcomingReminder!),
+                      ],
+                      
+                      const SizedBox(height: 32),
+                      const Text('Quick Actions', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Your Revolt RV400 is ready.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                sliver: SliverGrid.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 2.2,
+                  children: [
+                    _buildSmallMenuCard(context, title: 'Rides', icon: LucideIcons.bike, color: const Color(0xFF3B82F6), route: '/rides'),
+                    _buildSmallMenuCard(context, title: 'Charging', icon: LucideIcons.batteryCharging, color: const Color(0xFF10B981), route: '/charging'),
+                    _buildSmallMenuCard(context, title: 'Expenses', icon: LucideIcons.wallet, color: const Color(0xFFF59E0B), route: '/expenses'),
+                    _buildSmallMenuCard(context, title: 'Maintenance', icon: LucideIcons.wrench, color: const Color(0xFFEF4444), route: '/maintenance'),
+                    _buildSmallMenuCard(context, title: 'Reminders', icon: LucideIcons.bell, color: const Color(0xFF8B5CF6), route: '/reminders'),
+                    _buildSmallMenuCard(context, title: 'Analytics', icon: LucideIcons.barChart3, color: const Color(0xFF14B8A6), route: '/analytics'),
+                  ],
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      const Text('Weekly Progress', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 16),
+                      _buildChart(context, data),
+                      const SizedBox(height: 32),
+                      const Text('Lifetime Impact', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 16),
+                      _buildImpactCards(context, data),
+                      const SizedBox(height: 32),
+                      if (data.recentActivities.isNotEmpty) ...[
+                        const Text('Recent Activities', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 16),
+                        _buildRecentActivities(context, data.recentActivities),
+                      ],
+                      const SizedBox(height: 40),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: _buildSummaryCard(context, ridesAsync, chargingAsync),
-            ),
-          ),
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 36, 20, 20),
-              child: Text(
-                'Quick Actions',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
                 ),
               ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            sliver: SliverGrid.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.15,
-              children: [
-                _buildMenuCard(
-                  context,
-                  title: 'Rides',
-                  icon: LucideIcons.bike,
-                  color: const Color(0xFF3B82F6), // Modern Blue
-                  route: '/rides',
-                ),
-                _buildMenuCard(
-                  context,
-                  title: 'Charging',
-                  icon: LucideIcons.batteryCharging,
-                  color: const Color(0xFF10B981), // Modern Green
-                  route: '/charging',
-                ),
-                _buildMenuCard(
-                  context,
-                  title: 'Expenses',
-                  icon: LucideIcons.wallet,
-                  color: const Color(0xFFF59E0B), // Modern Orange
-                  route: '/expenses',
-                ),
-                _buildMenuCard(
-                  context,
-                  title: 'Maintenance',
-                  icon: LucideIcons.wrench,
-                  color: const Color(0xFFEF4444), // Modern Red
-                  route: '/maintenance',
-                ),
-                _buildMenuCard(
-                  context,
-                  title: 'Reminders',
-                  icon: LucideIcons.bell,
-                  color: const Color(0xFF8B5CF6), // Modern Purple
-                  route: '/reminders',
-                ),
-                _buildMenuCard(
-                  context,
-                  title: 'Analytics',
-                  icon: LucideIcons.barChart3,
-                  color: const Color(0xFF14B8A6), // Modern Teal
-                  route: '/analytics',
-                ),
-              ],
-            ),
-          ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 40)),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildSummaryCard(
-    BuildContext context,
-    AsyncValue ridesAsync,
-    AsyncValue chargingAsync,
-  ) {
+  Widget _buildBatteryStatus(BuildContext context, int battery, double odo) {
+    // Basic range estimation: RV400 approx 1.5 km per 1% battery on average
+    final estRange = (battery * 1.5).toStringAsFixed(0);
+    
+    Color batteryColor;
+    if (battery > 50) batteryColor = Colors.green;
+    else if (battery > 20) batteryColor = Colors.orange;
+    else batteryColor = Colors.red;
+
     return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.tertiary,
+            Theme.of(context).colorScheme.primaryContainer,
+            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
           ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Battery Status', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text('$battery', style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: batteryColor, height: 1)),
+                  Text('%', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: batteryColor)),
+                ],
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text('Est. Range', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              Text('$estRange km', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+            ],
           ),
         ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 24.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildSummaryStat(
-              context,
-              'Total Rides',
-              ridesAsync.maybeWhen(
-                data: (rides) => rides.length.toString(),
-                orElse: () => '-',
-              ),
-            ),
-            Container(
-              width: 1,
-              height: 50,
-              color: Colors.white.withValues(alpha: 0.3),
-            ),
-            _buildSummaryStat(
-              context,
-              'Total Charges',
-              chargingAsync.maybeWhen(
-                data: (logs) => logs.length.toString(),
-                orElse: () => '-',
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _buildSummaryStat(BuildContext context, String label, String value) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+  Widget _buildQuickStatsRow(BuildContext context, DashboardData data) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            height: 1.1,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.white.withValues(alpha: 0.9),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        _buildStatBox(context, 'Today', '${data.todayDistance.toStringAsFixed(1)} km'),
+        _buildStatBox(context, 'Week', '${data.weeklyDistance.toStringAsFixed(1)} km'),
+        _buildStatBox(context, 'Month', '${data.monthlyDistance.toStringAsFixed(1)} km'),
       ],
     );
   }
 
-  Widget _buildMenuCard(
+  Widget _buildStatBox(BuildContext context, String label, String value) {
+    return Container(
+      width: (MediaQuery.of(context).size.width - 40 - 24) / 3, // 40 padding, 24 space between
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4)),
+      ),
+      child: Column(
+        children: [
+          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUpcomingReminder(BuildContext context, dynamic reminder) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.orange.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: Colors.orange.withOpacity(0.2), shape: BoxShape.circle),
+            child: const Icon(LucideIcons.bellRing, color: Colors.orange),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(reminder.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 4),
+                Text(
+                  reminder.targetDate != null 
+                    ? 'Due: ${DateFormat.yMMMd().format(reminder.targetDate!)}'
+                    : 'Due at: ${reminder.targetOdometer} km',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.checkCircle),
+            onPressed: () {
+              // mark as done
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmallMenuCard(
     BuildContext context, {
     required String title,
     required IconData icon,
@@ -222,51 +288,196 @@ class DashboardScreen extends HookConsumerWidget {
     required String route,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return InkWell(
       onTap: () => context.push(route),
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(16),
       child: Ink(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: isDark ? 0.05 : 0.08),
-              blurRadius: 15,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4)),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: isDark ? 0.2 : 0.12),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon, color: color, size: 28),
-              ),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: -0.3,
-                ),
-              ),
+              Icon(icon, color: color, size: 24),
+              const SizedBox(width: 12),
+              Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildChart(BuildContext context, DashboardData data) {
+    // Fake data for the chart since we don't have daily breakdown easily available right now
+    // In a real app, the provider should supply a List of daily distances.
+    return Container(
+      height: 200,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4)),
+      ),
+      child: BarChart(
+        BarChartData(
+          alignment: BarChartAlignment.spaceAround,
+          maxY: 100, // Hardcoded max for demo
+          barTouchData: BarTouchData(enabled: false),
+          titlesData: FlTitlesData(
+            show: true,
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  const titles = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                  if (value.toInt() >= 0 && value.toInt() < titles.length) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(titles[value.toInt()], style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    );
+                  }
+                  return const Text('');
+                },
+              ),
+            ),
+            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          ),
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          barGroups: [
+            for (int i = 0; i < 7; i++)
+              BarChartGroupData(
+                x: i,
+                barRods: [
+                  BarChartRodData(
+                    toY: i == 6 ? data.todayDistance : (10.0 + (i * 5) % 30), // Fake past days, actual today
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 16,
+                    borderRadius: BorderRadius.circular(4),
+                    backDrawRodData: BackgroundBarChartRodData(
+                      show: true,
+                      toY: 100,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImpactCards(BuildContext context, DashboardData data) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildImpactCard(
+            context,
+            'Petrol Saved',
+            '~${data.petrolSaved.toStringAsFixed(1)} L',
+            '₹${(data.petrolSaved * 100).toStringAsFixed(0)}', // Approx ₹100/L
+            LucideIcons.fuel,
+            Colors.orange,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _buildImpactCard(
+            context,
+            'CO₂ Prevented',
+            '${data.co2Saved.toStringAsFixed(1)} kg',
+            'Trees saved',
+            LucideIcons.leaf,
+            Colors.green,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImpactCard(BuildContext context, String title, String value, String subtitle, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 16),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.grey)),
+          const SizedBox(height: 4),
+          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(subtitle, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 13)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentActivities(BuildContext context, List<RecentActivity> activities) {
+    return Column(
+      children: activities.map((activity) {
+        IconData icon;
+        Color color;
+        if (activity.type == ActivityType.ride) {
+          icon = LucideIcons.bike;
+          color = Colors.blue;
+        } else if (activity.type == ActivityType.charge) {
+          icon = LucideIcons.batteryCharging;
+          color = Colors.green;
+        } else if (activity.type == ActivityType.maintenance) {
+          icon = LucideIcons.wrench;
+          color = Colors.red;
+        } else {
+          icon = LucideIcons.wallet;
+          color = Colors.orange;
+        }
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4)),
+          ),
+          child: ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            title: Text(activity.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text(activity.subtitle),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  activity.type == ActivityType.ride 
+                      ? '+${activity.value.toStringAsFixed(1)} km' 
+                      : '₹${activity.value.toStringAsFixed(0)}',
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                ),
+                Text(
+                  DateFormat.MMMd().format(activity.date),
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

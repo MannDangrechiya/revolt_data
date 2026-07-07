@@ -5,6 +5,7 @@ import '../../features/charging/domain/charge_log.dart';
 import '../../features/expenses/domain/expense.dart';
 import '../../features/maintenance/domain/maintenance_log.dart';
 import '../../features/reminders/domain/reminder.dart';
+import '../../features/bikes/domain/bike.dart';
 import 'app_database.dart';
 
 extension RideDataMapper on RidesTableData {
@@ -153,6 +154,64 @@ extension ReminderMapper on Reminder {
       targetOdometer: Value(targetOdometer),
       isCompleted: Value(isCompleted),
       isNotified: Value(isNotified),
+    );
+  }
+}
+
+extension BikeDataMapper on BikesTableData {
+  Bike toDomain() {
+    return Bike(
+      id: id,
+      name: name,
+      brand: brand,
+      model: model,
+      variant: variant,
+      color: color,
+      registrationNumber: registrationNumber,
+      vin: vin,
+      motorNumber: motorNumber,
+      purchaseDate: purchaseDate,
+      purchasePrice: purchasePrice,
+      dealer: dealer,
+      insurance: insurance,
+      warranty: warranty,
+      batteryWarranty: batteryWarranty,
+      batteryCapacity: batteryCapacity,
+      motorPower: motorPower,
+      claimedRange: claimedRange,
+      topSpeed: topSpeed,
+      tyreInfo: tyreInfo,
+      customNotes: customNotes,
+      photoPath: photoPath,
+    );
+  }
+}
+
+extension BikeMapper on Bike {
+  BikesTableCompanion toCompanion() {
+    return BikesTableCompanion(
+      id: id != null ? Value(id!) : const Value.absent(),
+      name: Value(name),
+      brand: Value(brand),
+      model: Value(model),
+      variant: Value(variant),
+      color: Value(color),
+      registrationNumber: Value(registrationNumber),
+      vin: Value(vin),
+      motorNumber: Value(motorNumber),
+      purchaseDate: Value(purchaseDate),
+      purchasePrice: Value(purchasePrice),
+      dealer: Value(dealer),
+      insurance: Value(insurance),
+      warranty: Value(warranty),
+      batteryWarranty: Value(batteryWarranty),
+      batteryCapacity: Value(batteryCapacity),
+      motorPower: Value(motorPower),
+      claimedRange: Value(claimedRange),
+      topSpeed: Value(topSpeed),
+      tyreInfo: Value(tyreInfo),
+      customNotes: Value(customNotes),
+      photoPath: Value(photoPath),
     );
   }
 }
