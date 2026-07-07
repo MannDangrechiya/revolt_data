@@ -4,7 +4,7 @@ part 'document.freezed.dart';
 part 'document.g.dart';
 
 @freezed
-class Document with _$Document {
+abstract class Document with _$Document {
   const factory Document({
     int? id,
     required String name,

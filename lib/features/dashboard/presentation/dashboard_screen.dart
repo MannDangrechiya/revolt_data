@@ -174,10 +174,13 @@ class DashboardScreen extends HookConsumerWidget {
     final estRange = (battery * 1.5).toStringAsFixed(0);
     
     Color batteryColor;
-    if (battery > 50) batteryColor = Colors.green;
-    else if (battery > 20) batteryColor = Colors.orange;
-    else batteryColor = Colors.red;
-
+    if (battery > 50) {
+      batteryColor = Colors.green;
+    } else if (battery > 20) {
+      batteryColor = Colors.orange;
+    } else {
+      batteryColor = Colors.red;
+    }
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(

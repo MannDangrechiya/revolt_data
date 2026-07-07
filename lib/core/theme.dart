@@ -18,7 +18,7 @@ class AppTheme {
     subThemesData: const FlexSubThemesData(
       blendOnLevel: 20,
       blendOnColors: false,
-      useTextTheme: true,
+      useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
       elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,
@@ -71,7 +71,7 @@ class AppTheme {
     textTheme: textTheme,
     subThemesData: const FlexSubThemesData(
       blendOnLevel: 30,
-      useTextTheme: true,
+      useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       elevatedButtonSchemeColor: SchemeColor.onPrimaryContainer,
       elevatedButtonSecondarySchemeColor: SchemeColor.primaryContainer,

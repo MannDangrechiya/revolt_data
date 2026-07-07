@@ -83,14 +83,13 @@ class ExpensesScreen extends HookConsumerWidget {
                         sections: totalsByCategory.entries.toList().asMap().entries.map((entry) {
                           final idx = entry.key;
                           final e = entry.value;
-                          final isTouched = false;
                           final color = Colors.primaries[idx % Colors.primaries.length];
                           
                           return PieChartSectionData(
                             color: color,
                             value: e.value,
                             title: '${(e.value / total * 100).toStringAsFixed(1)}%',
-                            radius: isTouched ? 60.0 : 50.0,
+                            radius: 50.0,
                             titleStyle: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,

@@ -27,7 +27,7 @@ class EfficiencyStats {
 }
 
 @riverpod
-Future<EfficiencyStats> efficiencyStats(EfficiencyStatsRef ref) async {
+Future<EfficiencyStats> efficiencyStats(Ref ref) async {
   final rides = await ref.watch(ridesProvider.future);
   final charges = await ref.watch(chargingLogsProvider.future);
   final expenses = await ref.watch(expensesProvider.future);

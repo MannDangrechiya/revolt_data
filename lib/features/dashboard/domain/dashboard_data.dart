@@ -9,7 +9,7 @@ part 'dashboard_data.freezed.dart';
 enum ActivityType { ride, charge, maintenance, expense }
 
 @freezed
-class RecentActivity with _$RecentActivity {
+abstract class RecentActivity with _$RecentActivity {
   const factory RecentActivity({
     required String id,
     required ActivityType type,
@@ -21,7 +21,7 @@ class RecentActivity with _$RecentActivity {
 }
 
 @freezed
-class DashboardData with _$DashboardData {
+abstract class DashboardData with _$DashboardData {
   const factory DashboardData({
     required double currentOdometer,
     required double todayDistance,

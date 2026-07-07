@@ -27,7 +27,7 @@ class StatisticsData {
 }
 
 @riverpod
-Future<StatisticsData> statisticsService(StatisticsServiceRef ref) async {
+Future<StatisticsData> statisticsService(Ref ref) async {
   final db = ref.read(databaseProvider);
   
   final rides = await db.select(db.ridesTable).get();
@@ -37,9 +37,9 @@ Future<StatisticsData> statisticsService(StatisticsServiceRef ref) async {
 
   // 1. Total Ownership Cost
   double totalCost = 0.0;
-  for (var c in charges) totalCost += c.cost;
-  for (var e in expenses) totalCost += e.amount;
-  for (var m in maintenance) totalCost += m.cost;
+  for (var c in charges) { totalCost += c.cost; }
+  for (var e in expenses) { totalCost += e.amount; }
+  for (var m in maintenance) { totalCost += m.cost; }
 
   // 2. Rides Stats
   double totalDist = 0.0;

@@ -182,7 +182,7 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<LocationType>(
-                    value: locationType.value,
+                    initialValue: locationType.value,
                     decoration: const InputDecoration(labelText: 'Location Type*'),
                     items: LocationType.values.map((t) => DropdownMenuItem(value: t, child: Text(t.name.toUpperCase()))).toList(),
                     onChanged: (v) {
@@ -258,7 +258,7 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
                 const SizedBox(width: 16),
                 Expanded(
                   child: DropdownButtonFormField<PaymentMethod>(
-                    value: paymentMethod.value,
+                    initialValue: paymentMethod.value,
                     decoration: const InputDecoration(labelText: 'Payment Method*'),
                     items: PaymentMethod.values.map((p) => DropdownMenuItem(value: p, child: Text(p.name.toUpperCase()))).toList(),
                     onChanged: (v) {

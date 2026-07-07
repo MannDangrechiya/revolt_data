@@ -6,7 +6,7 @@ import 'charge_log.dart';
 part 'charge_filter.freezed.dart';
 
 @freezed
-class ChargeFilter with _$ChargeFilter {
+abstract class ChargeFilter with _$ChargeFilter {
   const factory ChargeFilter({
     LocationType? locationType,
     String? chargerType,

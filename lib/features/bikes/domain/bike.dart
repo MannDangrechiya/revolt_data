@@ -4,7 +4,7 @@ part 'bike.freezed.dart';
 part 'bike.g.dart';
 
 @freezed
-class Bike with _$Bike {
+abstract class Bike with _$Bike {
   const factory Bike({
     int? id,
     required String name,

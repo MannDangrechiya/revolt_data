@@ -6,7 +6,6 @@ import 'package:revolt_data/core/database/app_database.dart';
 import 'package:revolt_data/features/rides/domain/ride.dart';
 import 'package:revolt_data/features/charging/domain/charge_log.dart';
 import 'package:revolt_data/features/expenses/domain/expense.dart';
-import 'package:revolt_data/features/maintenance/domain/maintenance_log.dart';
 
 void main() {
   late AppDatabase database;

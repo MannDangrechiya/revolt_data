@@ -2,8 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../rides/data/rides_provider.dart';
 import '../../charging/data/charging_provider.dart';
-import '../../rides/domain/ride.dart';
-import '../../charging/domain/charge_log.dart';
 
 part 'battery_analytics_service.g.dart';
 
@@ -28,7 +26,7 @@ class BatteryAnalytics {
 }
 
 @riverpod
-Future<BatteryAnalytics> batteryAnalytics(BatteryAnalyticsRef ref) async {
+Future<BatteryAnalytics> batteryAnalytics(Ref ref) async {
   final rides = await ref.watch(ridesProvider.future);
   final charges = await ref.watch(chargingLogsProvider.future);
 

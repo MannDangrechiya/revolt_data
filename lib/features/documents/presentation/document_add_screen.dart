@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -255,7 +255,7 @@ class _DocumentAddScreenState extends ConsumerState<DocumentAddScreen> {
               const SizedBox(height: 16),
               
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   prefixIcon: Icon(LucideIcons.tag),

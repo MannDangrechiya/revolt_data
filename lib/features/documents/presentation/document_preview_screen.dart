@@ -25,10 +25,10 @@ class DocumentPreviewScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(LucideIcons.share2),
               onPressed: () {
-                Share.shareXFiles(
-                  [XFile(document.filePath)],
+                SharePlus.instance.share(ShareParams(
+                  files: [XFile(document.filePath)],
                   text: 'Sharing document: ${document.name}',
-                );
+                ));
               },
             ),
         ],
@@ -45,10 +45,10 @@ class DocumentPreviewScreen extends StatelessWidget {
                   autoSpacing: false,
                   pageFling: false,
                   onError: (error) {
-                    print(error.toString());
+                    debugPrint(error.toString());
                   },
                   onPageError: (page, error) {
-                    print('$page: ${error.toString()}');
+                    debugPrint('$page: ${error.toString()}');
                   },
                 )
               : Center(

@@ -80,10 +80,10 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       final service = ref.read(reportGeneratorServiceProvider.notifier);
       if (format == 'PDF') {
         final file = await service.generatePdfReport(_startDate, _endDate, _isDetailed);
-        Share.shareXFiles([XFile(file.path)], text: 'Revolt Report (PDF)');
+        await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'Revolt Report (PDF)'));
       } else if (format == 'Excel') {
         final file = await service.generateExcelReport(_startDate, _endDate);
-        Share.shareXFiles([XFile(file.path)], text: 'Revolt Report (Excel)');
+        await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'Revolt Report (Excel)'));
       }
     } catch (e) {
       if (mounted) {

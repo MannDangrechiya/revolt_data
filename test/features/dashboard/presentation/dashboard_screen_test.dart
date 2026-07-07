@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -25,13 +26,25 @@ class MockDashboardDataNotifier extends DashboardDataNotifier {
   }
 }
 
+class MockCurrentBike extends CurrentBike {
+  final AsyncValue<Bike?> customState;
+  
+  MockCurrentBike(this.customState);
+  
+  @override
+  FutureOr<Bike?> build() {
+    if (customState.hasError) throw customState.error!;
+    return customState.value;
+  }
+}
+
 void main() {
   group('DashboardScreen Widget Tests', () {
     testWidgets('shows loading skeleton when data is loading', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            dashboardDataNotifierProvider.overrideWith(
+            dashboardDataProvider.overrideWith(
               () => MockDashboardDataNotifier(const AsyncValue.loading())
             ),
           ],
@@ -51,7 +64,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            dashboardDataNotifierProvider.overrideWith(
+            dashboardDataProvider.overrideWith(
               () => MockDashboardDataNotifier(AsyncValue.error(error, StackTrace.empty))
             ),
           ],
@@ -89,17 +102,17 @@ void main() {
         model: 'RV400',
         color: 'Black',
         registrationNumber: 'MH01AB1234',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
       );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            dashboardDataNotifierProvider.overrideWith(
+            dashboardDataProvider.overrideWith(
               () => MockDashboardDataNotifier(AsyncValue.data(dashboardData))
             ),
-            currentBikeProvider.overrideWith((ref) => AsyncValue.data(bike)),
+            currentBikeProvider.overrideWith(
+              () => MockCurrentBike(AsyncValue.data(bike))
+            ),
           ],
           child: const MaterialApp(
             home: DashboardScreen(),

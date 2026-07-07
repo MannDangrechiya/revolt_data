@@ -7,7 +7,7 @@ import 'bike_repository_impl.dart';
 part 'bike_provider.g.dart';
 
 @riverpod
-BikeRepository bikeRepository(BikeRepositoryRef ref) {
+BikeRepository bikeRepository(Ref ref) {
   final db = ref.watch(databaseProvider);
   return BikeRepositoryImpl(db);
 }
