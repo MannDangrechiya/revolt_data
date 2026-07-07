@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
 
 import '../data/reminders_provider.dart';
 import '../domain/reminder.dart';
+import '../../../core/widgets/skeleton_loader.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_retry_widget.dart';
 
 class RemindersScreen extends ConsumerStatefulWidget {
   const RemindersScreen({super.key});
@@ -26,20 +29,10 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
       body: remindersAsync.when(
         data: (reminders) {
           if (reminders.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(LucideIcons.bellRing, size: 64, color: Theme.of(context).colorScheme.surfaceContainerHighest),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No reminders set',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ],
-              ),
+            return const EmptyStateWidget(
+              title: 'No reminders set',
+              message: 'Set reminders for service, insurance renewal, or part replacements.',
+              icon: LucideIcons.bellRing,
             );
           }
 
@@ -79,8 +72,14 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        loading: () => const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ListSkeletonLoader(itemCount: 6, itemHeight: 90),
+        ),
+        error: (err, stack) => ErrorRetryWidget(
+          message: err.toString(),
+          onRetry: () => ref.refresh(remindersProvider),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/reminders/add'),

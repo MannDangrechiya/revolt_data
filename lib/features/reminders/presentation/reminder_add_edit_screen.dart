@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 import '../data/reminders_provider.dart';
 import '../domain/reminder.dart';
@@ -73,7 +72,7 @@ class _ReminderAddEditScreenState extends ConsumerState<ReminderAddEditScreen> {
     }
 
     final reminder = Reminder(
-      id: widget.reminder?.id ?? const Uuid().v4(),
+      id: widget.reminder?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       title: _titleController.text.trim(),
       body: _bodyController.text.trim(),
       targetDate: _selectedDate,
@@ -110,7 +109,7 @@ class _ReminderAddEditScreenState extends ConsumerState<ReminderAddEditScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               DropdownButtonFormField<String>(
-                value: _selectedType,
+                initialValue: _selectedType,
                 decoration: const InputDecoration(
                   labelText: 'Reminder Type',
                   prefixIcon: Icon(LucideIcons.listTodo),

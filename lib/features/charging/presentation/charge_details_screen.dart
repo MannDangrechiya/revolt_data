@@ -5,8 +5,9 @@ import '../domain/charge_log.dart';
 
 class ChargeDetailsScreen extends StatelessWidget {
   final ChargeLog log;
+  final String? chargeId;
   
-  const ChargeDetailsScreen({super.key, required this.log});
+  const ChargeDetailsScreen({super.key, required this.log, this.chargeId});
 
   @override
   Widget build(BuildContext context) {

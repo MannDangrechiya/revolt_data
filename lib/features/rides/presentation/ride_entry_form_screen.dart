@@ -173,11 +173,13 @@ class RideEntryFormScreen extends HookConsumerWidget {
           ),
         ],
       ),
-      body: Form(
-        key: formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
+      body: Stack(
+        children: [
+          Form(
+            key: formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(20.0),
+              children: [
             _buildSectionHeader('Date & Time', LucideIcons.clock),
             const SizedBox(height: 16),
             ListTile(
@@ -259,14 +261,14 @@ class RideEntryFormScreen extends HookConsumerWidget {
             _buildSectionHeader('Ride Details', LucideIcons.info),
             const SizedBox(height: 16),
             DropdownButtonFormField<RideMode>(
-              value: rideMode.value,
+              initialValue: rideMode.value,
               decoration: const InputDecoration(labelText: 'Ride Mode*'),
               items: RideMode.values.map((m) => DropdownMenuItem(value: m, child: Text(m.name.toUpperCase()))).toList(),
               onChanged: (v) { if (v != null) rideMode.value = v; },
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<RoadCondition>(
-              value: roadCondition.value,
+              initialValue: roadCondition.value,
               decoration: const InputDecoration(labelText: 'Road Condition*'),
               items: RoadCondition.values.map((c) => DropdownMenuItem(value: c, child: Text(c.name.toUpperCase()))).toList(),
               onChanged: (v) { if (v != null) roadCondition.value = v; },
@@ -284,7 +286,7 @@ class RideEntryFormScreen extends HookConsumerWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: weather.value,
+                    initialValue: weather.value,
                     decoration: const InputDecoration(labelText: 'Weather'),
                     items: const [
                       DropdownMenuItem(value: 'Sunny', child: Text('Sunny')),
@@ -298,7 +300,7 @@ class RideEntryFormScreen extends HookConsumerWidget {
                 const SizedBox(width: 16),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: ridePurpose.value,
+                    initialValue: ridePurpose.value,
                     decoration: const InputDecoration(labelText: 'Purpose'),
                     items: const [
                       DropdownMenuItem(value: 'Commute', child: Text('Commute')),
@@ -316,7 +318,7 @@ class RideEntryFormScreen extends HookConsumerWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: roadType.value,
+                    initialValue: roadType.value,
                     decoration: const InputDecoration(labelText: 'Road Type'),
                     items: const [
                       DropdownMenuItem(value: 'City', child: Text('City')),
@@ -380,7 +382,16 @@ class RideEntryFormScreen extends HookConsumerWidget {
               ],
             ),
             
-            const SizedBox(height: 40),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(LucideIcons.cloudOff, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Text('Data is saved locally.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+              ],
+            ),
+            const SizedBox(height: 16),
             FilledButton(
               onPressed: isSubmitting.value ? null : submit,
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
@@ -390,7 +401,16 @@ class RideEntryFormScreen extends HookConsumerWidget {
           ],
         ),
       ),
-    );
+      if (isSubmitting.value)
+        Container(
+          color: Colors.black45,
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+    ],
+  ),
+);
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {

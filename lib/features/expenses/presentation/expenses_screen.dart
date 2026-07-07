@@ -7,6 +7,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../data/expenses_provider.dart';
 import '../domain/expense.dart';
+import '../../../core/widgets/skeleton_loader.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_retry_widget.dart';
 
 class ExpensesScreen extends HookConsumerWidget {
   const ExpensesScreen({super.key});
@@ -139,11 +142,10 @@ class ExpensesScreen extends HookConsumerWidget {
               ),
               if (filteredExpenses.isEmpty)
                 const SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text('No expenses recorded.'),
-                    ),
+                  child: EmptyStateWidget(
+                    title: 'No expenses recorded',
+                    message: 'Add an expense to start tracking your spending.',
+                    icon: Icons.attach_money,
                   ),
                 )
               else
@@ -179,8 +181,14 @@ class ExpensesScreen extends HookConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Error: $e')),
+        loading: () => const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ListSkeletonLoader(itemCount: 5, itemHeight: 80),
+        ),
+        error: (e, st) => ErrorRetryWidget(
+          message: e.toString(),
+          onRetry: () => ref.refresh(expensesProvider),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/expenses/add'),

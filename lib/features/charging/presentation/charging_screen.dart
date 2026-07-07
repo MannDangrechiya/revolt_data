@@ -11,6 +11,9 @@ import '../domain/charge_log.dart';
 import '../domain/charge_filter.dart';
 import 'widgets/battery_health_dashboard.dart';
 import 'widgets/charge_card.dart';
+import '../../../core/widgets/skeleton_loader.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_retry_widget.dart';
 
 class ChargingScreen extends HookConsumerWidget {
   const ChargingScreen({super.key});
@@ -139,20 +142,13 @@ class ChargingScreen extends HookConsumerWidget {
               ),
             ),
             if (logs.isEmpty)
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Icon(LucideIcons.batteryCharging, size: 48, color: Colors.grey.shade400),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No logs found.',
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-                        ),
-                      ],
-                    ),
+                  padding: EdgeInsets.all(32.0),
+                  child: EmptyStateWidget(
+                    title: 'No logs found',
+                    message: 'Start logging your charging sessions to see them here.',
+                    icon: LucideIcons.batteryCharging,
                   ),
                 ),
               )
@@ -190,7 +186,7 @@ class ChargingScreen extends HookConsumerWidget {
                       child: ChargeCard(
                         log: log,
                         onTap: () {
-                          context.push('/charging/details', extra: log);
+                          context.push('/charging/${log.id}', extra: log);
                         },
                       ),
                     );
@@ -201,8 +197,14 @@ class ChargingScreen extends HookConsumerWidget {
             const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
           ],
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        loading: () => const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ListSkeletonLoader(itemCount: 8, itemHeight: 120),
+        ),
+        error: (err, stack) => ErrorRetryWidget(
+          message: err.toString(),
+          onRetry: () => ref.refresh(filteredChargeLogsProvider),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/charging/add'),

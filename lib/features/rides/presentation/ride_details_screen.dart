@@ -6,8 +6,9 @@ import '../domain/ride.dart';
 
 class RideDetailsScreen extends StatelessWidget {
   final Ride ride;
+  final String? rideId;
   
-  const RideDetailsScreen({super.key, required this.ride});
+  const RideDetailsScreen({super.key, required this.ride, this.rideId});
 
   @override
   Widget build(BuildContext context) {

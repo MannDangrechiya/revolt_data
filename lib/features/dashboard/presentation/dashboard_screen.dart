@@ -8,6 +8,9 @@ import 'package:intl/intl.dart';
 import '../data/dashboard_provider.dart';
 import '../../bikes/data/bike_provider.dart';
 import '../domain/dashboard_data.dart';
+import '../../../core/widgets/animated_number.dart';
+import '../../../core/widgets/skeleton_loader.dart';
+import '../../../core/widgets/error_retry_widget.dart';
 
 class DashboardScreen extends HookConsumerWidget {
   const DashboardScreen({super.key});
@@ -29,10 +32,16 @@ class DashboardScreen extends HookConsumerWidget {
         ],
       ),
       body: dashboardAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error loading dashboard: $err')),
+        loading: () => const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: ListSkeletonLoader(itemCount: 4, itemHeight: 150),
+        ),
+        error: (err, stack) => ErrorRetryWidget(
+          message: err.toString(),
+          onRetry: () => ref.refresh(dashboardDataNotifierProvider),
+        ),
         data: (data) {
-          final bikeName = bikeAsync.valueOrNull?.name ?? 'My RV400';
+          final bikeName = bikeAsync.value?.name ?? 'My RV400';
           
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
@@ -83,8 +92,10 @@ class DashboardScreen extends HookConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               const Text('ODO', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
-                              Text(
-                                '${data.currentOdometer.toStringAsFixed(1)} km',
+                              AnimatedNumber(
+                                value: data.currentOdometer,
+                                suffix: ' km',
+                                fractionDigits: 1,
                                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                             ],
@@ -191,7 +202,10 @@ class DashboardScreen extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
-                  Text('$battery', style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: batteryColor, height: 1)),
+                  AnimatedNumber(
+                    value: battery,
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: batteryColor, height: 1),
+                  ),
                   Text('%', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: batteryColor)),
                 ],
               ),
@@ -202,7 +216,11 @@ class DashboardScreen extends HookConsumerWidget {
             children: [
               Text('Est. Range', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
-              Text('$estRange km', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              AnimatedNumber(
+                value: double.parse(estRange),
+                suffix: ' km',
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ],
@@ -214,14 +232,14 @@ class DashboardScreen extends HookConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildStatBox(context, 'Today', '${data.todayDistance.toStringAsFixed(1)} km'),
-        _buildStatBox(context, 'Week', '${data.weeklyDistance.toStringAsFixed(1)} km'),
-        _buildStatBox(context, 'Month', '${data.monthlyDistance.toStringAsFixed(1)} km'),
+        _buildStatBox(context, 'Today', data.todayDistance, ' km', 1),
+        _buildStatBox(context, 'Week', data.weeklyDistance, ' km', 1),
+        _buildStatBox(context, 'Month', data.monthlyDistance, ' km', 1),
       ],
     );
   }
 
-  Widget _buildStatBox(BuildContext context, String label, String value) {
+  Widget _buildStatBox(BuildContext context, String label, num value, String suffix, int fractionDigits) {
     return Container(
       width: (MediaQuery.of(context).size.width - 40 - 24) / 3, // 40 padding, 24 space between
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -234,7 +252,12 @@ class DashboardScreen extends HookConsumerWidget {
         children: [
           Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          AnimatedNumber(
+            value: value,
+            suffix: suffix,
+            fractionDigits: fractionDigits,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
         ],
       ),
     );
@@ -383,10 +406,12 @@ class DashboardScreen extends HookConsumerWidget {
           child: _buildImpactCard(
             context,
             'Petrol Saved',
-            '~${data.petrolSaved.toStringAsFixed(1)} L',
+            data.petrolSaved,
+            ' L',
             '₹${(data.petrolSaved * 100).toStringAsFixed(0)}', // Approx ₹100/L
             LucideIcons.fuel,
             Colors.orange,
+            1,
           ),
         ),
         const SizedBox(width: 16),
@@ -394,17 +419,19 @@ class DashboardScreen extends HookConsumerWidget {
           child: _buildImpactCard(
             context,
             'CO₂ Prevented',
-            '${data.co2Saved.toStringAsFixed(1)} kg',
+            data.co2Saved,
+            ' kg',
             'Trees saved',
             LucideIcons.leaf,
             Colors.green,
+            1,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildImpactCard(BuildContext context, String title, String value, String subtitle, IconData icon, Color color) {
+  Widget _buildImpactCard(BuildContext context, String title, num value, String suffix, String subtitle, IconData icon, Color color, int fractionDigits) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -419,7 +446,13 @@ class DashboardScreen extends HookConsumerWidget {
           const SizedBox(height: 16),
           Text(title, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.grey)),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          AnimatedNumber(
+            value: value,
+            prefix: title == 'Petrol Saved' ? '~' : null,
+            suffix: suffix,
+            fractionDigits: fractionDigits,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 4),
           Text(subtitle, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 13)),
         ],

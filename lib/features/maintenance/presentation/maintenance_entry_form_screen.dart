@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../data/maintenance_provider.dart';
 import '../domain/maintenance_log.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class MaintenanceEntryFormScreen extends HookConsumerWidget {
   const MaintenanceEntryFormScreen({super.key});
@@ -105,11 +106,13 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
           )
         ],
       ),
-      body: Form(
-        key: formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
+      body: Stack(
+        children: [
+          Form(
+            key: formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
             ListTile(
               title: const Text('Date'),
               subtitle: Text(date.value.toString().split(' ')[0]),
@@ -236,13 +239,32 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
               maxLines: 3,
             ),
             const SizedBox(height: 32),
-            ElevatedButton(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(LucideIcons.cloudOff, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Text('Data is saved locally.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
               onPressed: isSubmitting.value ? null : submit,
+              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
               child: const Text('Save Maintenance Log'),
             ),
           ],
         ),
       ),
-    );
+      if (isSubmitting.value)
+        Container(
+          color: Colors.black45,
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+    ],
+  ),
+);
   }
 }

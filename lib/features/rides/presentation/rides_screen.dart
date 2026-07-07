@@ -10,6 +10,9 @@ import '../data/rides_provider.dart';
 import '../domain/ride.dart';
 import '../domain/ride_filter.dart';
 import 'widgets/ride_card.dart';
+import '../../../core/widgets/skeleton_loader.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_retry_widget.dart';
 
 class RidesScreen extends HookConsumerWidget {
   const RidesScreen({super.key});
@@ -121,22 +124,20 @@ class RidesScreen extends HookConsumerWidget {
       ),
       body: ridesAsync.when(
         data: (ridesList) => ridesList.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(LucideIcons.bike, size: 64, color: Colors.grey.shade400),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No rides found.',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
+            ? const EmptyStateWidget(
+                title: 'No rides found',
+                message: 'Start logging your trips to see them here.',
+                icon: LucideIcons.bike,
               )
             : _buildGroupedList(context, ref, ridesList),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        loading: () => const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ListSkeletonLoader(itemCount: 8, itemHeight: 120),
+        ),
+        error: (err, stack) => ErrorRetryWidget(
+          message: err.toString(),
+          onRetry: () => ref.refresh(filteredRidesProvider),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/rides/add'),
@@ -240,7 +241,7 @@ class RidesScreen extends HookConsumerWidget {
                   child: RideCard(
                     ride: ride,
                     onTap: () {
-                      context.push('/rides/details', extra: ride);
+                      context.push('/rides/${ride.id}', extra: ride);
                     },
                     onLongPress: () {
                       _showRideOptions(context, ref, ride);

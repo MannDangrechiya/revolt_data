@@ -6,6 +6,9 @@ import 'package:intl/intl.dart';
 
 import '../data/documents_provider.dart';
 import '../domain/document.dart';
+import '../../../core/widgets/skeleton_loader.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_retry_widget.dart';
 
 class DocumentsScreen extends ConsumerStatefulWidget {
   const DocumentsScreen({super.key});
@@ -70,20 +73,10 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
               : documents.where((d) => d.category == _selectedCategory).toList();
 
           if (filteredDocs.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(LucideIcons.fileText, size: 64, color: Theme.of(context).colorScheme.surfaceContainerHighest),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No documents found',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ],
-              ),
+            return const EmptyStateWidget(
+              title: 'No documents found',
+              message: 'Add important documents like RC, Insurance, or Invoices.',
+              icon: LucideIcons.fileText,
             );
           }
 
@@ -96,8 +89,14 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        loading: () => const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ListSkeletonLoader(itemCount: 6, itemHeight: 90),
+        ),
+        error: (err, stack) => ErrorRetryWidget(
+          message: err.toString(),
+          onRetry: () => ref.refresh(documentsProvider),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/documents/add'),

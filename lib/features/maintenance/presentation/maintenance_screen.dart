@@ -6,6 +6,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../data/maintenance_provider.dart';
 import '../domain/maintenance_log.dart';
+import '../../../core/widgets/skeleton_loader.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/error_retry_widget.dart';
 
 class MaintenanceScreen extends HookConsumerWidget {
   const MaintenanceScreen({super.key});
@@ -80,11 +83,10 @@ class MaintenanceScreen extends HookConsumerWidget {
                 ),
               if (filteredLogs.isEmpty)
                 const SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text('No maintenance logs found.'),
-                    ),
+                  child: EmptyStateWidget(
+                    title: 'No maintenance logs found',
+                    message: 'Record maintenance events to keep track of your bike health.',
+                    icon: Icons.build,
                   ),
                 )
               else
@@ -145,8 +147,14 @@ class MaintenanceScreen extends HookConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Error: $e')),
+        loading: () => const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ListSkeletonLoader(itemCount: 5, itemHeight: 80),
+        ),
+        error: (e, st) => ErrorRetryWidget(
+          message: e.toString(),
+          onRetry: () => ref.refresh(maintenanceLogsProvider),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/maintenance/add'),

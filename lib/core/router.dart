@@ -31,6 +31,23 @@ import '../features/reminders/domain/reminder.dart';
 import '../features/reports/presentation/reports_screen.dart';
 import '../features/analytics/presentation/statistics_screen.dart';
 
+CustomTransitionPage buildPageWithDefaultTransition<T>({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+        child: child,
+      );
+    },
+  );
+}
+
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerDelegate = GoRouter(
@@ -54,15 +71,21 @@ final routerDelegate = GoRouter(
           routes: [
             GoRoute(
               path: '/rides',
-              builder: (context, state) => const RidesScreen(),
+              pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const RidesScreen()),
               routes: [
                 GoRoute(
                   path: 'add',
-                  builder: (context, state) => const RideEntryFormScreen(),
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const RideEntryFormScreen()),
                 ),
                 GoRoute(
-                  path: 'details',
-                  builder: (context, state) => RideDetailsScreen(ride: state.extra as Ride),
+                  path: ':id',
+                  pageBuilder: (context, state) {
+                    final id = state.pathParameters['id'];
+                    // We'll pass the id, for now, we still need the ride object if it's passed via extra, or we fetch it.
+                    // To avoid breaking immediately, we can check extra, else fetch.
+                    final ride = state.extra as Ride?;
+                    return buildPageWithDefaultTransition(context: context, state: state, child: RideDetailsScreen(ride: ride!, rideId: id));
+                  },
                 ),
               ],
             ),
@@ -72,15 +95,19 @@ final routerDelegate = GoRouter(
           routes: [
             GoRoute(
               path: '/charging',
-              builder: (context, state) => const ChargingScreen(),
+              pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const ChargingScreen()),
               routes: [
                 GoRoute(
                   path: 'add',
-                  builder: (context, state) => const ChargeEntryFormScreen(),
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const ChargeEntryFormScreen()),
                 ),
                 GoRoute(
-                  path: 'details',
-                  builder: (context, state) => ChargeDetailsScreen(log: state.extra as ChargeLog),
+                  path: ':id',
+                  pageBuilder: (context, state) {
+                     final id = state.pathParameters['id'];
+                     final log = state.extra as ChargeLog?;
+                     return buildPageWithDefaultTransition(context: context, state: state, child: ChargeDetailsScreen(log: log!, chargeId: id));
+                  },
                 ),
               ],
             ),

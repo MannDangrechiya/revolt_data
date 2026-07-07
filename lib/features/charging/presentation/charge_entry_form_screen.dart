@@ -85,11 +85,13 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
           ),
         ],
       ),
-      body: Form(
-        key: formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
+      body: Stack(
+        children: [
+          Form(
+            key: formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(20.0),
+              children: [
             _buildSectionHeader('Date & Time', LucideIcons.calendar),
             const SizedBox(height: 16),
             ListTile(
@@ -276,7 +278,16 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
               maxLines: 3,
             ),
             
-            const SizedBox(height: 40),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(LucideIcons.cloudOff, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Text('Data is saved locally.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+              ],
+            ),
+            const SizedBox(height: 16),
             FilledButton(
               onPressed: isSubmitting.value ? null : submit,
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
@@ -286,7 +297,16 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
           ],
         ),
       ),
-    );
+      if (isSubmitting.value)
+        Container(
+          color: Colors.black45,
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+    ],
+  ),
+);
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {

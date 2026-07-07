@@ -9,6 +9,7 @@ import 'package:path/path.dart' as path;
 
 import '../data/expenses_provider.dart';
 import '../domain/expense.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class ExpenseEntryFormScreen extends HookConsumerWidget {
   const ExpenseEntryFormScreen({super.key});
@@ -77,11 +78,13 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
           )
         ],
       ),
-      body: Form(
-        key: formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
+      body: Stack(
+        children: [
+          Form(
+            key: formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
             ListTile(
               title: const Text('Date'),
               subtitle: Text(date.value.toString().split(' ')[0]),
@@ -148,13 +151,32 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
                 label: const Text('Capture Receipt'),
               ),
             const SizedBox(height: 32),
-            ElevatedButton(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(LucideIcons.cloudOff, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Text('Data is saved locally.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
               onPressed: isSubmitting.value ? null : submit,
+              style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
               child: const Text('Save Expense'),
             ),
           ],
         ),
       ),
-    );
+      if (isSubmitting.value)
+        Container(
+          color: Colors.black45,
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+    ],
+  ),
+);
   }
 }
