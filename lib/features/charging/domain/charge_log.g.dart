@@ -7,18 +7,33 @@ part of 'charge_log.dart';
 // **************************************************************************
 
 _ChargeLog _$ChargeLogFromJson(Map<String, dynamic> json) => _ChargeLog(
-      id: json['id'] as String,
-      date: DateTime.parse(json['date'] as String),
-      durationMinutes: (json['durationMinutes'] as num).toDouble(),
-      kwhAdded: (json['kwhAdded'] as num).toDouble(),
-      cost: (json['cost'] as num).toDouble(),
-      paymentMethod: $enumDecode(_$PaymentMethodEnumMap, json['paymentMethod']),
-      locationType: $enumDecode(_$LocationTypeEnumMap, json['locationType']),
-      startBattery: (json['startBattery'] as num).toInt(),
-      endBattery: (json['endBattery'] as num).toInt(),
-      locationName: json['locationName'] as String?,
-      notes: json['notes'] as String?,
-    );
+  id: json['id'] as String,
+  date: DateTime.parse(json['date'] as String),
+  durationMinutes: (json['durationMinutes'] as num).toDouble(),
+  kwhAdded: (json['kwhAdded'] as num).toDouble(),
+  cost: (json['cost'] as num).toDouble(),
+  paymentMethod: $enumDecode(_$PaymentMethodEnumMap, json['paymentMethod']),
+  locationType: $enumDecode(_$LocationTypeEnumMap, json['locationType']),
+  startBattery: (json['startBattery'] as num).toInt(),
+  endBattery: (json['endBattery'] as num).toInt(),
+  locationName: json['locationName'] as String?,
+  notes: json['notes'] as String?,
+  startTime: json['startTime'] == null
+      ? null
+      : DateTime.parse(json['startTime'] as String),
+  endTime: json['endTime'] == null
+      ? null
+      : DateTime.parse(json['endTime'] as String),
+  chargerType: json['chargerType'] as String?,
+  chargingMethod: json['chargingMethod'] as String?,
+  electricityPrice: (json['electricityPrice'] as num?)?.toDouble(),
+  photoPaths:
+      (json['photoPaths'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  bikeId: (json['bikeId'] as num?)?.toInt(),
+);
 
 Map<String, dynamic> _$ChargeLogToJson(_ChargeLog instance) =>
     <String, dynamic>{
@@ -33,6 +48,13 @@ Map<String, dynamic> _$ChargeLogToJson(_ChargeLog instance) =>
       'endBattery': instance.endBattery,
       'locationName': instance.locationName,
       'notes': instance.notes,
+      'startTime': instance.startTime?.toIso8601String(),
+      'endTime': instance.endTime?.toIso8601String(),
+      'chargerType': instance.chargerType,
+      'chargingMethod': instance.chargingMethod,
+      'electricityPrice': instance.electricityPrice,
+      'photoPaths': instance.photoPaths,
+      'bikeId': instance.bikeId,
     };
 
 const _$PaymentMethodEnumMap = {

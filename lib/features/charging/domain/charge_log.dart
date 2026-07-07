@@ -39,6 +39,13 @@ abstract class ChargeLog with _$ChargeLog {
     required int endBattery,
     String? locationName,
     String? notes,
+    DateTime? startTime,
+    DateTime? endTime,
+    String? chargerType,
+    String? chargingMethod,
+    double? electricityPrice,
+    @Default([]) List<String> photoPaths,
+    int? bikeId,
   }) = _ChargeLog;
 
   factory ChargeLog.fromJson(Map<String, dynamic> json) => _$ChargeLogFromJson(json);

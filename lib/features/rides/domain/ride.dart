@@ -34,6 +34,22 @@ abstract class Ride with _$Ride {
     required RoadCondition roadCondition,
     String? notes,
     @Default([]) List<String> photoPaths,
+    DateTime? startTime,
+    DateTime? endTime,
+    int? durationMinutes,
+    double? estimatedRemainingRange,
+    double? averageSpeed,
+    double? maxSpeed,
+    String? weather,
+    String? roadType,
+    int? passengerCount,
+    String? ridePurpose,
+    String? startLocation,
+    String? endLocation,
+    String? routeNotes,
+    @Default([]) List<String> customTags,
+    @Default(false) bool isFavorite,
+    int? bikeId,
   }) = _Ride;
 
   factory Ride.fromJson(Map<String, dynamic> json) => _$RideFromJson(json);

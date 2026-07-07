@@ -21,7 +21,7 @@ class DashboardScreen extends HookConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.settings),
-            onPressed: () {},
+            onPressed: () => context.push('/profile'),
           ),
         ],
       ),

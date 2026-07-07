@@ -12,6 +12,7 @@ import '../features/reminders/presentation/reminders_screen.dart';
 import '../features/analytics/presentation/analytics_screen.dart';
 
 import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../features/settings/presentation/profile_screen.dart';
 
 final routerDelegate = GoRouter(
   routes: [
@@ -58,6 +59,10 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/analytics',
       builder: (context, state) => const AnalyticsScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
   ],
 );

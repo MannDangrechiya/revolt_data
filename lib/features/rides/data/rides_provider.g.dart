@@ -15,15 +15,15 @@ final rideFilterStateProvider = RideFilterStateProvider._();
 final class RideFilterStateProvider
     extends $NotifierProvider<RideFilterState, RideFilter> {
   RideFilterStateProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'rideFilterStateProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'rideFilterStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$rideFilterStateHash();
@@ -49,8 +49,14 @@ abstract class _$RideFilterState extends $Notifier<RideFilter> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<RideFilter, RideFilter>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<RideFilter, RideFilter>, RideFilter, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<RideFilter, RideFilter>,
+              RideFilter,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }
@@ -60,15 +66,15 @@ final ridesProvider = RidesProvider._();
 
 final class RidesProvider extends $StreamNotifierProvider<Rides, List<Ride>> {
   RidesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'ridesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'ridesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$ridesHash();
@@ -86,11 +92,14 @@ abstract class _$Rides extends $StreamNotifier<List<Ride>> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<AsyncValue<List<Ride>>, List<Ride>>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<List<Ride>>, List<Ride>>,
-        AsyncValue<List<Ride>>,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<Ride>>, List<Ride>>,
+              AsyncValue<List<Ride>>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }
@@ -98,19 +107,24 @@ abstract class _$Rides extends $StreamNotifier<List<Ride>> {
 @ProviderFor(filteredRides)
 final filteredRidesProvider = FilteredRidesProvider._();
 
-final class FilteredRidesProvider extends $FunctionalProvider<
-        AsyncValue<List<Ride>>, List<Ride>, FutureOr<List<Ride>>>
+final class FilteredRidesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Ride>>,
+          List<Ride>,
+          FutureOr<List<Ride>>
+        >
     with $FutureModifier<List<Ride>>, $FutureProvider<List<Ride>> {
   FilteredRidesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'filteredRidesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'filteredRidesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$filteredRidesHash();

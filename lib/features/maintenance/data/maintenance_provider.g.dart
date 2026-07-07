@@ -15,15 +15,15 @@ final maintenanceLogsProvider = MaintenanceLogsProvider._();
 final class MaintenanceLogsProvider
     extends $StreamNotifierProvider<MaintenanceLogs, List<MaintenanceLog>> {
   MaintenanceLogsProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'maintenanceLogsProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'maintenanceLogsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$maintenanceLogsHash();
@@ -40,13 +40,20 @@ abstract class _$MaintenanceLogs extends $StreamNotifier<List<MaintenanceLog>> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref
-        as $Ref<AsyncValue<List<MaintenanceLog>>, List<MaintenanceLog>>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<List<MaintenanceLog>>, List<MaintenanceLog>>,
-        AsyncValue<List<MaintenanceLog>>,
-        Object?,
-        Object?>;
+    final ref =
+        this.ref
+            as $Ref<AsyncValue<List<MaintenanceLog>>, List<MaintenanceLog>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<List<MaintenanceLog>>,
+                List<MaintenanceLog>
+              >,
+              AsyncValue<List<MaintenanceLog>>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }
@@ -54,23 +61,26 @@ abstract class _$MaintenanceLogs extends $StreamNotifier<List<MaintenanceLog>> {
 @ProviderFor(maintenanceByComponent)
 final maintenanceByComponentProvider = MaintenanceByComponentProvider._();
 
-final class MaintenanceByComponentProvider extends $FunctionalProvider<
-        AsyncValue<Map<MaintenanceComponent, List<MaintenanceLog>>>,
-        Map<MaintenanceComponent, List<MaintenanceLog>>,
-        FutureOr<Map<MaintenanceComponent, List<MaintenanceLog>>>>
+final class MaintenanceByComponentProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<MaintenanceComponent, List<MaintenanceLog>>>,
+          Map<MaintenanceComponent, List<MaintenanceLog>>,
+          FutureOr<Map<MaintenanceComponent, List<MaintenanceLog>>>
+        >
     with
         $FutureModifier<Map<MaintenanceComponent, List<MaintenanceLog>>>,
         $FutureProvider<Map<MaintenanceComponent, List<MaintenanceLog>>> {
   MaintenanceByComponentProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'maintenanceByComponentProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'maintenanceByComponentProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$maintenanceByComponentHash();
@@ -78,8 +88,7 @@ final class MaintenanceByComponentProvider extends $FunctionalProvider<
   @$internal
   @override
   $FutureProviderElement<Map<MaintenanceComponent, List<MaintenanceLog>>>
-      $createElement($ProviderPointer pointer) =>
-          $FutureProviderElement(pointer);
+  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<Map<MaintenanceComponent, List<MaintenanceLog>>> create(Ref ref) {

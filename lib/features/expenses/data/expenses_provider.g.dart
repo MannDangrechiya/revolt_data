@@ -15,15 +15,15 @@ final expensesProvider = ExpensesProvider._();
 final class ExpensesProvider
     extends $StreamNotifierProvider<Expenses, List<Expense>> {
   ExpensesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'expensesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'expensesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$expensesHash();
@@ -41,11 +41,14 @@ abstract class _$Expenses extends $StreamNotifier<List<Expense>> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<AsyncValue<List<Expense>>, List<Expense>>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<List<Expense>>, List<Expense>>,
-        AsyncValue<List<Expense>>,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<Expense>>, List<Expense>>,
+              AsyncValue<List<Expense>>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }
@@ -53,23 +56,26 @@ abstract class _$Expenses extends $StreamNotifier<List<Expense>> {
 @ProviderFor(expensesByCategory)
 final expensesByCategoryProvider = ExpensesByCategoryProvider._();
 
-final class ExpensesByCategoryProvider extends $FunctionalProvider<
-        AsyncValue<Map<ExpenseCategory, double>>,
-        Map<ExpenseCategory, double>,
-        FutureOr<Map<ExpenseCategory, double>>>
+final class ExpensesByCategoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<ExpenseCategory, double>>,
+          Map<ExpenseCategory, double>,
+          FutureOr<Map<ExpenseCategory, double>>
+        >
     with
         $FutureModifier<Map<ExpenseCategory, double>>,
         $FutureProvider<Map<ExpenseCategory, double>> {
   ExpensesByCategoryProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'expensesByCategoryProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'expensesByCategoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$expensesByCategoryHash();
@@ -77,8 +83,8 @@ final class ExpensesByCategoryProvider extends $FunctionalProvider<
   @$internal
   @override
   $FutureProviderElement<Map<ExpenseCategory, double>> $createElement(
-          $ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<Map<ExpenseCategory, double>> create(Ref ref) {
@@ -96,15 +102,15 @@ final class TotalExpensesProvider
     extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
     with $FutureModifier<double>, $FutureProvider<double> {
   TotalExpensesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'totalExpensesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'totalExpensesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$totalExpensesHash();

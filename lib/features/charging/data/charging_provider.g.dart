@@ -15,15 +15,15 @@ final chargingLogsProvider = ChargingLogsProvider._();
 final class ChargingLogsProvider
     extends $StreamNotifierProvider<ChargingLogs, List<ChargeLog>> {
   ChargingLogsProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'chargingLogsProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'chargingLogsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$chargingLogsHash();
@@ -41,11 +41,14 @@ abstract class _$ChargingLogs extends $StreamNotifier<List<ChargeLog>> {
   @override
   void runBuild() {
     final ref = this.ref as $Ref<AsyncValue<List<ChargeLog>>, List<ChargeLog>>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AsyncValue<List<ChargeLog>>, List<ChargeLog>>,
-        AsyncValue<List<ChargeLog>>,
-        Object?,
-        Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<ChargeLog>>, List<ChargeLog>>,
+              AsyncValue<List<ChargeLog>>,
+              Object?,
+              Object?
+            >;
     element.handleCreate(ref, build);
   }
 }
@@ -57,15 +60,15 @@ final class TotalChargingCostProvider
     extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
     with $FutureModifier<double>, $FutureProvider<double> {
   TotalChargingCostProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'totalChargingCostProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'totalChargingCostProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$totalChargingCostHash();
@@ -87,23 +90,26 @@ String _$totalChargingCostHash() => r'51495fc15f761c1ab538a61d4d7eab20ffcd42bd';
 final chargingLocationDistributionProvider =
     ChargingLocationDistributionProvider._();
 
-final class ChargingLocationDistributionProvider extends $FunctionalProvider<
-        AsyncValue<Map<LocationType, int>>,
-        Map<LocationType, int>,
-        FutureOr<Map<LocationType, int>>>
+final class ChargingLocationDistributionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<LocationType, int>>,
+          Map<LocationType, int>,
+          FutureOr<Map<LocationType, int>>
+        >
     with
         $FutureModifier<Map<LocationType, int>>,
         $FutureProvider<Map<LocationType, int>> {
   ChargingLocationDistributionProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'chargingLocationDistributionProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'chargingLocationDistributionProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$chargingLocationDistributionHash();
@@ -111,8 +117,8 @@ final class ChargingLocationDistributionProvider extends $FunctionalProvider<
   @$internal
   @override
   $FutureProviderElement<Map<LocationType, int>> $createElement(
-          $ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<Map<LocationType, int>> create(Ref ref) {
@@ -130,15 +136,15 @@ final class AverageChargingSpeedProvider
     extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
     with $FutureModifier<double>, $FutureProvider<double> {
   AverageChargingSpeedProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'averageChargingSpeedProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'averageChargingSpeedProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$averageChargingSpeedHash();

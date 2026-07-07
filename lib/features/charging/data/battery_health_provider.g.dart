@@ -16,15 +16,15 @@ final class TotalChargeCyclesProvider
     extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
     with $FutureModifier<int>, $FutureProvider<int> {
   TotalChargeCyclesProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'totalChargeCyclesProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'totalChargeCyclesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$totalChargeCyclesHash();
@@ -49,15 +49,15 @@ final class PowerEfficiencyProvider
     extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
     with $FutureModifier<double>, $FutureProvider<double> {
   PowerEfficiencyProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'powerEfficiencyProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'powerEfficiencyProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$powerEfficiencyHash();
@@ -82,15 +82,15 @@ final class BatteryHealthEstimateProvider
     extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
     with $FutureModifier<double>, $FutureProvider<double> {
   BatteryHealthEstimateProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'batteryHealthEstimateProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'batteryHealthEstimateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$batteryHealthEstimateHash();

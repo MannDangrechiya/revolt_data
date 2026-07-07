@@ -13,6 +13,10 @@ abstract class Reminder with _$Reminder {
     double? targetOdometer,
     @Default(false) bool isCompleted,
     @Default(false) bool isNotified, // To prevent duplicate alerts
+    String? type,
+    String? note,
+    @Default(true) bool isActive,
+    int? bikeId,
   }) = _Reminder;
 
   factory Reminder.fromJson(Map<String, dynamic> json) => _$ReminderFromJson(json);
