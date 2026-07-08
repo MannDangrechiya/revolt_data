@@ -22,6 +22,22 @@ extension RideDataMapper on RidesTableData {
       roadCondition: roadCondition,
       notes: notes,
       photoPaths: photoPaths,
+      startTime: startTime,
+      endTime: endTime,
+      durationMinutes: durationMinutes,
+      estimatedRemainingRange: estimatedRemainingRange,
+      averageSpeed: averageSpeed,
+      maxSpeed: maxSpeed,
+      weather: weather,
+      roadType: roadType,
+      passengerCount: passengerCount,
+      ridePurpose: ridePurpose,
+      startLocation: startLocation,
+      endLocation: endLocation,
+      routeNotes: routeNotes,
+      customTags: customTags,
+      isFavorite: isFavorite,
+      bikeId: bikeId,
     );
   }
 }
@@ -39,6 +55,22 @@ extension RideMapper on Ride {
       roadCondition: Value(roadCondition),
       notes: Value(notes),
       photoPaths: Value(photoPaths),
+      startTime: Value(startTime),
+      endTime: Value(endTime),
+      durationMinutes: Value(durationMinutes),
+      estimatedRemainingRange: Value(estimatedRemainingRange),
+      averageSpeed: Value(averageSpeed),
+      maxSpeed: Value(maxSpeed),
+      weather: Value(weather),
+      roadType: Value(roadType),
+      passengerCount: Value(passengerCount),
+      ridePurpose: Value(ridePurpose),
+      startLocation: Value(startLocation),
+      endLocation: Value(endLocation),
+      routeNotes: Value(routeNotes),
+      customTags: Value(customTags),
+      isFavorite: Value(isFavorite),
+      bikeId: Value(bikeId),
     );
   }
 }
@@ -57,6 +89,15 @@ extension ChargeLogDataMapper on ChargeLogsTableData {
       endBattery: endBattery,
       locationName: locationName,
       notes: notes,
+      startTime: startTime,
+      endTime: endTime,
+      chargerType: chargerType,
+      chargingMethod: chargingMethod,
+      electricityPrice: electricityPrice,
+      providerName: providerName,
+      maxChargingPowerKw: maxChargingPowerKw,
+      photoPaths: photoPaths,
+      bikeId: bikeId,
     );
   }
 }
@@ -75,6 +116,15 @@ extension ChargeLogMapper on ChargeLog {
       endBattery: Value(endBattery),
       locationName: Value(locationName),
       notes: Value(notes),
+      startTime: Value(startTime),
+      endTime: Value(endTime),
+      chargerType: Value(chargerType),
+      chargingMethod: Value(chargingMethod),
+      electricityPrice: Value(electricityPrice),
+      providerName: Value(providerName),
+      maxChargingPowerKw: Value(maxChargingPowerKw),
+      photoPaths: Value(photoPaths),
+      bikeId: Value(bikeId),
     );
   }
 }
@@ -88,6 +138,8 @@ extension ExpenseDataMapper on ExpensesTableData {
       amount: amount,
       notes: notes,
       receiptPhotoPath: receiptPhotoPath,
+      description: description,
+      bikeId: bikeId,
     );
   }
 }
@@ -101,6 +153,8 @@ extension ExpenseMapper on Expense {
       amount: Value(amount),
       notes: Value(notes),
       receiptPhotoPath: Value(receiptPhotoPath),
+      description: Value(description),
+      bikeId: Value(bikeId),
     );
   }
 }
@@ -114,6 +168,25 @@ extension MaintenanceLogDataMapper on MaintenanceLogsTableData {
       description: description,
       odometerReading: odometerReading,
       cost: cost,
+      serviceCenter: serviceCenter,
+      partsReplaced: partsReplaced,
+      labourCost: labourCost,
+      warrantyClaim: warrantyClaim,
+      technician: technician,
+      invoicePhotoPath: invoicePhotoPath,
+      notes: notes,
+      nextServiceDueOdometer: nextServiceDueOdometer,
+      nextServiceDueDate: nextServiceDueDate,
+      tyres: tyres,
+      brakes: brakes,
+      battery: battery,
+      suspension: suspension,
+      motor: motor,
+      lights: lights,
+      horn: horn,
+      softwareUpdate: softwareUpdate,
+      generalInspection: generalInspection,
+      bikeId: bikeId,
     );
   }
 }
@@ -127,6 +200,25 @@ extension MaintenanceLogMapper on MaintenanceLog {
       description: Value(description),
       odometerReading: Value(odometerReading),
       cost: Value(cost),
+      serviceCenter: Value(serviceCenter),
+      partsReplaced: Value(partsReplaced),
+      labourCost: Value(labourCost),
+      warrantyClaim: Value(warrantyClaim),
+      technician: Value(technician),
+      invoicePhotoPath: Value(invoicePhotoPath),
+      notes: Value(notes),
+      nextServiceDueOdometer: Value(nextServiceDueOdometer),
+      nextServiceDueDate: Value(nextServiceDueDate),
+      tyres: Value(tyres),
+      brakes: Value(brakes),
+      battery: Value(battery),
+      suspension: Value(suspension),
+      motor: Value(motor),
+      lights: Value(lights),
+      horn: Value(horn),
+      softwareUpdate: Value(softwareUpdate),
+      generalInspection: Value(generalInspection),
+      bikeId: Value(bikeId),
     );
   }
 }

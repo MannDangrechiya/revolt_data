@@ -8,6 +8,7 @@ import '../features/charging/presentation/charging_screen.dart';
 import '../features/charging/presentation/charge_entry_form_screen.dart';
 import '../features/expenses/presentation/expenses_screen.dart';
 import '../features/expenses/presentation/expense_entry_form_screen.dart';
+import '../features/expenses/domain/expense.dart';
 import '../features/maintenance/presentation/maintenance_screen.dart';
 import '../features/maintenance/presentation/maintenance_entry_form_screen.dart';
 import '../features/reminders/presentation/reminders_screen.dart';
@@ -138,6 +139,10 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/expenses/add',
       builder: (context, state) => const ExpenseEntryFormScreen(),
+    ),
+    GoRoute(
+      path: '/expenses/edit',
+      builder: (context, state) => ExpenseEntryFormScreen(expense: state.extra as Expense?),
     ),
     GoRoute(
       path: '/maintenance',

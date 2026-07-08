@@ -12,17 +12,20 @@ import '../domain/expense.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class ExpenseEntryFormScreen extends HookConsumerWidget {
-  const ExpenseEntryFormScreen({super.key});
+  final Expense? expense;
+
+  const ExpenseEntryFormScreen({super.key, this.expense});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isEditing = expense != null;
     final formKey = useMemoized(() => GlobalKey<FormState>());
-    final date = useState(DateTime.now());
-    final category = useState(ExpenseCategory.service);
-    final amountController = useTextEditingController();
-    final notesController = useTextEditingController();
-    final descriptionController = useTextEditingController();
-    final receiptPhoto = useState<String?>(null);
+    final date = useState(expense?.date ?? DateTime.now());
+    final category = useState(expense?.category ?? ExpenseCategory.service);
+    final amountController = useTextEditingController(text: expense != null ? expense!.amount.toString() : '');
+    final notesController = useTextEditingController(text: expense?.notes ?? '');
+    final descriptionController = useTextEditingController(text: expense?.description ?? '');
+    final receiptPhoto = useState<String?>(expense?.receiptPhotoPath);
 
     Future<void> pickReceipt() async {
       final picker = ImagePicker();
@@ -42,8 +45,8 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
       isSubmitting.value = true;
 
       try {
-        final expense = Expense(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+        final result = Expense(
+          id: expense?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
           date: date.value,
           category: category.value,
           amount: double.parse(amountController.text),
@@ -52,7 +55,11 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
           receiptPhotoPath: receiptPhoto.value,
         );
 
-        await ref.read(expensesProvider.notifier).addExpense(expense);
+        if (isEditing) {
+          await ref.read(expensesProvider.notifier).updateExpense(result);
+        } else {
+          await ref.read(expensesProvider.notifier).addExpense(result);
+        }
         if (context.mounted) context.pop();
       } catch (e) {
         if (context.mounted) {
@@ -70,7 +77,7 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Expense'),
+        title: Text(isEditing ? 'Edit Expense' : 'Add Expense'),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
@@ -111,7 +118,7 @@ class ExpenseEntryFormScreen extends HookConsumerWidget {
             const SizedBox(height: 16),
             TextFormField(
               controller: amountController,
-              decoration: const InputDecoration(labelText: 'Amount (\$)', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Amount (₹)', border: OutlineInputBorder()),
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               validator: (v) {
                 if (v == null || v.isEmpty) return 'Required';

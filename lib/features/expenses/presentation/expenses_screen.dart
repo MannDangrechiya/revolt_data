@@ -64,7 +64,7 @@ class ExpensesScreen extends HookConsumerWidget {
                       children: [
                         const Text('Total Spent', style: TextStyle(fontSize: 16)),
                         Text(
-                          '\$${total.toStringAsFixed(2)}',
+                          '₹${total.toStringAsFixed(2)}',
                           style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -115,7 +115,7 @@ class ExpensesScreen extends HookConsumerWidget {
                             backgroundColor: Colors.primaries[idx % Colors.primaries.length],
                             radius: 8,
                           ),
-                          label: Text('${e.key.name.toUpperCase()}: \$${e.value.toStringAsFixed(2)}'),
+                          label: Text('${e.key.name.toUpperCase()}: ₹${e.value.toStringAsFixed(2)}'),
                           backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         );
                       }).toList(),
@@ -144,7 +144,7 @@ class ExpensesScreen extends HookConsumerWidget {
                   child: EmptyStateWidget(
                     title: 'No expenses recorded',
                     message: 'Add an expense to start tracking your spending.',
-                    icon: Icons.attach_money,
+                    icon: Icons.currency_rupee,
                   ),
                 )
               else
@@ -154,9 +154,9 @@ class ExpensesScreen extends HookConsumerWidget {
                       final expense = filteredExpenses[index];
                       return ListTile(
                         leading: CircleAvatar(
-                          child: Icon(expense.receiptPhotoPath != null ? Icons.receipt : Icons.attach_money),
+                          child: Icon(expense.receiptPhotoPath != null ? Icons.receipt : Icons.currency_rupee),
                         ),
-                        title: Text('${expense.category.name.toUpperCase()} • \$${expense.amount.toStringAsFixed(2)}'),
+                        title: Text('${expense.category.name.toUpperCase()} • ₹${expense.amount.toStringAsFixed(2)}'),
                         subtitle: Text(
                           '${DateFormat('MMM d, yyyy').format(expense.date)}'
                           '${expense.description != null ? '\n${expense.description}' : ''}'
@@ -168,9 +168,7 @@ class ExpensesScreen extends HookConsumerWidget {
                             ref.read(expensesProvider.notifier).removeExpense(expense.id);
                           },
                         ),
-                        onTap: () {
-                          // TODO: Edit Expense
-                        },
+                        onTap: () => context.push('/expenses/edit', extra: expense),
                       );
                     },
                     childCount: filteredExpenses.length,

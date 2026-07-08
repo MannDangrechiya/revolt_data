@@ -2904,6 +2904,28 @@ class $ChargeLogsTableTable extends ChargeLogsTable
       'REFERENCES bikes_table (id) ON DELETE CASCADE',
     ),
   );
+  static const VerificationMeta _providerNameMeta = const VerificationMeta(
+    'providerName',
+  );
+  @override
+  late final GeneratedColumn<String> providerName = GeneratedColumn<String>(
+    'provider_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _maxChargingPowerKwMeta =
+      const VerificationMeta('maxChargingPowerKw');
+  @override
+  late final GeneratedColumn<double> maxChargingPowerKw =
+      GeneratedColumn<double>(
+        'max_charging_power_kw',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2924,6 +2946,8 @@ class $ChargeLogsTableTable extends ChargeLogsTable
     electricityPrice,
     photoPaths,
     bikeId,
+    providerName,
+    maxChargingPowerKw,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3056,6 +3080,24 @@ class $ChargeLogsTableTable extends ChargeLogsTable
         bikeId.isAcceptableOrUnknown(data['bike_id']!, _bikeIdMeta),
       );
     }
+    if (data.containsKey('provider_name')) {
+      context.handle(
+        _providerNameMeta,
+        providerName.isAcceptableOrUnknown(
+          data['provider_name']!,
+          _providerNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('max_charging_power_kw')) {
+      context.handle(
+        _maxChargingPowerKwMeta,
+        maxChargingPowerKw.isAcceptableOrUnknown(
+          data['max_charging_power_kw']!,
+          _maxChargingPowerKwMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3143,6 +3185,14 @@ class $ChargeLogsTableTable extends ChargeLogsTable
         DriftSqlType.int,
         data['${effectivePrefix}bike_id'],
       ),
+      providerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}provider_name'],
+      ),
+      maxChargingPowerKw: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}max_charging_power_kw'],
+      ),
     );
   }
 
@@ -3179,6 +3229,8 @@ class ChargeLogsTableData extends DataClass
   final double? electricityPrice;
   final List<String> photoPaths;
   final int? bikeId;
+  final String? providerName;
+  final double? maxChargingPowerKw;
   const ChargeLogsTableData({
     required this.id,
     required this.date,
@@ -3198,6 +3250,8 @@ class ChargeLogsTableData extends DataClass
     this.electricityPrice,
     required this.photoPaths,
     this.bikeId,
+    this.providerName,
+    this.maxChargingPowerKw,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3248,6 +3302,12 @@ class ChargeLogsTableData extends DataClass
     if (!nullToAbsent || bikeId != null) {
       map['bike_id'] = Variable<int>(bikeId);
     }
+    if (!nullToAbsent || providerName != null) {
+      map['provider_name'] = Variable<String>(providerName);
+    }
+    if (!nullToAbsent || maxChargingPowerKw != null) {
+      map['max_charging_power_kw'] = Variable<double>(maxChargingPowerKw);
+    }
     return map;
   }
 
@@ -3287,6 +3347,12 @@ class ChargeLogsTableData extends DataClass
       bikeId: bikeId == null && nullToAbsent
           ? const Value.absent()
           : Value(bikeId),
+      providerName: providerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(providerName),
+      maxChargingPowerKw: maxChargingPowerKw == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maxChargingPowerKw),
     );
   }
 
@@ -3318,6 +3384,10 @@ class ChargeLogsTableData extends DataClass
       electricityPrice: serializer.fromJson<double?>(json['electricityPrice']),
       photoPaths: serializer.fromJson<List<String>>(json['photoPaths']),
       bikeId: serializer.fromJson<int?>(json['bikeId']),
+      providerName: serializer.fromJson<String?>(json['providerName']),
+      maxChargingPowerKw: serializer.fromJson<double?>(
+        json['maxChargingPowerKw'],
+      ),
     );
   }
   @override
@@ -3346,6 +3416,8 @@ class ChargeLogsTableData extends DataClass
       'electricityPrice': serializer.toJson<double?>(electricityPrice),
       'photoPaths': serializer.toJson<List<String>>(photoPaths),
       'bikeId': serializer.toJson<int?>(bikeId),
+      'providerName': serializer.toJson<String?>(providerName),
+      'maxChargingPowerKw': serializer.toJson<double?>(maxChargingPowerKw),
     };
   }
 
@@ -3368,6 +3440,8 @@ class ChargeLogsTableData extends DataClass
     Value<double?> electricityPrice = const Value.absent(),
     List<String>? photoPaths,
     Value<int?> bikeId = const Value.absent(),
+    Value<String?> providerName = const Value.absent(),
+    Value<double?> maxChargingPowerKw = const Value.absent(),
   }) => ChargeLogsTableData(
     id: id ?? this.id,
     date: date ?? this.date,
@@ -3391,6 +3465,10 @@ class ChargeLogsTableData extends DataClass
         : this.electricityPrice,
     photoPaths: photoPaths ?? this.photoPaths,
     bikeId: bikeId.present ? bikeId.value : this.bikeId,
+    providerName: providerName.present ? providerName.value : this.providerName,
+    maxChargingPowerKw: maxChargingPowerKw.present
+        ? maxChargingPowerKw.value
+        : this.maxChargingPowerKw,
   );
   ChargeLogsTableData copyWithCompanion(ChargeLogsTableCompanion data) {
     return ChargeLogsTableData(
@@ -3432,6 +3510,12 @@ class ChargeLogsTableData extends DataClass
           ? data.photoPaths.value
           : this.photoPaths,
       bikeId: data.bikeId.present ? data.bikeId.value : this.bikeId,
+      providerName: data.providerName.present
+          ? data.providerName.value
+          : this.providerName,
+      maxChargingPowerKw: data.maxChargingPowerKw.present
+          ? data.maxChargingPowerKw.value
+          : this.maxChargingPowerKw,
     );
   }
 
@@ -3455,7 +3539,9 @@ class ChargeLogsTableData extends DataClass
           ..write('chargingMethod: $chargingMethod, ')
           ..write('electricityPrice: $electricityPrice, ')
           ..write('photoPaths: $photoPaths, ')
-          ..write('bikeId: $bikeId')
+          ..write('bikeId: $bikeId, ')
+          ..write('providerName: $providerName, ')
+          ..write('maxChargingPowerKw: $maxChargingPowerKw')
           ..write(')'))
         .toString();
   }
@@ -3480,6 +3566,8 @@ class ChargeLogsTableData extends DataClass
     electricityPrice,
     photoPaths,
     bikeId,
+    providerName,
+    maxChargingPowerKw,
   );
   @override
   bool operator ==(Object other) =>
@@ -3502,7 +3590,9 @@ class ChargeLogsTableData extends DataClass
           other.chargingMethod == this.chargingMethod &&
           other.electricityPrice == this.electricityPrice &&
           other.photoPaths == this.photoPaths &&
-          other.bikeId == this.bikeId);
+          other.bikeId == this.bikeId &&
+          other.providerName == this.providerName &&
+          other.maxChargingPowerKw == this.maxChargingPowerKw);
 }
 
 class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
@@ -3524,6 +3614,8 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
   final Value<double?> electricityPrice;
   final Value<List<String>> photoPaths;
   final Value<int?> bikeId;
+  final Value<String?> providerName;
+  final Value<double?> maxChargingPowerKw;
   final Value<int> rowid;
   const ChargeLogsTableCompanion({
     this.id = const Value.absent(),
@@ -3544,6 +3636,8 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     this.electricityPrice = const Value.absent(),
     this.photoPaths = const Value.absent(),
     this.bikeId = const Value.absent(),
+    this.providerName = const Value.absent(),
+    this.maxChargingPowerKw = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChargeLogsTableCompanion.insert({
@@ -3565,6 +3659,8 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     this.electricityPrice = const Value.absent(),
     this.photoPaths = const Value.absent(),
     this.bikeId = const Value.absent(),
+    this.providerName = const Value.absent(),
+    this.maxChargingPowerKw = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        date = Value(date),
@@ -3594,6 +3690,8 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     Expression<double>? electricityPrice,
     Expression<String>? photoPaths,
     Expression<int>? bikeId,
+    Expression<String>? providerName,
+    Expression<double>? maxChargingPowerKw,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3615,6 +3713,9 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
       if (electricityPrice != null) 'electricity_price': electricityPrice,
       if (photoPaths != null) 'photo_paths': photoPaths,
       if (bikeId != null) 'bike_id': bikeId,
+      if (providerName != null) 'provider_name': providerName,
+      if (maxChargingPowerKw != null)
+        'max_charging_power_kw': maxChargingPowerKw,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3638,6 +3739,8 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     Value<double?>? electricityPrice,
     Value<List<String>>? photoPaths,
     Value<int?>? bikeId,
+    Value<String?>? providerName,
+    Value<double?>? maxChargingPowerKw,
     Value<int>? rowid,
   }) {
     return ChargeLogsTableCompanion(
@@ -3659,6 +3762,8 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
       electricityPrice: electricityPrice ?? this.electricityPrice,
       photoPaths: photoPaths ?? this.photoPaths,
       bikeId: bikeId ?? this.bikeId,
+      providerName: providerName ?? this.providerName,
+      maxChargingPowerKw: maxChargingPowerKw ?? this.maxChargingPowerKw,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3728,6 +3833,12 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     if (bikeId.present) {
       map['bike_id'] = Variable<int>(bikeId.value);
     }
+    if (providerName.present) {
+      map['provider_name'] = Variable<String>(providerName.value);
+    }
+    if (maxChargingPowerKw.present) {
+      map['max_charging_power_kw'] = Variable<double>(maxChargingPowerKw.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3755,6 +3866,8 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
           ..write('electricityPrice: $electricityPrice, ')
           ..write('photoPaths: $photoPaths, ')
           ..write('bikeId: $bikeId, ')
+          ..write('providerName: $providerName, ')
+          ..write('maxChargingPowerKw: $maxChargingPowerKw, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -9326,6 +9439,8 @@ typedef $$ChargeLogsTableTableCreateCompanionBuilder =
       Value<double?> electricityPrice,
       Value<List<String>> photoPaths,
       Value<int?> bikeId,
+      Value<String?> providerName,
+      Value<double?> maxChargingPowerKw,
       Value<int> rowid,
     });
 typedef $$ChargeLogsTableTableUpdateCompanionBuilder =
@@ -9348,6 +9463,8 @@ typedef $$ChargeLogsTableTableUpdateCompanionBuilder =
       Value<double?> electricityPrice,
       Value<List<String>> photoPaths,
       Value<int?> bikeId,
+      Value<String?> providerName,
+      Value<double?> maxChargingPowerKw,
       Value<int> rowid,
     });
 
@@ -9481,6 +9598,16 @@ class $$ChargeLogsTableTableFilterComposer
     builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
+  ColumnFilters<String> get providerName => $composableBuilder(
+    column: $table.providerName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get maxChargingPowerKw => $composableBuilder(
+    column: $table.maxChargingPowerKw,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$BikesTableTableFilterComposer get bikeId {
     final $$BikesTableTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -9599,6 +9726,16 @@ class $$ChargeLogsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get providerName => $composableBuilder(
+    column: $table.providerName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get maxChargingPowerKw => $composableBuilder(
+    column: $table.maxChargingPowerKw,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$BikesTableTableOrderingComposer get bikeId {
     final $$BikesTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -9706,6 +9843,16 @@ class $$ChargeLogsTableTableAnnotationComposer
         builder: (column) => column,
       );
 
+  GeneratedColumn<String> get providerName => $composableBuilder(
+    column: $table.providerName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get maxChargingPowerKw => $composableBuilder(
+    column: $table.maxChargingPowerKw,
+    builder: (column) => column,
+  );
+
   $$BikesTableTableAnnotationComposer get bikeId {
     final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -9778,6 +9925,8 @@ class $$ChargeLogsTableTableTableManager
                 Value<double?> electricityPrice = const Value.absent(),
                 Value<List<String>> photoPaths = const Value.absent(),
                 Value<int?> bikeId = const Value.absent(),
+                Value<String?> providerName = const Value.absent(),
+                Value<double?> maxChargingPowerKw = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChargeLogsTableCompanion(
                 id: id,
@@ -9798,6 +9947,8 @@ class $$ChargeLogsTableTableTableManager
                 electricityPrice: electricityPrice,
                 photoPaths: photoPaths,
                 bikeId: bikeId,
+                providerName: providerName,
+                maxChargingPowerKw: maxChargingPowerKw,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9820,6 +9971,8 @@ class $$ChargeLogsTableTableTableManager
                 Value<double?> electricityPrice = const Value.absent(),
                 Value<List<String>> photoPaths = const Value.absent(),
                 Value<int?> bikeId = const Value.absent(),
+                Value<String?> providerName = const Value.absent(),
+                Value<double?> maxChargingPowerKw = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChargeLogsTableCompanion.insert(
                 id: id,
@@ -9840,6 +9993,8 @@ class $$ChargeLogsTableTableTableManager
                 electricityPrice: electricityPrice,
                 photoPaths: photoPaths,
                 bikeId: bikeId,
+                providerName: providerName,
+                maxChargingPowerKw: maxChargingPowerKw,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

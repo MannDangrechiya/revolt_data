@@ -31,7 +31,7 @@ class BatteryHealthDashboard extends HookConsumerWidget {
         Row(
           children: [
             Expanded(child: _buildMetricCard(theme, 'Efficiency', '${efficiency.toStringAsFixed(2)} km/kWh', Icons.speed, Colors.orange)),
-            Expanded(child: _buildMetricCard(theme, 'Total Cost', '\$${totalCost.toStringAsFixed(2)}', Icons.attach_money, Colors.purple)),
+            Expanded(child: _buildMetricCard(theme, 'Total Cost', '₹${totalCost.toStringAsFixed(2)}', Icons.currency_rupee, Colors.purple)),
           ],
         ),
         _buildMetricCard(theme, 'Average Speed', '${avgSpeed.toStringAsFixed(1)} kW', Icons.bolt, Colors.amber),

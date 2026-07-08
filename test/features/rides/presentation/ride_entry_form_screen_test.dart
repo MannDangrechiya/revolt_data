@@ -38,7 +38,7 @@ void main() {
       );
 
       // Tap the submit button (Save Ride)
-      final submitButton = find.text('Save Ride');
+      final submitButton = find.text('Save Ride Log');
       await tester.scrollUntilVisible(submitButton, 50.0);
       await tester.tap(submitButton);
       await tester.pumpAndSettle();
@@ -61,12 +61,12 @@ void main() {
         ),
       );
 
-      await tester.enterText(find.bySemanticsLabel('Start Odometer*'), '100');
-      await tester.enterText(find.bySemanticsLabel('End Odometer*'), '90');
+      await tester.enterText(find.bySemanticsLabel('Start Odo (km)*'), '100');
+      await tester.enterText(find.bySemanticsLabel('End Odo (km)*'), '90');
       await tester.enterText(find.bySemanticsLabel('Battery Before (%)*'), '100');
       await tester.enterText(find.bySemanticsLabel('Battery After (%)*'), '90');
 
-      final submitButton = find.text('Save Ride');
+      final submitButton = find.text('Save Ride Log');
       await tester.scrollUntilVisible(submitButton, 50.0);
       await tester.tap(submitButton);
       await tester.pumpAndSettle();

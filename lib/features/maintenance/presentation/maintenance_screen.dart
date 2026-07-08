@@ -116,7 +116,7 @@ class MaintenanceScreen extends HookConsumerWidget {
                         '${DateFormat('MMM d, yyyy').format(log.date)} • ${log.odometerReading} km',
                       ),
                       trailing: Text(
-                        '\$${log.cost.toStringAsFixed(2)}',
+                        '₹${log.cost.toStringAsFixed(2)}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       children: [

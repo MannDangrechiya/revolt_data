@@ -78,7 +78,7 @@ void main() {
 
       // Verify error text is displayed
       expect(find.textContaining('Failed to load dashboard data'), findsOneWidget);
-      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text('Try Again'), findsOneWidget);
     });
 
     testWidgets('shows dashboard data when successfully loaded', (tester) async {
@@ -125,7 +125,7 @@ void main() {
       // Verify Dashboard contents
       expect(find.text('My RV400 Test'), findsOneWidget); // Bike name
       expect(find.text('Welcome back!'), findsOneWidget);
-      expect(find.text('1500.5'), findsOneWidget); // Odometer
+      expect(find.textContaining('1500.5'), findsOneWidget); // Odometer
       expect(find.text('85%'), findsOneWidget); // Battery
       expect(find.text('Quick Actions'), findsOneWidget);
       

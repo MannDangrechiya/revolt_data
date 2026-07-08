@@ -205,10 +205,7 @@ class ChargingScreen extends HookConsumerWidget {
           onRetry: () => ref.refresh(filteredChargeLogsProvider),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/charging/add'),
-        child: const Icon(LucideIcons.plus),
-      ),
+      // Add action is provided by the app shell's context-aware FAB.
     );
   }
 

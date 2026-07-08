@@ -48,7 +48,7 @@ final class BikeRepositoryProvider
   }
 }
 
-String _$bikeRepositoryHash() => r'5cbaf0898e24723dd701240c726d804704e011ec';
+String _$bikeRepositoryHash() => r'5249179bb6c8d6fcdd274b77ea0a3d3908c3410b';
 
 @ProviderFor(CurrentBike)
 final currentBikeProvider = CurrentBikeProvider._();

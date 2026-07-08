@@ -45,8 +45,8 @@ class EfficiencyScreen extends HookConsumerWidget {
                   ),
                   _StatCard(
                     title: 'Cost per km',
-                    value: '\$${stats.costPerKm.toStringAsFixed(2)}',
-                    icon: Icons.attach_money,
+                    value: '₹${stats.costPerKm.toStringAsFixed(2)}',
+                    icon: Icons.currency_rupee,
                   ),
                 ],
               ),

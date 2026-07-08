@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/theme/theme_extension.dart';
 import '../../core/theme/sizes.dart';
@@ -46,7 +47,7 @@ void showVoltQuickActionsMenu(BuildContext context) {
                 title: const Text("Start Ride"),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to Start Ride
+                  context.push('/rides/add');
                 },
               ),
               ListTile(
@@ -54,7 +55,7 @@ void showVoltQuickActionsMenu(BuildContext context) {
                 title: const Text("Add Charge"),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to Add Charge
+                  context.push('/charging/add');
                 },
               ),
               ListTile(
@@ -62,7 +63,7 @@ void showVoltQuickActionsMenu(BuildContext context) {
                 title: const Text("Add Expense"),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to Add Expense
+                  context.push('/expenses/add');
                 },
               ),
               ListTile(
@@ -70,7 +71,7 @@ void showVoltQuickActionsMenu(BuildContext context) {
                 title: const Text("Add Maintenance"),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to Add Maintenance
+                  context.push('/maintenance/add');
                 },
               ),
             ],

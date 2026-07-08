@@ -30,7 +30,7 @@ class ReportGeneratorService {
 
     // Expenses Section
     rows.add(['--- EXPENSES ---']);
-    rows.add(['Date', 'Category', 'Amount (\$)']);
+    rows.add(['Date', 'Category', 'Amount (₹)']);
     for (final e in expenses) {
       rows.add([e.date.toIso8601String(), e.category.name, e.amount]);
     }
@@ -39,7 +39,7 @@ class ReportGeneratorService {
 
     // Maintenance Section
     rows.add(['--- MAINTENANCE ---']);
-    rows.add(['Date', 'Component', 'Cost (\$)', 'Odometer', 'Description']);
+    rows.add(['Date', 'Component', 'Cost (₹)', 'Odometer', 'Description']);
     for (final m in maintenanceLogs) {
       rows.add([m.date.toIso8601String(), m.component.name, m.cost, m.odometerReading, m.description]);
     }
@@ -76,7 +76,7 @@ class ReportGeneratorService {
               pw.Text('Summary Overview', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 10),
               pw.Text('Total Distance Logged: ${totalDistance.toStringAsFixed(1)} km', style: const pw.TextStyle(fontSize: 14)),
-              pw.Text('Total Operating Expenses: \$${totalExpenses.toStringAsFixed(2)}', style: const pw.TextStyle(fontSize: 14)),
+              pw.Text('Total Operating Expenses: ₹${totalExpenses.toStringAsFixed(2)}', style: const pw.TextStyle(fontSize: 14)),
               pw.Text('Estimated Charge Cycles: $totalChargeCycles', style: const pw.TextStyle(fontSize: 14)),
               
               pw.SizedBox(height: 30),
@@ -92,7 +92,7 @@ class ReportGeneratorService {
                     ...maintenanceLogs.map((m) => [
                           m.date.toIso8601String().split('T')[0],
                           m.component.name.toUpperCase(),
-                          '\$${m.cost.toStringAsFixed(2)}',
+                          '₹${m.cost.toStringAsFixed(2)}',
                           '${m.odometerReading} km',
                         ])
                   ],

@@ -104,6 +104,8 @@ class ChargeLogsTable extends Table {
   RealColumn get electricityPrice => real().nullable()();
   TextColumn get photoPaths => text().map(const StringListConverter()).withDefault(const Constant(''))();
   IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+  TextColumn get providerName => text().nullable()();
+  RealColumn get maxChargingPowerKw => real().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -214,7 +216,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -281,6 +283,10 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 3) {
         await m.createTable(batteryHealthSnapshotsTable);
+      }
+      if (from < 4) {
+        await m.addColumn(chargeLogsTable, chargeLogsTable.providerName);
+        await m.addColumn(chargeLogsTable, chargeLogsTable.maxChargingPowerKw);
       }
     },
     beforeOpen: (details) async {

@@ -139,10 +139,7 @@ class RidesScreen extends HookConsumerWidget {
           onRetry: () => ref.refresh(filteredRidesProvider),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/rides/add'),
-        child: const Icon(LucideIcons.plus),
-      ),
+      // Add action is provided by the app shell's context-aware FAB.
     );
   }
 

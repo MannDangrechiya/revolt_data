@@ -23,6 +23,11 @@ class Expenses extends _$Expenses {
     await db.into(db.expensesTable).insert(expense.toCompanion());
   }
 
+  Future<void> updateExpense(Expense expense) async {
+    final db = ref.watch(databaseProvider);
+    await db.update(db.expensesTable).replace(expense.toCompanion());
+  }
+
   Future<void> removeExpense(String id) async {
     final db = ref.watch(databaseProvider);
     await (db.delete(db.expensesTable)..where((t) => t.id.equals(id))).go();

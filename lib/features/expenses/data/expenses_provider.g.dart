@@ -33,7 +33,7 @@ final class ExpensesProvider
   Expenses create() => Expenses();
 }
 
-String _$expensesHash() => r'd1020bff827fc3fb55e589f13e73e91640c79cb8';
+String _$expensesHash() => r'ff7d4c0c8ec20ae4e2bf06de14e8e74ca325df10';
 
 abstract class _$Expenses extends $StreamNotifier<List<Expense>> {
   Stream<List<Expense>> build();

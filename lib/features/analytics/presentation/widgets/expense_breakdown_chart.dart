@@ -30,7 +30,7 @@ class ExpenseBreakdownChart extends HookConsumerWidget {
           
           return PieChartSectionData(
             value: e.value,
-            title: '${e.key.name}\n\$${e.value.toStringAsFixed(0)}',
+            title: '${e.key.name}\n₹${e.value.toStringAsFixed(0)}',
             color: color,
             radius: 60,
             titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),

@@ -90,11 +90,28 @@ class AppShell extends StatelessWidget {
                 ),
               ],
             ),
-      floatingActionButton: isDesktopOrTablet
-          ? null
-          : VoltFloatingActionButton(
-              onPressed: () => showVoltQuickActionsMenu(context),
-            ),
+      floatingActionButton: isDesktopOrTablet ? null : _buildFab(context),
     );
+  }
+
+  /// The Add button is context-aware: inside a section it jumps straight to that
+  /// section's entry form; on the Dashboard it opens the global quick-actions menu.
+  Widget? _buildFab(BuildContext context) {
+    switch (navigationShell.currentIndex) {
+      case 1: // Rides
+        return VoltFloatingActionButton(
+          onPressed: () => context.push('/rides/add'),
+        );
+      case 2: // Charging
+        return VoltFloatingActionButton(
+          onPressed: () => context.push('/charging/add'),
+        );
+      case 3: // Analytics — no create action
+        return null;
+      default: // Dashboard
+        return VoltFloatingActionButton(
+          onPressed: () => showVoltQuickActionsMenu(context),
+        );
+    }
   }
 }

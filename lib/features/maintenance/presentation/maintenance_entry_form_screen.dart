@@ -161,7 +161,7 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
                 Expanded(
                   child: TextFormField(
                     controller: costController,
-                    decoration: const InputDecoration(labelText: 'Total Cost (\$)', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(labelText: 'Total Cost (₹)', border: OutlineInputBorder()),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Required';
@@ -178,7 +178,7 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
                 Expanded(
                   child: TextFormField(
                     controller: labourCostController,
-                    decoration: const InputDecoration(labelText: 'Labour Cost (\$)', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(labelText: 'Labour Cost (₹)', border: OutlineInputBorder()),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
                 ),
