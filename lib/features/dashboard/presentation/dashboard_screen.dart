@@ -22,7 +22,10 @@ class DashboardScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EV Companion', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text(
+          'EV Companion',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -42,7 +45,7 @@ class DashboardScreen extends HookConsumerWidget {
         ),
         data: (data) {
           final bikeName = bikeAsync.value?.name ?? 'My RV400';
-          
+
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
@@ -81,7 +84,10 @@ class DashboardScreen extends HookConsumerWidget {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      const Icon(LucideIcons.chevronRight, size: 28),
+                                      const Icon(
+                                        LucideIcons.chevronRight,
+                                        size: 28,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -91,29 +97,48 @@ class DashboardScreen extends HookConsumerWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              const Text('ODO', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                              const Text(
+                                'ODO',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               AnimatedNumber(
                                 value: data.currentOdometer,
                                 suffix: ' km',
                                 fractionDigits: 1,
-                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
                         ],
                       ),
                       const SizedBox(height: 24),
-                      _buildBatteryStatus(context, data.latestBatteryPercentage, data.currentOdometer),
+                      _buildBatteryStatus(
+                        context,
+                        data.latestBatteryPercentage,
+                        data.currentOdometer,
+                      ),
                       const SizedBox(height: 24),
                       _buildQuickStatsRow(context, data),
-                      
+
                       if (data.upcomingReminder != null) ...[
                         const SizedBox(height: 24),
                         _buildUpcomingReminder(context, data.upcomingReminder!),
                       ],
-                      
+
                       const SizedBox(height: 32),
-                      const Text('Quick Actions', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Quick Actions',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -126,14 +151,62 @@ class DashboardScreen extends HookConsumerWidget {
                   crossAxisSpacing: 16,
                   childAspectRatio: 2.2,
                   children: [
-                    _buildSmallMenuCard(context, title: 'Rides', icon: LucideIcons.bike, color: const Color(0xFF3B82F6), route: '/rides'),
-                    _buildSmallMenuCard(context, title: 'Charging', icon: LucideIcons.batteryCharging, color: const Color(0xFF10B981), route: '/charging'),
-                    _buildSmallMenuCard(context, title: 'Expenses', icon: LucideIcons.wallet, color: const Color(0xFFF59E0B), route: '/expenses'),
-                    _buildSmallMenuCard(context, title: 'Maintenance', icon: LucideIcons.wrench, color: const Color(0xFFEF4444), route: '/maintenance'),
-                    _buildSmallMenuCard(context, title: 'Reminders', icon: LucideIcons.bell, color: const Color(0xFF8B5CF6), route: '/reminders'),
-                    _buildSmallMenuCard(context, title: 'Documents', icon: LucideIcons.fileText, color: const Color(0xFF6366F1), route: '/documents'),
-                    _buildSmallMenuCard(context, title: 'Reports', icon: LucideIcons.fileSpreadsheet, color: const Color(0xFF06B6D4), route: '/reports'),
-                    _buildSmallMenuCard(context, title: 'Statistics', icon: LucideIcons.pieChart, color: const Color(0xFF14B8A6), route: '/statistics'),
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Rides',
+                      icon: LucideIcons.bike,
+                      color: const Color(0xFF3B82F6),
+                      route: '/rides',
+                    ),
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Charging',
+                      icon: LucideIcons.batteryCharging,
+                      color: const Color(0xFF10B981),
+                      route: '/charging',
+                    ),
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Expenses',
+                      icon: LucideIcons.wallet,
+                      color: const Color(0xFFF59E0B),
+                      route: '/expenses',
+                    ),
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Maintenance',
+                      icon: LucideIcons.wrench,
+                      color: const Color(0xFFEF4444),
+                      route: '/maintenance',
+                    ),
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Reminders',
+                      icon: LucideIcons.bell,
+                      color: const Color(0xFF8B5CF6),
+                      route: '/reminders',
+                    ),
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Documents',
+                      icon: LucideIcons.fileText,
+                      color: const Color(0xFF6366F1),
+                      route: '/documents',
+                    ),
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Reports',
+                      icon: LucideIcons.fileSpreadsheet,
+                      color: const Color(0xFF06B6D4),
+                      route: '/reports',
+                    ),
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Statistics',
+                      icon: LucideIcons.pieChart,
+                      color: const Color(0xFF14B8A6),
+                      route: '/statistics',
+                    ),
                   ],
                 ),
               ),
@@ -144,16 +217,34 @@ class DashboardScreen extends HookConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 16),
-                      const Text('Weekly Progress', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Weekly Progress',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       _buildChart(context, data),
                       const SizedBox(height: 32),
-                      const Text('Lifetime Impact', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Lifetime Impact',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       _buildImpactCards(context, data),
                       const SizedBox(height: 32),
                       if (data.recentActivities.isNotEmpty) ...[
-                        const Text('Recent Activities', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                        const Text(
+                          'Recent Activities',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         _buildRecentActivities(context, data.recentActivities),
                       ],
@@ -172,7 +263,7 @@ class DashboardScreen extends HookConsumerWidget {
   Widget _buildBatteryStatus(BuildContext context, int battery, double odo) {
     // Basic range estimation: RV400 approx 1.5 km per 1% battery on average
     final estRange = (battery * 1.5).toStringAsFixed(0);
-    
+
     Color batteryColor;
     if (battery > 50) {
       batteryColor = Colors.green;
@@ -191,7 +282,9 @@ class DashboardScreen extends HookConsumerWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -199,7 +292,13 @@ class DashboardScreen extends HookConsumerWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Battery Status', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.w600)),
+              Text(
+                'Battery Status',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -207,9 +306,21 @@ class DashboardScreen extends HookConsumerWidget {
                 children: [
                   AnimatedNumber(
                     value: battery,
-                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: batteryColor, height: 1),
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: batteryColor,
+                      height: 1,
+                    ),
                   ),
-                  Text('%', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: batteryColor)),
+                  Text(
+                    '%',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: batteryColor,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -217,12 +328,21 @@ class DashboardScreen extends HookConsumerWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('Est. Range', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.w600)),
+              Text(
+                'Est. Range',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 8),
               AnimatedNumber(
                 value: double.parse(estRange),
                 suffix: ' km',
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -242,18 +362,35 @@ class DashboardScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildStatBox(BuildContext context, String label, num value, String suffix, int fractionDigits) {
+  Widget _buildStatBox(
+    BuildContext context,
+    String label,
+    num value,
+    String suffix,
+    int fractionDigits,
+  ) {
     return Container(
-      width: (MediaQuery.of(context).size.width - 40 - 24) / 3, // 40 padding, 24 space between
+      width:
+          (MediaQuery.of(context).size.width - 40 - 24) /
+          3, // 40 padding, 24 space between
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+        ),
       ),
       child: Column(
         children: [
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 8),
           AnimatedNumber(
             value: value,
@@ -278,7 +415,10 @@ class DashboardScreen extends HookConsumerWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.orange.withOpacity(0.2), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
             child: const Icon(LucideIcons.bellRing, color: Colors.orange),
           ),
           const SizedBox(width: 16),
@@ -286,13 +426,21 @@ class DashboardScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(reminder.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  reminder.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
-                  reminder.targetDate != null 
-                    ? 'Due: ${DateFormat.yMMMd().format(reminder.targetDate!)}'
-                    : 'Due at: ${reminder.targetOdometer} km',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  reminder.targetDate != null
+                      ? 'Due: ${DateFormat.yMMMd().format(reminder.targetDate!)}'
+                      : 'Due at: ${reminder.targetOdometer} km',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -302,7 +450,7 @@ class DashboardScreen extends HookConsumerWidget {
             onPressed: () {
               // mark as done
             },
-          )
+          ),
         ],
       ),
     );
@@ -315,7 +463,6 @@ class DashboardScreen extends HookConsumerWidget {
     required Color color,
     required String route,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: () => context.push(route),
       borderRadius: BorderRadius.circular(16),
@@ -323,7 +470,11 @@ class DashboardScreen extends HookConsumerWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4)),
+          border: Border.all(
+            color: Theme.of(
+              context,
+            ).colorScheme.outlineVariant.withOpacity(0.4),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -331,7 +482,13 @@ class DashboardScreen extends HookConsumerWidget {
             children: [
               Icon(icon, color: color, size: 24),
               const SizedBox(width: 12),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
             ],
           ),
         ),
@@ -348,7 +505,9 @@ class DashboardScreen extends HookConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+        ),
       ),
       child: BarChart(
         BarChartData(
@@ -361,20 +520,40 @@ class DashboardScreen extends HookConsumerWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: (value, meta) {
-                  const titles = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                  const titles = [
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat',
+                    'Sun',
+                  ];
                   if (value.toInt() >= 0 && value.toInt() < titles.length) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(titles[value.toInt()], style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      child: Text(
+                        titles[value.toInt()],
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
                     );
                   }
                   return const Text('');
                 },
               ),
             ),
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
           ),
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
@@ -384,14 +563,18 @@ class DashboardScreen extends HookConsumerWidget {
                 x: i,
                 barRods: [
                   BarChartRodData(
-                    toY: i == 6 ? data.todayDistance : (10.0 + (i * 5) % 30), // Fake past days, actual today
+                    toY: i == 6
+                        ? data.todayDistance
+                        : (10.0 + (i * 5) % 30), // Fake past days, actual today
                     color: Theme.of(context).colorScheme.primary,
                     width: 16,
                     borderRadius: BorderRadius.circular(4),
                     backDrawRodData: BackgroundBarChartRodData(
                       show: true,
                       toY: 100,
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                     ),
                   ),
                 ],
@@ -434,7 +617,16 @@ class DashboardScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildImpactCard(BuildContext context, String title, num value, String suffix, String subtitle, IconData icon, Color color, int fractionDigits) {
+  Widget _buildImpactCard(
+    BuildContext context,
+    String title,
+    num value,
+    String suffix,
+    String subtitle,
+    IconData icon,
+    Color color,
+    int fractionDigits,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -447,7 +639,13 @@ class DashboardScreen extends HookConsumerWidget {
         children: [
           Icon(icon, color: color, size: 28),
           const SizedBox(height: 16),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.grey)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
           const SizedBox(height: 4),
           AnimatedNumber(
             value: value,
@@ -457,13 +655,23 @@ class DashboardScreen extends HookConsumerWidget {
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          Text(subtitle, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 13)),
+          Text(
+            subtitle,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildRecentActivities(BuildContext context, List<RecentActivity> activities) {
+  Widget _buildRecentActivities(
+    BuildContext context,
+    List<RecentActivity> activities,
+  ) {
     return Column(
       children: activities.map((activity) {
         IconData icon;
@@ -487,25 +695,38 @@ class DashboardScreen extends HookConsumerWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4)),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withOpacity(0.4),
+            ),
           ),
           child: ListTile(
             leading: Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Icon(icon, color: color, size: 20),
             ),
-            title: Text(activity.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(
+              activity.title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             subtitle: Text(activity.subtitle),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  activity.type == ActivityType.ride 
-                      ? '+${activity.value.toStringAsFixed(1)} km' 
+                  activity.type == ActivityType.ride
+                      ? '+${activity.value.toStringAsFixed(1)} km'
                       : '₹${activity.value.toStringAsFixed(0)}',
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
                 ),
                 Text(
                   DateFormat.MMMd().format(activity.date),
