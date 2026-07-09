@@ -27,6 +27,11 @@ class MaintenanceLogs extends _$MaintenanceLogs {
     final db = ref.watch(databaseProvider);
     await (db.delete(db.maintenanceLogsTable)..where((t) => t.id.equals(id))).go();
   }
+
+  Future<void> updateLog(MaintenanceLog log) async {
+    final db = ref.watch(databaseProvider);
+    await db.update(db.maintenanceLogsTable).replace(log.toCompanion());
+  }
 }
 
 @riverpod

@@ -8,38 +8,45 @@ import '../domain/maintenance_log.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class MaintenanceEntryFormScreen extends HookConsumerWidget {
-  const MaintenanceEntryFormScreen({super.key});
+  final MaintenanceLog? log;
+
+  const MaintenanceEntryFormScreen({super.key, this.log});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isEditing = log != null;
     final formKey = useMemoized(() => GlobalKey<FormState>());
-    final date = useState(DateTime.now());
-    final component = useState(MaintenanceComponent.other);
-    final descriptionController = useTextEditingController();
-    final odoController = useTextEditingController();
-    final costController = useTextEditingController();
-    
+    final date = useState(log?.date ?? DateTime.now());
+    final component = useState(log?.component ?? MaintenanceComponent.other);
+    final descriptionController = useTextEditingController(text: log?.description ?? '');
+    final odoController = useTextEditingController(text: log != null ? log!.odometerReading.toString() : '');
+    final costController = useTextEditingController(text: log != null ? log!.cost.toString() : '');
+
     // New fields
-    final serviceCenterController = useTextEditingController();
-    final partsReplacedController = useTextEditingController(); // Simplified: just a text field for comma separated for now
-    final labourCostController = useTextEditingController();
-    final technicianController = useTextEditingController();
-    final notesController = useTextEditingController();
-    final warrantyClaim = useState(false);
-    
-    // Next service
-    final serviceIntervalController = useTextEditingController();
+    final serviceCenterController = useTextEditingController(text: log?.serviceCenter ?? '');
+    final partsReplacedController = useTextEditingController(text: log?.partsReplaced ?? ''); // Simplified: just a text field for comma separated for now
+    final labourCostController = useTextEditingController(text: log?.labourCost?.toString() ?? '');
+    final technicianController = useTextEditingController(text: log?.technician ?? '');
+    final notesController = useTextEditingController(text: log?.notes ?? '');
+    final warrantyClaim = useState(log?.warrantyClaim ?? false);
+
+    // Next service (stored as an absolute odometer; reconstruct the interval for editing)
+    final serviceIntervalController = useTextEditingController(
+      text: (log?.nextServiceDueOdometer != null)
+          ? (log!.nextServiceDueOdometer! - log!.odometerReading).toString()
+          : '',
+    );
 
     // Checklist
-    final chkTyres = useState(false);
-    final chkBrakes = useState(false);
-    final chkBattery = useState(false);
-    final chkSuspension = useState(false);
-    final chkMotor = useState(false);
-    final chkLights = useState(false);
-    final chkHorn = useState(false);
-    final chkSoftwareUpdate = useState(false);
-    final chkGeneralInspection = useState(false);
+    final chkTyres = useState(log?.tyres ?? false);
+    final chkBrakes = useState(log?.brakes ?? false);
+    final chkBattery = useState(log?.battery ?? false);
+    final chkSuspension = useState(log?.suspension ?? false);
+    final chkMotor = useState(log?.motor ?? false);
+    final chkLights = useState(log?.lights ?? false);
+    final chkHorn = useState(log?.horn ?? false);
+    final chkSoftwareUpdate = useState(log?.softwareUpdate ?? false);
+    final chkGeneralInspection = useState(log?.generalInspection ?? false);
 
     final isSubmitting = useState(false);
 
@@ -54,8 +61,8 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
            nextDueOdo = currentOdo + double.parse(serviceIntervalController.text);
         }
 
-        final log = MaintenanceLog(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+        final entry = MaintenanceLog(
+          id: log?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
           date: date.value,
           component: component.value,
           description: descriptionController.text,
@@ -80,7 +87,11 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
           generalInspection: chkGeneralInspection.value,
         );
 
-        await ref.read(maintenanceLogsProvider.notifier).addLog(log);
+        if (isEditing) {
+          await ref.read(maintenanceLogsProvider.notifier).updateLog(entry);
+        } else {
+          await ref.read(maintenanceLogsProvider.notifier).addLog(entry);
+        }
         if (context.mounted) context.pop();
       } catch (e) {
         if (context.mounted) {
@@ -98,7 +109,7 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Log Maintenance'),
+        title: Text(isEditing ? 'Edit Maintenance' : 'Log Maintenance'),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
@@ -251,7 +262,7 @@ class MaintenanceEntryFormScreen extends HookConsumerWidget {
             FilledButton(
               onPressed: isSubmitting.value ? null : submit,
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-              child: const Text('Save Maintenance Log'),
+              child: Text(isEditing ? 'Update Maintenance Log' : 'Save Maintenance Log'),
             ),
           ],
         ),

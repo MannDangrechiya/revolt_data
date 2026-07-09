@@ -12,40 +12,47 @@ import '../data/rides_provider.dart';
 import '../domain/ride.dart';
 
 class RideEntryFormScreen extends HookConsumerWidget {
-  const RideEntryFormScreen({super.key});
+  final Ride? ride;
+
+  const RideEntryFormScreen({super.key, this.ride});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isEditing = ride != null;
     final formKey = useMemoized(() => GlobalKey<FormState>());
-    
-    final selectedDate = useState(DateTime.now());
-    final startTime = useState<TimeOfDay?>(null);
-    final endTime = useState<TimeOfDay?>(null);
-    
-    final startOdoController = useTextEditingController();
-    final endOdoController = useTextEditingController();
-    final batteryBeforeController = useTextEditingController();
-    final batteryAfterController = useTextEditingController();
-    
-    final estRemainingRangeController = useTextEditingController();
-    final avgSpeedController = useTextEditingController();
-    final maxSpeedController = useTextEditingController();
-    final passengerCountController = useTextEditingController(text: '1');
-    
-    final startLocationController = useTextEditingController();
-    final endLocationController = useTextEditingController();
-    
-    final notesController = useTextEditingController();
-    final routeNotesController = useTextEditingController();
-    final customTagsController = useTextEditingController();
 
-    final rideMode = useState(RideMode.normal);
-    final roadCondition = useState(RoadCondition.average);
-    final weather = useState<String?>(null);
-    final roadType = useState<String?>(null);
-    final ridePurpose = useState<String?>(null);
-    
-    final photoPaths = useState<List<String>>([]);
+    final selectedDate = useState(ride?.date ?? DateTime.now());
+    final startTime = useState<TimeOfDay?>(
+      ride?.startTime != null ? TimeOfDay.fromDateTime(ride!.startTime!) : null,
+    );
+    final endTime = useState<TimeOfDay?>(
+      ride?.endTime != null ? TimeOfDay.fromDateTime(ride!.endTime!) : null,
+    );
+
+    final startOdoController = useTextEditingController(text: ride != null ? ride!.startOdometer.toString() : '');
+    final endOdoController = useTextEditingController(text: ride != null ? ride!.endOdometer.toString() : '');
+    final batteryBeforeController = useTextEditingController(text: ride != null ? ride!.batteryBefore.toString() : '');
+    final batteryAfterController = useTextEditingController(text: ride != null ? ride!.batteryAfter.toString() : '');
+
+    final estRemainingRangeController = useTextEditingController(text: ride?.estimatedRemainingRange?.toString() ?? '');
+    final avgSpeedController = useTextEditingController(text: ride?.averageSpeed?.toString() ?? '');
+    final maxSpeedController = useTextEditingController(text: ride?.maxSpeed?.toString() ?? '');
+    final passengerCountController = useTextEditingController(text: ride?.passengerCount?.toString() ?? '1');
+
+    final startLocationController = useTextEditingController(text: ride?.startLocation ?? '');
+    final endLocationController = useTextEditingController(text: ride?.endLocation ?? '');
+
+    final notesController = useTextEditingController(text: ride?.notes ?? '');
+    final routeNotesController = useTextEditingController(text: ride?.routeNotes ?? '');
+    final customTagsController = useTextEditingController(text: ride?.customTags.join(', ') ?? '');
+
+    final rideMode = useState(ride?.rideMode ?? RideMode.normal);
+    final roadCondition = useState(ride?.roadCondition ?? RoadCondition.average);
+    final weather = useState<String?>(ride?.weather);
+    final roadType = useState<String?>(ride?.roadType);
+    final ridePurpose = useState<String?>(ride?.ridePurpose);
+
+    final photoPaths = useState<List<String>>(ride?.photoPaths ?? []);
     final isSubmitting = useState(false);
 
     Future<void> pickImage() async {
@@ -120,8 +127,8 @@ class RideEntryFormScreen extends HookConsumerWidget {
 
       isSubmitting.value = true;
       try {
-        final ride = Ride(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+        final entry = Ride(
+          id: ride?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
           date: selectedDate.value,
           startOdometer: startOdo,
           endOdometer: endOdo,
@@ -145,9 +152,15 @@ class RideEntryFormScreen extends HookConsumerWidget {
           endLocation: endLocationController.text.isEmpty ? null : endLocationController.text,
           routeNotes: routeNotesController.text.isEmpty ? null : routeNotesController.text,
           customTags: tags,
+          isFavorite: ride?.isFavorite ?? false,
+          bikeId: ride?.bikeId,
         );
 
-        await ref.read(ridesProvider.notifier).addRide(ride);
+        if (isEditing) {
+          await ref.read(ridesProvider.notifier).updateRide(entry);
+        } else {
+          await ref.read(ridesProvider.notifier).addRide(entry);
+        }
         if (context.mounted) {
           context.pop();
         }
@@ -164,7 +177,7 @@ class RideEntryFormScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Ride Log', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(isEditing ? 'Edit Ride Log' : 'Add Ride Log', style: const TextStyle(fontWeight: FontWeight.w600)),
         centerTitle: true,
         actions: [
           IconButton(
@@ -395,7 +408,7 @@ class RideEntryFormScreen extends HookConsumerWidget {
             FilledButton(
               onPressed: isSubmitting.value ? null : submit,
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-              child: const Text('Save Ride Log'),
+              child: Text(isEditing ? 'Update Ride Log' : 'Save Ride Log'),
             ),
             const SizedBox(height: 40),
           ],

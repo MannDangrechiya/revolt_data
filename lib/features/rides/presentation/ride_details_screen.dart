@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../domain/ride.dart';
@@ -18,9 +19,14 @@ class RideDetailsScreen extends StatelessWidget {
         actions: [
           if (ride.isFavorite)
             const Padding(
-              padding: EdgeInsets.only(right: 16.0),
+              padding: EdgeInsets.only(right: 8.0),
               child: Icon(Icons.star, color: Colors.amber),
             ),
+          IconButton(
+            icon: const Icon(LucideIcons.pencil),
+            tooltip: 'Edit',
+            onPressed: () => context.push('/rides/edit', extra: ride),
+          ),
         ],
       ),
       body: CustomScrollView(

@@ -8,28 +8,31 @@ import '../data/charging_provider.dart';
 import '../domain/charge_log.dart';
 
 class ChargeEntryFormScreen extends HookConsumerWidget {
-  const ChargeEntryFormScreen({super.key});
+  final ChargeLog? log;
+
+  const ChargeEntryFormScreen({super.key, this.log});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isEditing = log != null;
     final formKey = useMemoized(() => GlobalKey<FormState>());
 
-    final date = useState(DateTime.now());
-    final durationController = useTextEditingController();
-    final kwhController = useTextEditingController();
-    final costController = useTextEditingController();
-    final startBatteryController = useTextEditingController();
-    final endBatteryController = useTextEditingController();
-    final locationNameController = useTextEditingController();
-    final notesController = useTextEditingController();
-    
-    final chargerTypeController = useTextEditingController();
-    final providerNameController = useTextEditingController();
-    final maxPowerController = useTextEditingController();
+    final date = useState(log?.date ?? DateTime.now());
+    final durationController = useTextEditingController(text: log != null ? log!.durationMinutes.toString() : '');
+    final kwhController = useTextEditingController(text: log != null ? log!.kwhAdded.toString() : '');
+    final costController = useTextEditingController(text: log != null ? log!.cost.toString() : '');
+    final startBatteryController = useTextEditingController(text: log != null ? log!.startBattery.toString() : '');
+    final endBatteryController = useTextEditingController(text: log != null ? log!.endBattery.toString() : '');
+    final locationNameController = useTextEditingController(text: log?.locationName ?? '');
+    final notesController = useTextEditingController(text: log?.notes ?? '');
+
+    final chargerTypeController = useTextEditingController(text: log?.chargerType ?? '');
+    final providerNameController = useTextEditingController(text: log?.providerName ?? '');
+    final maxPowerController = useTextEditingController(text: log?.maxChargingPowerKw?.toString() ?? '');
     final speedController = useTextEditingController();
 
-    final paymentMethod = useState(PaymentMethod.creditCard);
-    final locationType = useState(LocationType.home);
+    final paymentMethod = useState(log?.paymentMethod ?? PaymentMethod.creditCard);
+    final locationType = useState(log?.locationType ?? LocationType.home);
 
     final isSubmitting = useState(false);
 
@@ -38,8 +41,8 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
 
       isSubmitting.value = true;
       try {
-        final log = ChargeLog(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+        final entry = ChargeLog(
+          id: log?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
           date: date.value,
           durationMinutes: double.parse(durationController.text),
           kwhAdded: double.parse(kwhController.text),
@@ -56,7 +59,11 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
 
         );
 
-        await ref.read(chargingLogsProvider.notifier).addChargeLog(log);
+        if (isEditing) {
+          await ref.read(chargingLogsProvider.notifier).updateChargeLog(entry);
+        } else {
+          await ref.read(chargingLogsProvider.notifier).addChargeLog(entry);
+        }
         if (context.mounted) {
           context.pop();
         }
@@ -76,7 +83,7 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Charge Log', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(isEditing ? 'Edit Charge Log' : 'Add Charge Log', style: const TextStyle(fontWeight: FontWeight.w600)),
         centerTitle: true,
         actions: [
           IconButton(
@@ -291,7 +298,7 @@ class ChargeEntryFormScreen extends HookConsumerWidget {
             FilledButton(
               onPressed: isSubmitting.value ? null : submit,
               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-              child: const Text('Save Charge Log'),
+              child: Text(isEditing ? 'Update Charge Log' : 'Save Charge Log'),
             ),
             const SizedBox(height: 40),
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../domain/charge_log.dart';
@@ -14,6 +15,13 @@ class ChargeDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Charge Details'),
+        actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.pencil),
+            tooltip: 'Edit',
+            onPressed: () => context.push('/charging/edit', extra: log),
+          ),
+        ],
       ),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),

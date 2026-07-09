@@ -178,23 +178,32 @@ class MaintenanceScreen extends HookConsumerWidget {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton.icon(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  TextButton.icon(
+                                    icon: const Icon(Icons.edit),
+                                    label: const Text('Edit'),
+                                    onPressed: () {
+                                      context.push('/maintenance/edit', extra: log);
+                                    },
                                   ),
-                                  label: const Text(
-                                    'Delete',
-                                    style: TextStyle(color: Colors.red),
+                                  TextButton.icon(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    label: const Text(
+                                      'Delete',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                    onPressed: () {
+                                      ref
+                                          .read(maintenanceLogsProvider.notifier)
+                                          .removeLog(log.id);
+                                    },
                                   ),
-                                  onPressed: () {
-                                    ref
-                                        .read(maintenanceLogsProvider.notifier)
-                                        .removeLog(log.id);
-                                  },
-                                ),
+                                ],
                               ),
                             ],
                           ),

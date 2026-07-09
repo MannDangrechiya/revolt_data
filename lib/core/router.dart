@@ -11,6 +11,7 @@ import '../features/expenses/presentation/expense_entry_form_screen.dart';
 import '../features/expenses/domain/expense.dart';
 import '../features/maintenance/presentation/maintenance_screen.dart';
 import '../features/maintenance/presentation/maintenance_entry_form_screen.dart';
+import '../features/maintenance/domain/maintenance_log.dart';
 import '../features/reminders/presentation/reminders_screen.dart';
 import '../features/analytics/presentation/analytics_screen.dart';
 import '../features/analytics/presentation/battery_analytics_screen.dart';
@@ -79,6 +80,10 @@ final routerDelegate = GoRouter(
                   pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const RideEntryFormScreen()),
                 ),
                 GoRoute(
+                  path: 'edit',
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: RideEntryFormScreen(ride: state.extra as Ride?)),
+                ),
+                GoRoute(
                   path: ':id',
                   pageBuilder: (context, state) {
                     final id = state.pathParameters['id'];
@@ -101,6 +106,10 @@ final routerDelegate = GoRouter(
                 GoRoute(
                   path: 'add',
                   pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const ChargeEntryFormScreen()),
+                ),
+                GoRoute(
+                  path: 'edit',
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: ChargeEntryFormScreen(log: state.extra as ChargeLog?)),
                 ),
                 GoRoute(
                   path: ':id',
@@ -151,6 +160,10 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/maintenance/add',
       builder: (context, state) => const MaintenanceEntryFormScreen(),
+    ),
+    GoRoute(
+      path: '/maintenance/edit',
+      builder: (context, state) => MaintenanceEntryFormScreen(log: state.extra as MaintenanceLog?),
     ),
     GoRoute(
       path: '/reminders',
