@@ -235,12 +235,12 @@ class DashboardScreen extends HookConsumerWidget {
         gradient: LinearGradient(
           colors: [
             Theme.of(context).colorScheme.primaryContainer,
-            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+            Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -335,7 +335,7 @@ class DashboardScreen extends HookConsumerWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
         ),
       ),
       child: Column(
@@ -364,16 +364,16 @@ class DashboardScreen extends HookConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.1),
+        color: Colors.orange.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.withOpacity(0.3)),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.2),
+              color: Colors.orange.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: const Icon(LucideIcons.bellRing, color: Colors.orange),
@@ -430,7 +430,7 @@ class DashboardScreen extends HookConsumerWidget {
           border: Border.all(
             color: Theme.of(
               context,
-            ).colorScheme.outlineVariant.withOpacity(0.4),
+            ).colorScheme.outlineVariant.withValues(alpha: 0.4),
           ),
         ),
         child: Padding(

@@ -105,7 +105,7 @@ class BatteryAnalyticsScreen extends HookConsumerWidget {
                             dotData: const FlDotData(show: true),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                             ),
                           ),
                         ],

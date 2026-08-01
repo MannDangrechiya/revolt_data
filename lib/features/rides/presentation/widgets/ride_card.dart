@@ -28,7 +28,7 @@ class RideCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: ride.isFavorite ? BorderSide(color: Colors.amber.withOpacity(0.5), width: 2) : BorderSide.none,
+        side: ride.isFavorite ? BorderSide(color: Colors.amber.withValues(alpha: 0.5), width: 2) : BorderSide.none,
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -166,9 +166,9 @@ class RideCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.1),
+        color: badgeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: badgeColor.withOpacity(0.5)),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.5)),
       ),
       child: Text(
         mode.name.toUpperCase(),
