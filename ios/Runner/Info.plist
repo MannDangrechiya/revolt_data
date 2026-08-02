@@ -2,6 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- User-facing description for Bluetooth permission request on iOS -->
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Revolt Data requires Bluetooth access to scan for, connect to, and display live telemetry from your Revolt RV400 electric bike.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Revolt Data uses Bluetooth to communicate with your Revolt RV400 electric bike.</string>
+
+	<!-- Enable background central mode to maintain BLE connection in background -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+	</array>
+
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

@@ -1,4 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Bluetooth permissions for Android 12+ (API level 31+) -->
+    <!-- BLUETOOTH_SCAN with neverForLocation asserts app doesn't derive physical location from BLE scan results -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+    <!-- BLUETOOTH_CONNECT needed to connect and communicate with paired/scanned RV400 BLE devices -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Legacy location permission for BLE scanning on Android 11 and lower -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Internet access for optional cloud sync or remote data features -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Notification permission for Android 13+ (API level 33+) telemetry alert notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Declare mandatory hardware requirement for Bluetooth Low Energy support -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
     <application
         android:label="revolt_data"
         android:name="${applicationName}"
