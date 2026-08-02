@@ -4,6 +4,8 @@ description: Production-grade electric bike logbook app with premium features
 
 version: 1.0.0
 
+publish_to: none
+
 environment:
   sdk: '^3.8.0'
 

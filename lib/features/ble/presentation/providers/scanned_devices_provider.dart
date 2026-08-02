@@ -1,32 +1,27 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../domain/ble_device_info.dart';
 import 'ble_connection_provider.dart';
 
-/// StateNotifier to manage scanning state and list of discovered BLE devices.
-class ScannedDevicesNotifier extends StateNotifier<AsyncValue<List<BleDeviceInfo>>> {
-  final Ref _ref;
+part 'scanned_devices_provider.g.dart';
 
-  ScannedDevicesNotifier(this._ref) : super(const AsyncValue.data([]));
+/// Notifier managing scanned RV400 BLE devices.
+@riverpod
+class ScannedDevices extends _$ScannedDevices {
+  @override
+  FutureOr<List<BleDeviceInfo>> build() {
+    return [];
+  }
 
   Future<void> startScan({Duration timeout = const Duration(seconds: 10)}) async {
     state = const AsyncValue.loading();
-    try {
-      final repo = _ref.read(bleRepositoryProvider);
-      final devices = await repo.scan(timeout: timeout);
-      state = AsyncValue.data(devices);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    state = await AsyncValue.guard(() async {
+      final repo = ref.read(bleRepositoryProvider);
+      return repo.scan(timeout: timeout);
+    });
   }
 
   void clear() {
     state = const AsyncValue.data([]);
   }
 }
-
-/// Provider for scanned BLE devices.
-final scannedDevicesProvider =
-    StateNotifierProvider<ScannedDevicesNotifier, AsyncValue<List<BleDeviceInfo>>>(
-  (ref) => ScannedDevicesNotifier(ref),
-);
