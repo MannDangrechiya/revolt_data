@@ -33,7 +33,7 @@ final class MaintenanceLogsProvider
   MaintenanceLogs create() => MaintenanceLogs();
 }
 
-String _$maintenanceLogsHash() => r'fa151010ec44a1f5e3289039771c4fd21df8c780';
+String _$maintenanceLogsHash() => r'407e8f25e6089d6cf43fd97fc42dd33de423627b';
 
 abstract class _$MaintenanceLogs extends $StreamNotifier<List<MaintenanceLog>> {
   Stream<List<MaintenanceLog>> build();
