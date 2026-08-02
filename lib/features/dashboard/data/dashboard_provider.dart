@@ -4,6 +4,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/database/database_provider.dart';
 import '../../../core/database/database_mappers.dart';
+import '../../ble/domain/connection_state.dart';
+import '../../ble/presentation/providers/ble_connection_provider.dart';
+import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../domain/dashboard_data.dart';
 
 part 'dashboard_provider.g.dart';
@@ -13,16 +16,14 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
   @override
   Stream<DashboardData> build() {
     final db = ref.watch(databaseProvider);
+    final bleStateAsync = ref.watch(bleConnectionStateProvider);
+    final snapshotAsync = ref.watch(vehicleSnapshotProvider);
 
-    // Watch multiple tables using Drift's customSelect or stream zip.
-    // For simplicity, we can watch the tables we need.
-    // However, since we need to combine them, watching all updates might trigger frequently.
-    
-    // Using a Stream.multi or similar, but the easiest is to just watch the tables
-    // and recompute. We will watch rides, charges, maintenance, expenses, reminders.
+    final connectionState = bleStateAsync.value ?? BleConnectionState.disconnected;
+    final liveSnapshot = snapshotAsync.value;
 
     final stream = db.customSelect(
-      'SELECT 1', // Dummy select to just trigger on any change if we use a trigger
+      'SELECT 1',
       readsFrom: {
         db.ridesTable,
         db.chargeLogsTable,
@@ -31,19 +32,22 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
         db.remindersTable,
         db.bikesTable,
       },
-    ).watch().asyncMap((_) => _computeDashboardData(db));
+    ).watch().asyncMap((_) => _computeDashboardData(db, connectionState, liveSnapshot));
 
-    // Yield initial data
-    _computeDashboardData(db).then((data) {
+    _computeDashboardData(db, connectionState, liveSnapshot).then((data) {
       if (state.value == null) {
-         state = AsyncValue.data(data);
+        state = AsyncValue.data(data);
       }
     });
 
     return stream;
   }
 
-  Future<DashboardData> _computeDashboardData(AppDatabase db) async {
+  Future<DashboardData> _computeDashboardData(
+    AppDatabase db,
+    BleConnectionState connectionState,
+    dynamic liveSnapshot,
+  ) async {
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
     final weekStart = todayStart.subtract(Duration(days: now.weekday - 1));
@@ -53,9 +57,9 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
     final ridesRows = await (db.select(db.ridesTable)
           ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
         .get();
-    
+
     final rides = ridesRows.map((r) => r.toDomain()).toList();
-    
+
     double totalDistance = 0;
     double todayDistance = 0;
     double weeklyDistance = 0;
@@ -66,7 +70,7 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
     for (final ride in rides) {
       final distance = ride.endOdometer - ride.startOdometer;
       totalDistance += distance;
-      
+
       if (ride.date.isAfter(todayStart) || ride.date.isAtSameMomentAs(todayStart)) {
         todayDistance += distance;
       }
@@ -76,7 +80,7 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
       if (ride.date.isAfter(monthStart) || ride.date.isAtSameMomentAs(monthStart)) {
         monthlyDistance += distance;
       }
-      
+
       if (ride.endOdometer > maxOdometer) {
         maxOdometer = ride.endOdometer;
       }
@@ -90,18 +94,28 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
     final chargesRows = await (db.select(db.chargeLogsTable)
           ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
         .get();
-    
+
     final charges = chargesRows.map((c) => c.toDomain()).toList();
-    
+
     double totalChargingCost = 0;
     for (final charge in charges) {
       totalChargingCost += charge.cost;
     }
 
-    // Update battery if charge is more recent than ride
     if (charges.isNotEmpty) {
       if (rides.isEmpty || charges.first.date.isAfter(rides.first.date)) {
         latestBattery = charges.first.endBattery;
+      }
+    }
+
+    // Override with live BLE snapshot if connected
+    final isConnected = connectionState == BleConnectionState.connected ||
+        connectionState == BleConnectionState.authenticated;
+
+    if (isConnected && liveSnapshot != null) {
+      latestBattery = liveSnapshot.battery;
+      if (liveSnapshot.odo > maxOdometer) {
+        maxOdometer = liveSnapshot.odo;
       }
     }
 
@@ -110,12 +124,12 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
           ..where((t) => t.isCompleted.equals(false))
           ..orderBy([(t) => OrderingTerm(expression: t.targetDate, mode: OrderingMode.asc)]))
         .get();
-    
+
     final reminders = remindersRows.map((r) => r.toDomain()).toList();
 
     // 4. Recent Activities
     List<RecentActivity> activities = [];
-    
+
     for (var i = 0; i < (rides.length > 5 ? 5 : rides.length); i++) {
       activities.add(RecentActivity(
         id: rides[i].id,
@@ -126,7 +140,7 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
         value: rides[i].endOdometer - rides[i].startOdometer,
       ));
     }
-    
+
     for (var i = 0; i < (charges.length > 5 ? 5 : charges.length); i++) {
       activities.add(RecentActivity(
         id: charges[i].id,
@@ -137,17 +151,14 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
         value: charges[i].cost,
       ));
     }
-    
+
     activities.sort((a, b) => b.date.compareTo(a.date));
     if (activities.length > 5) {
       activities = activities.sublist(0, 5);
     }
 
-    // 5. Calculations
-    // Assume ICE bike gives 40km/l, Petrol price ₹100
     final petrolSaved = (totalDistance / 40) * 100;
-    // Assume EV saves ~60g CO2 per km
-    final co2Saved = (totalDistance * 60) / 1000; // in kg
+    final co2Saved = (totalDistance * 60) / 1000;
 
     return DashboardData(
       currentOdometer: maxOdometer,
@@ -164,6 +175,8 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
       petrolSaved: petrolSaved,
       co2Saved: co2Saved,
       latestBatteryPercentage: latestBattery,
+      connectionStatus: connectionState,
+      liveSnapshot: liveSnapshot,
     );
   }
 }

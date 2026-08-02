@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 
 import '../data/dashboard_provider.dart';
 import '../../bikes/data/bike_provider.dart';
-import '../domain/dashboard_data.dart';
+import '../../ble/domain/connection_state.dart';
+import '../../ble/presentation/widgets/connection_status_badge.dart';
 import '../../../core/widgets/animated_number.dart';
 import '../../../core/widgets/skeleton_loader.dart';
 import '../../../core/widgets/error_retry_widget.dart';
@@ -28,6 +29,11 @@ class DashboardScreen extends HookConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
+            icon: const Icon(LucideIcons.bluetooth),
+            onPressed: () => context.push('/device/scan'),
+            tooltip: 'Connect Bike',
+          ),
+          IconButton(
             icon: const Icon(LucideIcons.settings),
             onPressed: () => context.push('/profile'),
           ),
@@ -44,6 +50,9 @@ class DashboardScreen extends HookConsumerWidget {
         ),
         data: (data) {
           final bikeName = bikeAsync.value?.name ?? 'My RV400';
+          final isConnected =
+              data.connectionStatus == BleConnectionState.connected ||
+                  data.connectionStatus == BleConnectionState.authenticated;
 
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
@@ -61,13 +70,24 @@ class DashboardScreen extends HookConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Welcome back!',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey,
-                                  ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Welcome back!',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    GestureDetector(
+                                      onTap: () => context.push('/device'),
+                                      child: ConnectionStatusBadge(
+                                        state: data.connectionStatus,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 4),
                                 InkWell(
@@ -77,7 +97,7 @@ class DashboardScreen extends HookConsumerWidget {
                                       Text(
                                         bikeName,
                                         style: const TextStyle(
-                                          fontSize: 32,
+                                          fontSize: 28,
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: -1,
                                         ),
@@ -85,7 +105,7 @@ class DashboardScreen extends HookConsumerWidget {
                                       const SizedBox(width: 8),
                                       const Icon(
                                         LucideIcons.chevronRight,
-                                        size: 28,
+                                        size: 24,
                                       ),
                                     ],
                                   ),
@@ -119,8 +139,9 @@ class DashboardScreen extends HookConsumerWidget {
                       const SizedBox(height: 24),
                       _buildBatteryStatus(
                         context,
-                        data.latestBatteryPercentage,
-                        data.currentOdometer,
+                        battery: data.latestBatteryPercentage,
+                        isConnected: isConnected,
+                        data: data,
                       ),
                       const SizedBox(height: 24),
                       _buildQuickStatsRow(context, data),
@@ -131,12 +152,22 @@ class DashboardScreen extends HookConsumerWidget {
                       ],
 
                       const SizedBox(height: 32),
-                      const Text(
-                        'Quick Actions',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Quick Actions',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => context.push('/device/scan'),
+                            icon: const Icon(LucideIcons.bluetooth, size: 16),
+                            label: const Text('Connect Bike'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -150,6 +181,13 @@ class DashboardScreen extends HookConsumerWidget {
                   crossAxisSpacing: 16,
                   childAspectRatio: 2.2,
                   children: [
+                    _buildSmallMenuCard(
+                      context,
+                      title: 'Connect Bike',
+                      icon: LucideIcons.bluetooth,
+                      color: const Color(0xFF2563EB),
+                      route: '/device/scan',
+                    ),
                     _buildSmallMenuCard(
                       context,
                       title: 'Rides',
@@ -217,9 +255,15 @@ class DashboardScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildBatteryStatus(BuildContext context, int battery, double odo) {
-    // Basic range estimation: RV400 approx 1.5 km per 1% battery on average
-    final estRange = (battery * 1.5).toStringAsFixed(0);
+  Widget _buildBatteryStatus(
+    BuildContext context, {
+    required int battery,
+    required bool isConnected,
+    required dynamic data,
+  }) {
+    final estRange = isConnected && data.liveSnapshot != null
+        ? data.liveSnapshot.range.toStringAsFixed(0)
+        : (battery * 1.5).toStringAsFixed(0);
 
     Color batteryColor;
     if (battery > 50) {
@@ -229,6 +273,11 @@ class DashboardScreen extends HookConsumerWidget {
     } else {
       batteryColor = Colors.red;
     }
+
+    final borderColor = isConnected
+        ? Colors.green
+        : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -240,75 +289,111 @@ class DashboardScreen extends HookConsumerWidget {
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+          color: borderColor,
+          width: isConnected ? 2 : 1,
         ),
+        boxShadow: isConnected
+            ? [
+                BoxShadow(
+                  color: Colors.green.withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                )
+              ]
+            : null,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Battery Status',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnimatedNumber(
-                    value: battery,
+                  Row(
+                    children: [
+                      Text(
+                        'Battery Status',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (isConnected) ...[
+                        const SizedBox(width: 6),
+                        const Icon(LucideIcons.radio, size: 14, color: Colors.green),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      AnimatedNumber(
+                        value: battery,
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: batteryColor,
+                          height: 1,
+                        ),
+                      ),
+                      Text(
+                        '%',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: batteryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Est. Range',
                     style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: batteryColor,
-                      height: 1,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(
-                    '%',
-                    style: TextStyle(
-                      fontSize: 24,
+                  const SizedBox(height: 8),
+                  AnimatedNumber(
+                    value: double.parse(estRange),
+                    suffix: ' km',
+                    style: const TextStyle(
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: batteryColor,
                     ),
                   ),
                 ],
               ),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                'Est. Range',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  fontWeight: FontWeight.w600,
-                ),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              isConnected
+                  ? '• Live BLE Telemetry Stream'
+                  : '• Disconnected (Last updated from log history)',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: isConnected ? Colors.green : Colors.grey,
               ),
-              const SizedBox(height: 8),
-              AnimatedNumber(
-                value: double.parse(estRange),
-                suffix: ' km',
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQuickStatsRow(BuildContext context, DashboardData data) {
+  Widget _buildQuickStatsRow(BuildContext context, dynamic data) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -327,9 +412,7 @@ class DashboardScreen extends HookConsumerWidget {
     int fractionDigits,
   ) {
     return Container(
-      width:
-          (MediaQuery.of(context).size.width - 40 - 24) /
-          3, // 40 padding, 24 space between
+      width: (MediaQuery.of(context).size.width - 40 - 24) / 3,
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -402,12 +485,6 @@ class DashboardScreen extends HookConsumerWidget {
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(LucideIcons.checkCircle),
-            onPressed: () {
-              // mark as done
-            },
-          ),
         ],
       ),
     );
@@ -428,22 +505,23 @@ class DashboardScreen extends HookConsumerWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Theme.of(
-              context,
-            ).colorScheme.outlineVariant.withValues(alpha: 0.4),
+            color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
           ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             children: [
-              Icon(icon, color: color, size: 24),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
+              Icon(icon, color: color, size: 22),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

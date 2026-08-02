@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../ble/domain/connection_state.dart';
+import '../../ble/domain/vehicle_snapshot.dart';
 import '../../rides/domain/ride.dart';
 import '../../charging/domain/charge_log.dart';
 import '../../reminders/domain/reminder.dart';
@@ -37,5 +39,7 @@ abstract class DashboardData with _$DashboardData {
     required double petrolSaved, // Assume ~ 1 liter per 40km, ₹100/liter
     required double co2Saved, // Assume ~ 40g/km for EV vs 100g/km for ICE
     required int latestBatteryPercentage,
+    @Default(BleConnectionState.disconnected) BleConnectionState connectionStatus,
+    VehicleSnapshot? liveSnapshot,
   }) = _DashboardData;
 }

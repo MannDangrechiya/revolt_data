@@ -32,6 +32,9 @@ import '../features/reminders/presentation/reminder_add_edit_screen.dart';
 import '../features/reminders/domain/reminder.dart';
 import '../features/reports/presentation/reports_screen.dart';
 import '../features/analytics/presentation/statistics_screen.dart';
+import '../features/ble/presentation/screens/device_status_screen.dart';
+import '../features/ble/presentation/screens/device_scan_screen.dart';
+import '../features/ble/presentation/screens/device_pair_screen.dart';
 
 CustomTransitionPage buildPageWithDefaultTransition<T>({
   required BuildContext context,
@@ -87,8 +90,6 @@ final routerDelegate = GoRouter(
                   path: ':id',
                   pageBuilder: (context, state) {
                     final id = state.pathParameters['id'];
-                    // We'll pass the id, for now, we still need the ride object if it's passed via extra, or we fetch it.
-                    // To avoid breaking immediately, we can check extra, else fetch.
                     final ride = state.extra as Ride?;
                     return buildPageWithDefaultTransition(context: context, state: state, child: RideDetailsScreen(ride: ride!, rideId: id));
                   },
@@ -130,6 +131,32 @@ final routerDelegate = GoRouter(
               builder: (context, state) => const AnalyticsScreen(),
             ),
           ],
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/device',
+      pageBuilder: (context, state) => buildPageWithDefaultTransition(
+        context: context,
+        state: state,
+        child: const DeviceStatusScreen(),
+      ),
+      routes: [
+        GoRoute(
+          path: 'scan',
+          pageBuilder: (context, state) => buildPageWithDefaultTransition(
+            context: context,
+            state: state,
+            child: const DeviceScanScreen(),
+          ),
+        ),
+        GoRoute(
+          path: 'pair',
+          pageBuilder: (context, state) => buildPageWithDefaultTransition(
+            context: context,
+            state: state,
+            child: DevicePairScreen(deviceId: state.extra as String?),
+          ),
         ),
       ],
     ),

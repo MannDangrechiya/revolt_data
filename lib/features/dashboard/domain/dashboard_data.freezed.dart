@@ -288,7 +288,7 @@ mixin _$DashboardData {
 
  double get currentOdometer; double get todayDistance; double get weeklyDistance; double get monthlyDistance; double get totalDistance; Ride? get lastRide; ChargeLog? get lastCharge; Reminder? get upcomingReminder; List<RecentActivity> get recentActivities; int get totalCharges; double get totalChargingCost; double get petrolSaved;// Assume ~ 1 liter per 40km, ₹100/liter
  double get co2Saved;// Assume ~ 40g/km for EV vs 100g/km for ICE
- int get latestBatteryPercentage;
+ int get latestBatteryPercentage; BleConnectionState get connectionStatus; VehicleSnapshot? get liveSnapshot;
 /// Create a copy of DashboardData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -299,16 +299,16 @@ $DashboardDataCopyWith<DashboardData> get copyWith => _$DashboardDataCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardData&&(identical(other.currentOdometer, currentOdometer) || other.currentOdometer == currentOdometer)&&(identical(other.todayDistance, todayDistance) || other.todayDistance == todayDistance)&&(identical(other.weeklyDistance, weeklyDistance) || other.weeklyDistance == weeklyDistance)&&(identical(other.monthlyDistance, monthlyDistance) || other.monthlyDistance == monthlyDistance)&&(identical(other.totalDistance, totalDistance) || other.totalDistance == totalDistance)&&(identical(other.lastRide, lastRide) || other.lastRide == lastRide)&&(identical(other.lastCharge, lastCharge) || other.lastCharge == lastCharge)&&(identical(other.upcomingReminder, upcomingReminder) || other.upcomingReminder == upcomingReminder)&&const DeepCollectionEquality().equals(other.recentActivities, recentActivities)&&(identical(other.totalCharges, totalCharges) || other.totalCharges == totalCharges)&&(identical(other.totalChargingCost, totalChargingCost) || other.totalChargingCost == totalChargingCost)&&(identical(other.petrolSaved, petrolSaved) || other.petrolSaved == petrolSaved)&&(identical(other.co2Saved, co2Saved) || other.co2Saved == co2Saved)&&(identical(other.latestBatteryPercentage, latestBatteryPercentage) || other.latestBatteryPercentage == latestBatteryPercentage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardData&&(identical(other.currentOdometer, currentOdometer) || other.currentOdometer == currentOdometer)&&(identical(other.todayDistance, todayDistance) || other.todayDistance == todayDistance)&&(identical(other.weeklyDistance, weeklyDistance) || other.weeklyDistance == weeklyDistance)&&(identical(other.monthlyDistance, monthlyDistance) || other.monthlyDistance == monthlyDistance)&&(identical(other.totalDistance, totalDistance) || other.totalDistance == totalDistance)&&(identical(other.lastRide, lastRide) || other.lastRide == lastRide)&&(identical(other.lastCharge, lastCharge) || other.lastCharge == lastCharge)&&(identical(other.upcomingReminder, upcomingReminder) || other.upcomingReminder == upcomingReminder)&&const DeepCollectionEquality().equals(other.recentActivities, recentActivities)&&(identical(other.totalCharges, totalCharges) || other.totalCharges == totalCharges)&&(identical(other.totalChargingCost, totalChargingCost) || other.totalChargingCost == totalChargingCost)&&(identical(other.petrolSaved, petrolSaved) || other.petrolSaved == petrolSaved)&&(identical(other.co2Saved, co2Saved) || other.co2Saved == co2Saved)&&(identical(other.latestBatteryPercentage, latestBatteryPercentage) || other.latestBatteryPercentage == latestBatteryPercentage)&&(identical(other.connectionStatus, connectionStatus) || other.connectionStatus == connectionStatus)&&(identical(other.liveSnapshot, liveSnapshot) || other.liveSnapshot == liveSnapshot));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentOdometer,todayDistance,weeklyDistance,monthlyDistance,totalDistance,lastRide,lastCharge,upcomingReminder,const DeepCollectionEquality().hash(recentActivities),totalCharges,totalChargingCost,petrolSaved,co2Saved,latestBatteryPercentage);
+int get hashCode => Object.hash(runtimeType,currentOdometer,todayDistance,weeklyDistance,monthlyDistance,totalDistance,lastRide,lastCharge,upcomingReminder,const DeepCollectionEquality().hash(recentActivities),totalCharges,totalChargingCost,petrolSaved,co2Saved,latestBatteryPercentage,connectionStatus,liveSnapshot);
 
 @override
 String toString() {
-  return 'DashboardData(currentOdometer: $currentOdometer, todayDistance: $todayDistance, weeklyDistance: $weeklyDistance, monthlyDistance: $monthlyDistance, totalDistance: $totalDistance, lastRide: $lastRide, lastCharge: $lastCharge, upcomingReminder: $upcomingReminder, recentActivities: $recentActivities, totalCharges: $totalCharges, totalChargingCost: $totalChargingCost, petrolSaved: $petrolSaved, co2Saved: $co2Saved, latestBatteryPercentage: $latestBatteryPercentage)';
+  return 'DashboardData(currentOdometer: $currentOdometer, todayDistance: $todayDistance, weeklyDistance: $weeklyDistance, monthlyDistance: $monthlyDistance, totalDistance: $totalDistance, lastRide: $lastRide, lastCharge: $lastCharge, upcomingReminder: $upcomingReminder, recentActivities: $recentActivities, totalCharges: $totalCharges, totalChargingCost: $totalChargingCost, petrolSaved: $petrolSaved, co2Saved: $co2Saved, latestBatteryPercentage: $latestBatteryPercentage, connectionStatus: $connectionStatus, liveSnapshot: $liveSnapshot)';
 }
 
 
@@ -319,11 +319,11 @@ abstract mixin class $DashboardDataCopyWith<$Res>  {
   factory $DashboardDataCopyWith(DashboardData value, $Res Function(DashboardData) _then) = _$DashboardDataCopyWithImpl;
 @useResult
 $Res call({
- double currentOdometer, double todayDistance, double weeklyDistance, double monthlyDistance, double totalDistance, Ride? lastRide, ChargeLog? lastCharge, Reminder? upcomingReminder, List<RecentActivity> recentActivities, int totalCharges, double totalChargingCost, double petrolSaved, double co2Saved, int latestBatteryPercentage
+ double currentOdometer, double todayDistance, double weeklyDistance, double monthlyDistance, double totalDistance, Ride? lastRide, ChargeLog? lastCharge, Reminder? upcomingReminder, List<RecentActivity> recentActivities, int totalCharges, double totalChargingCost, double petrolSaved, double co2Saved, int latestBatteryPercentage, BleConnectionState connectionStatus, VehicleSnapshot? liveSnapshot
 });
 
 
-$RideCopyWith<$Res>? get lastRide;$ChargeLogCopyWith<$Res>? get lastCharge;$ReminderCopyWith<$Res>? get upcomingReminder;
+$RideCopyWith<$Res>? get lastRide;$ChargeLogCopyWith<$Res>? get lastCharge;$ReminderCopyWith<$Res>? get upcomingReminder;$VehicleSnapshotCopyWith<$Res>? get liveSnapshot;
 
 }
 /// @nodoc
@@ -336,7 +336,7 @@ class _$DashboardDataCopyWithImpl<$Res>
 
 /// Create a copy of DashboardData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? currentOdometer = null,Object? todayDistance = null,Object? weeklyDistance = null,Object? monthlyDistance = null,Object? totalDistance = null,Object? lastRide = freezed,Object? lastCharge = freezed,Object? upcomingReminder = freezed,Object? recentActivities = null,Object? totalCharges = null,Object? totalChargingCost = null,Object? petrolSaved = null,Object? co2Saved = null,Object? latestBatteryPercentage = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? currentOdometer = null,Object? todayDistance = null,Object? weeklyDistance = null,Object? monthlyDistance = null,Object? totalDistance = null,Object? lastRide = freezed,Object? lastCharge = freezed,Object? upcomingReminder = freezed,Object? recentActivities = null,Object? totalCharges = null,Object? totalChargingCost = null,Object? petrolSaved = null,Object? co2Saved = null,Object? latestBatteryPercentage = null,Object? connectionStatus = null,Object? liveSnapshot = freezed,}) {
   return _then(_self.copyWith(
 currentOdometer: null == currentOdometer ? _self.currentOdometer : currentOdometer // ignore: cast_nullable_to_non_nullable
 as double,todayDistance: null == todayDistance ? _self.todayDistance : todayDistance // ignore: cast_nullable_to_non_nullable
@@ -352,7 +352,9 @@ as int,totalChargingCost: null == totalChargingCost ? _self.totalChargingCost : 
 as double,petrolSaved: null == petrolSaved ? _self.petrolSaved : petrolSaved // ignore: cast_nullable_to_non_nullable
 as double,co2Saved: null == co2Saved ? _self.co2Saved : co2Saved // ignore: cast_nullable_to_non_nullable
 as double,latestBatteryPercentage: null == latestBatteryPercentage ? _self.latestBatteryPercentage : latestBatteryPercentage // ignore: cast_nullable_to_non_nullable
-as int,
+as int,connectionStatus: null == connectionStatus ? _self.connectionStatus : connectionStatus // ignore: cast_nullable_to_non_nullable
+as BleConnectionState,liveSnapshot: freezed == liveSnapshot ? _self.liveSnapshot : liveSnapshot // ignore: cast_nullable_to_non_nullable
+as VehicleSnapshot?,
   ));
 }
 /// Create a copy of DashboardData
@@ -390,6 +392,18 @@ $ReminderCopyWith<$Res>? get upcomingReminder {
 
   return $ReminderCopyWith<$Res>(_self.upcomingReminder!, (value) {
     return _then(_self.copyWith(upcomingReminder: value));
+  });
+}/// Create a copy of DashboardData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VehicleSnapshotCopyWith<$Res>? get liveSnapshot {
+    if (_self.liveSnapshot == null) {
+    return null;
+  }
+
+  return $VehicleSnapshotCopyWith<$Res>(_self.liveSnapshot!, (value) {
+    return _then(_self.copyWith(liveSnapshot: value));
   });
 }
 }
@@ -473,10 +487,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double currentOdometer,  double todayDistance,  double weeklyDistance,  double monthlyDistance,  double totalDistance,  Ride? lastRide,  ChargeLog? lastCharge,  Reminder? upcomingReminder,  List<RecentActivity> recentActivities,  int totalCharges,  double totalChargingCost,  double petrolSaved,  double co2Saved,  int latestBatteryPercentage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double currentOdometer,  double todayDistance,  double weeklyDistance,  double monthlyDistance,  double totalDistance,  Ride? lastRide,  ChargeLog? lastCharge,  Reminder? upcomingReminder,  List<RecentActivity> recentActivities,  int totalCharges,  double totalChargingCost,  double petrolSaved,  double co2Saved,  int latestBatteryPercentage,  BleConnectionState connectionStatus,  VehicleSnapshot? liveSnapshot)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DashboardData() when $default != null:
-return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_that.monthlyDistance,_that.totalDistance,_that.lastRide,_that.lastCharge,_that.upcomingReminder,_that.recentActivities,_that.totalCharges,_that.totalChargingCost,_that.petrolSaved,_that.co2Saved,_that.latestBatteryPercentage);case _:
+return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_that.monthlyDistance,_that.totalDistance,_that.lastRide,_that.lastCharge,_that.upcomingReminder,_that.recentActivities,_that.totalCharges,_that.totalChargingCost,_that.petrolSaved,_that.co2Saved,_that.latestBatteryPercentage,_that.connectionStatus,_that.liveSnapshot);case _:
   return orElse();
 
 }
@@ -494,10 +508,10 @@ return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double currentOdometer,  double todayDistance,  double weeklyDistance,  double monthlyDistance,  double totalDistance,  Ride? lastRide,  ChargeLog? lastCharge,  Reminder? upcomingReminder,  List<RecentActivity> recentActivities,  int totalCharges,  double totalChargingCost,  double petrolSaved,  double co2Saved,  int latestBatteryPercentage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double currentOdometer,  double todayDistance,  double weeklyDistance,  double monthlyDistance,  double totalDistance,  Ride? lastRide,  ChargeLog? lastCharge,  Reminder? upcomingReminder,  List<RecentActivity> recentActivities,  int totalCharges,  double totalChargingCost,  double petrolSaved,  double co2Saved,  int latestBatteryPercentage,  BleConnectionState connectionStatus,  VehicleSnapshot? liveSnapshot)  $default,) {final _that = this;
 switch (_that) {
 case _DashboardData():
-return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_that.monthlyDistance,_that.totalDistance,_that.lastRide,_that.lastCharge,_that.upcomingReminder,_that.recentActivities,_that.totalCharges,_that.totalChargingCost,_that.petrolSaved,_that.co2Saved,_that.latestBatteryPercentage);case _:
+return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_that.monthlyDistance,_that.totalDistance,_that.lastRide,_that.lastCharge,_that.upcomingReminder,_that.recentActivities,_that.totalCharges,_that.totalChargingCost,_that.petrolSaved,_that.co2Saved,_that.latestBatteryPercentage,_that.connectionStatus,_that.liveSnapshot);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -514,10 +528,10 @@ return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double currentOdometer,  double todayDistance,  double weeklyDistance,  double monthlyDistance,  double totalDistance,  Ride? lastRide,  ChargeLog? lastCharge,  Reminder? upcomingReminder,  List<RecentActivity> recentActivities,  int totalCharges,  double totalChargingCost,  double petrolSaved,  double co2Saved,  int latestBatteryPercentage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double currentOdometer,  double todayDistance,  double weeklyDistance,  double monthlyDistance,  double totalDistance,  Ride? lastRide,  ChargeLog? lastCharge,  Reminder? upcomingReminder,  List<RecentActivity> recentActivities,  int totalCharges,  double totalChargingCost,  double petrolSaved,  double co2Saved,  int latestBatteryPercentage,  BleConnectionState connectionStatus,  VehicleSnapshot? liveSnapshot)?  $default,) {final _that = this;
 switch (_that) {
 case _DashboardData() when $default != null:
-return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_that.monthlyDistance,_that.totalDistance,_that.lastRide,_that.lastCharge,_that.upcomingReminder,_that.recentActivities,_that.totalCharges,_that.totalChargingCost,_that.petrolSaved,_that.co2Saved,_that.latestBatteryPercentage);case _:
+return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_that.monthlyDistance,_that.totalDistance,_that.lastRide,_that.lastCharge,_that.upcomingReminder,_that.recentActivities,_that.totalCharges,_that.totalChargingCost,_that.petrolSaved,_that.co2Saved,_that.latestBatteryPercentage,_that.connectionStatus,_that.liveSnapshot);case _:
   return null;
 
 }
@@ -529,7 +543,7 @@ return $default(_that.currentOdometer,_that.todayDistance,_that.weeklyDistance,_
 
 
 class _DashboardData implements DashboardData {
-  const _DashboardData({required this.currentOdometer, required this.todayDistance, required this.weeklyDistance, required this.monthlyDistance, required this.totalDistance, this.lastRide, this.lastCharge, this.upcomingReminder, final  List<RecentActivity> recentActivities = const [], required this.totalCharges, required this.totalChargingCost, required this.petrolSaved, required this.co2Saved, required this.latestBatteryPercentage}): _recentActivities = recentActivities;
+  const _DashboardData({required this.currentOdometer, required this.todayDistance, required this.weeklyDistance, required this.monthlyDistance, required this.totalDistance, this.lastRide, this.lastCharge, this.upcomingReminder, final  List<RecentActivity> recentActivities = const [], required this.totalCharges, required this.totalChargingCost, required this.petrolSaved, required this.co2Saved, required this.latestBatteryPercentage, this.connectionStatus = BleConnectionState.disconnected, this.liveSnapshot}): _recentActivities = recentActivities;
   
 
 @override final  double currentOdometer;
@@ -554,6 +568,8 @@ class _DashboardData implements DashboardData {
 @override final  double co2Saved;
 // Assume ~ 40g/km for EV vs 100g/km for ICE
 @override final  int latestBatteryPercentage;
+@override@JsonKey() final  BleConnectionState connectionStatus;
+@override final  VehicleSnapshot? liveSnapshot;
 
 /// Create a copy of DashboardData
 /// with the given fields replaced by the non-null parameter values.
@@ -565,16 +581,16 @@ _$DashboardDataCopyWith<_DashboardData> get copyWith => __$DashboardDataCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DashboardData&&(identical(other.currentOdometer, currentOdometer) || other.currentOdometer == currentOdometer)&&(identical(other.todayDistance, todayDistance) || other.todayDistance == todayDistance)&&(identical(other.weeklyDistance, weeklyDistance) || other.weeklyDistance == weeklyDistance)&&(identical(other.monthlyDistance, monthlyDistance) || other.monthlyDistance == monthlyDistance)&&(identical(other.totalDistance, totalDistance) || other.totalDistance == totalDistance)&&(identical(other.lastRide, lastRide) || other.lastRide == lastRide)&&(identical(other.lastCharge, lastCharge) || other.lastCharge == lastCharge)&&(identical(other.upcomingReminder, upcomingReminder) || other.upcomingReminder == upcomingReminder)&&const DeepCollectionEquality().equals(other._recentActivities, _recentActivities)&&(identical(other.totalCharges, totalCharges) || other.totalCharges == totalCharges)&&(identical(other.totalChargingCost, totalChargingCost) || other.totalChargingCost == totalChargingCost)&&(identical(other.petrolSaved, petrolSaved) || other.petrolSaved == petrolSaved)&&(identical(other.co2Saved, co2Saved) || other.co2Saved == co2Saved)&&(identical(other.latestBatteryPercentage, latestBatteryPercentage) || other.latestBatteryPercentage == latestBatteryPercentage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DashboardData&&(identical(other.currentOdometer, currentOdometer) || other.currentOdometer == currentOdometer)&&(identical(other.todayDistance, todayDistance) || other.todayDistance == todayDistance)&&(identical(other.weeklyDistance, weeklyDistance) || other.weeklyDistance == weeklyDistance)&&(identical(other.monthlyDistance, monthlyDistance) || other.monthlyDistance == monthlyDistance)&&(identical(other.totalDistance, totalDistance) || other.totalDistance == totalDistance)&&(identical(other.lastRide, lastRide) || other.lastRide == lastRide)&&(identical(other.lastCharge, lastCharge) || other.lastCharge == lastCharge)&&(identical(other.upcomingReminder, upcomingReminder) || other.upcomingReminder == upcomingReminder)&&const DeepCollectionEquality().equals(other._recentActivities, _recentActivities)&&(identical(other.totalCharges, totalCharges) || other.totalCharges == totalCharges)&&(identical(other.totalChargingCost, totalChargingCost) || other.totalChargingCost == totalChargingCost)&&(identical(other.petrolSaved, petrolSaved) || other.petrolSaved == petrolSaved)&&(identical(other.co2Saved, co2Saved) || other.co2Saved == co2Saved)&&(identical(other.latestBatteryPercentage, latestBatteryPercentage) || other.latestBatteryPercentage == latestBatteryPercentage)&&(identical(other.connectionStatus, connectionStatus) || other.connectionStatus == connectionStatus)&&(identical(other.liveSnapshot, liveSnapshot) || other.liveSnapshot == liveSnapshot));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentOdometer,todayDistance,weeklyDistance,monthlyDistance,totalDistance,lastRide,lastCharge,upcomingReminder,const DeepCollectionEquality().hash(_recentActivities),totalCharges,totalChargingCost,petrolSaved,co2Saved,latestBatteryPercentage);
+int get hashCode => Object.hash(runtimeType,currentOdometer,todayDistance,weeklyDistance,monthlyDistance,totalDistance,lastRide,lastCharge,upcomingReminder,const DeepCollectionEquality().hash(_recentActivities),totalCharges,totalChargingCost,petrolSaved,co2Saved,latestBatteryPercentage,connectionStatus,liveSnapshot);
 
 @override
 String toString() {
-  return 'DashboardData(currentOdometer: $currentOdometer, todayDistance: $todayDistance, weeklyDistance: $weeklyDistance, monthlyDistance: $monthlyDistance, totalDistance: $totalDistance, lastRide: $lastRide, lastCharge: $lastCharge, upcomingReminder: $upcomingReminder, recentActivities: $recentActivities, totalCharges: $totalCharges, totalChargingCost: $totalChargingCost, petrolSaved: $petrolSaved, co2Saved: $co2Saved, latestBatteryPercentage: $latestBatteryPercentage)';
+  return 'DashboardData(currentOdometer: $currentOdometer, todayDistance: $todayDistance, weeklyDistance: $weeklyDistance, monthlyDistance: $monthlyDistance, totalDistance: $totalDistance, lastRide: $lastRide, lastCharge: $lastCharge, upcomingReminder: $upcomingReminder, recentActivities: $recentActivities, totalCharges: $totalCharges, totalChargingCost: $totalChargingCost, petrolSaved: $petrolSaved, co2Saved: $co2Saved, latestBatteryPercentage: $latestBatteryPercentage, connectionStatus: $connectionStatus, liveSnapshot: $liveSnapshot)';
 }
 
 
@@ -585,11 +601,11 @@ abstract mixin class _$DashboardDataCopyWith<$Res> implements $DashboardDataCopy
   factory _$DashboardDataCopyWith(_DashboardData value, $Res Function(_DashboardData) _then) = __$DashboardDataCopyWithImpl;
 @override @useResult
 $Res call({
- double currentOdometer, double todayDistance, double weeklyDistance, double monthlyDistance, double totalDistance, Ride? lastRide, ChargeLog? lastCharge, Reminder? upcomingReminder, List<RecentActivity> recentActivities, int totalCharges, double totalChargingCost, double petrolSaved, double co2Saved, int latestBatteryPercentage
+ double currentOdometer, double todayDistance, double weeklyDistance, double monthlyDistance, double totalDistance, Ride? lastRide, ChargeLog? lastCharge, Reminder? upcomingReminder, List<RecentActivity> recentActivities, int totalCharges, double totalChargingCost, double petrolSaved, double co2Saved, int latestBatteryPercentage, BleConnectionState connectionStatus, VehicleSnapshot? liveSnapshot
 });
 
 
-@override $RideCopyWith<$Res>? get lastRide;@override $ChargeLogCopyWith<$Res>? get lastCharge;@override $ReminderCopyWith<$Res>? get upcomingReminder;
+@override $RideCopyWith<$Res>? get lastRide;@override $ChargeLogCopyWith<$Res>? get lastCharge;@override $ReminderCopyWith<$Res>? get upcomingReminder;@override $VehicleSnapshotCopyWith<$Res>? get liveSnapshot;
 
 }
 /// @nodoc
@@ -602,7 +618,7 @@ class __$DashboardDataCopyWithImpl<$Res>
 
 /// Create a copy of DashboardData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? currentOdometer = null,Object? todayDistance = null,Object? weeklyDistance = null,Object? monthlyDistance = null,Object? totalDistance = null,Object? lastRide = freezed,Object? lastCharge = freezed,Object? upcomingReminder = freezed,Object? recentActivities = null,Object? totalCharges = null,Object? totalChargingCost = null,Object? petrolSaved = null,Object? co2Saved = null,Object? latestBatteryPercentage = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? currentOdometer = null,Object? todayDistance = null,Object? weeklyDistance = null,Object? monthlyDistance = null,Object? totalDistance = null,Object? lastRide = freezed,Object? lastCharge = freezed,Object? upcomingReminder = freezed,Object? recentActivities = null,Object? totalCharges = null,Object? totalChargingCost = null,Object? petrolSaved = null,Object? co2Saved = null,Object? latestBatteryPercentage = null,Object? connectionStatus = null,Object? liveSnapshot = freezed,}) {
   return _then(_DashboardData(
 currentOdometer: null == currentOdometer ? _self.currentOdometer : currentOdometer // ignore: cast_nullable_to_non_nullable
 as double,todayDistance: null == todayDistance ? _self.todayDistance : todayDistance // ignore: cast_nullable_to_non_nullable
@@ -618,7 +634,9 @@ as int,totalChargingCost: null == totalChargingCost ? _self.totalChargingCost : 
 as double,petrolSaved: null == petrolSaved ? _self.petrolSaved : petrolSaved // ignore: cast_nullable_to_non_nullable
 as double,co2Saved: null == co2Saved ? _self.co2Saved : co2Saved // ignore: cast_nullable_to_non_nullable
 as double,latestBatteryPercentage: null == latestBatteryPercentage ? _self.latestBatteryPercentage : latestBatteryPercentage // ignore: cast_nullable_to_non_nullable
-as int,
+as int,connectionStatus: null == connectionStatus ? _self.connectionStatus : connectionStatus // ignore: cast_nullable_to_non_nullable
+as BleConnectionState,liveSnapshot: freezed == liveSnapshot ? _self.liveSnapshot : liveSnapshot // ignore: cast_nullable_to_non_nullable
+as VehicleSnapshot?,
   ));
 }
 
@@ -657,6 +675,18 @@ $ReminderCopyWith<$Res>? get upcomingReminder {
 
   return $ReminderCopyWith<$Res>(_self.upcomingReminder!, (value) {
     return _then(_self.copyWith(upcomingReminder: value));
+  });
+}/// Create a copy of DashboardData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VehicleSnapshotCopyWith<$Res>? get liveSnapshot {
+    if (_self.liveSnapshot == null) {
+    return null;
+  }
+
+  return $VehicleSnapshotCopyWith<$Res>(_self.liveSnapshot!, (value) {
+    return _then(_self.copyWith(liveSnapshot: value));
   });
 }
 }
