@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/theme_provider.dart';
+import '../../../shared/ui/volt_app_bar.dart';
 import '../../../shared/ui/volt_card.dart';
 import '../../bikes/data/bike_provider.dart';
 import '../data/data_export_service.dart';
@@ -33,10 +34,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final avatarLetter = bikeName.isNotEmpty ? bikeName[0].toUpperCase() : 'R';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile & Settings', style: TextStyle(fontWeight: FontWeight.w600)),
-        centerTitle: true,
-      ),
+      appBar: const VoltAppBar(title: 'Profile & Settings'),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [

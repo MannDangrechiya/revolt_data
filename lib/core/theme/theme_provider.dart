@@ -6,21 +6,20 @@ part 'theme_provider.g.dart';
 
 const _kThemeKey = 'app_theme_mode';
 
+ThemeMode? _preloadedThemeMode;
+
+/// Reads the saved theme before `runApp` so the first frame renders in the
+/// right mode instead of flashing system default then correcting itself.
+Future<void> preloadThemeMode() async {
+  final prefs = await SharedPreferences.getInstance();
+  final saved = prefs.getString(_kThemeKey);
+  if (saved != null) _preloadedThemeMode = ThemeNotifier._stringToThemeMode(saved);
+}
+
 @riverpod
 class ThemeNotifier extends _$ThemeNotifier {
   @override
-  ThemeMode build() {
-    _loadSavedTheme();
-    return ThemeMode.system;
-  }
-
-  Future<void> _loadSavedTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString(_kThemeKey);
-    if (saved != null) {
-      state = _stringToThemeMode(saved);
-    }
-  }
+  ThemeMode build() => _preloadedThemeMode ?? ThemeMode.system;
 
   Future<void> setThemeMode(ThemeMode mode) async {
     state = mode;
