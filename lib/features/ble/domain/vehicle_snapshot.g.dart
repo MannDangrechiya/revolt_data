@@ -8,16 +8,19 @@ part of 'vehicle_snapshot.dart';
 
 _VehicleSnapshot _$VehicleSnapshotFromJson(Map<String, dynamic> json) =>
     _VehicleSnapshot(
-      battery: (json['battery'] as num).toInt(),
-      voltage: (json['voltage'] as num).toDouble(),
-      current: (json['current'] as num).toDouble(),
-      temp: (json['temp'] as num).toInt(),
+      batteryPercent: (json['batteryPercent'] as num).toInt(),
+      batteryVoltage: (json['batteryVoltage'] as num).toDouble(),
+      batteryCurrent: (json['batteryCurrent'] as num).toDouble(),
+      batteryTemp: (json['batteryTemp'] as num).toInt(),
+      motorTemp: (json['motorTemp'] as num).toInt(),
       speed: (json['speed'] as num).toDouble(),
-      odo: (json['odo'] as num).toDouble(),
+      tripDistance: (json['tripDistance'] as num).toDouble(),
+      odometer: (json['odometer'] as num).toDouble(),
+      rideMode: json['rideMode'] as String,
       range: (json['range'] as num).toDouble(),
-      mode: json['mode'] as String,
-      faults:
-          (json['faults'] as List<dynamic>?)
+      power: (json['power'] as num).toDouble(),
+      faultCodes:
+          (json['faultCodes'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -28,14 +31,17 @@ _VehicleSnapshot _$VehicleSnapshotFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$VehicleSnapshotToJson(_VehicleSnapshot instance) =>
     <String, dynamic>{
-      'battery': instance.battery,
-      'voltage': instance.voltage,
-      'current': instance.current,
-      'temp': instance.temp,
+      'batteryPercent': instance.batteryPercent,
+      'batteryVoltage': instance.batteryVoltage,
+      'batteryCurrent': instance.batteryCurrent,
+      'batteryTemp': instance.batteryTemp,
+      'motorTemp': instance.motorTemp,
       'speed': instance.speed,
-      'odo': instance.odo,
+      'tripDistance': instance.tripDistance,
+      'odometer': instance.odometer,
+      'rideMode': instance.rideMode,
       'range': instance.range,
-      'mode': instance.mode,
-      'faults': instance.faults,
+      'power': instance.power,
+      'faultCodes': instance.faultCodes,
       'timestamp': instance.timestamp?.toIso8601String(),
     };
