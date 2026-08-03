@@ -5,6 +5,7 @@ import '../../../core/database/app_database.dart';
 import '../../../core/database/database_provider.dart';
 import '../../../core/database/database_mappers.dart';
 import '../../ble/domain/connection_state.dart';
+import '../../ble/domain/vehicle_snapshot.dart';
 import '../../ble/presentation/providers/ble_connection_provider.dart';
 import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../domain/dashboard_data.dart';
@@ -19,20 +20,25 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
     final bleStateAsync = ref.watch(bleConnectionStateProvider);
     final snapshotAsync = ref.watch(vehicleSnapshotProvider);
 
-    final connectionState = bleStateAsync.value ?? BleConnectionState.disconnected;
+    final connectionState =
+        bleStateAsync.value ?? BleConnectionState.disconnected;
     final liveSnapshot = snapshotAsync.value;
 
-    final stream = db.customSelect(
-      'SELECT 1',
-      readsFrom: {
-        db.ridesTable,
-        db.chargeLogsTable,
-        db.maintenanceLogsTable,
-        db.expensesTable,
-        db.remindersTable,
-        db.bikesTable,
-      },
-    ).watch().asyncMap((_) => _computeDashboardData(db, connectionState, liveSnapshot));
+    final stream = db
+        .customSelect(
+          'SELECT 1',
+          readsFrom: {
+            db.ridesTable,
+            db.chargeLogsTable,
+            db.maintenanceLogsTable,
+            db.expensesTable,
+            db.remindersTable,
+            db.bikesTable,
+          },
+        )
+        .watch()
+        .asyncMap(
+            (_) => _computeDashboardData(db, connectionState, liveSnapshot));
 
     _computeDashboardData(db, connectionState, liveSnapshot).then((data) {
       if (state.value == null) {
@@ -46,7 +52,7 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
   Future<DashboardData> _computeDashboardData(
     AppDatabase db,
     BleConnectionState connectionState,
-    dynamic liveSnapshot,
+    VehicleSnapshot? liveSnapshot,
   ) async {
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
@@ -55,7 +61,8 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
 
     // 1. Rides
     final ridesRows = await (db.select(db.ridesTable)
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy(
+              [(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
         .get();
 
     final rides = ridesRows.map((r) => r.toDomain()).toList();
@@ -71,13 +78,16 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
       final distance = ride.endOdometer - ride.startOdometer;
       totalDistance += distance;
 
-      if (ride.date.isAfter(todayStart) || ride.date.isAtSameMomentAs(todayStart)) {
+      if (ride.date.isAfter(todayStart) ||
+          ride.date.isAtSameMomentAs(todayStart)) {
         todayDistance += distance;
       }
-      if (ride.date.isAfter(weekStart) || ride.date.isAtSameMomentAs(weekStart)) {
+      if (ride.date.isAfter(weekStart) ||
+          ride.date.isAtSameMomentAs(weekStart)) {
         weeklyDistance += distance;
       }
-      if (ride.date.isAfter(monthStart) || ride.date.isAtSameMomentAs(monthStart)) {
+      if (ride.date.isAfter(monthStart) ||
+          ride.date.isAtSameMomentAs(monthStart)) {
         monthlyDistance += distance;
       }
 
@@ -92,7 +102,8 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
 
     // 2. Charges
     final chargesRows = await (db.select(db.chargeLogsTable)
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy(
+              [(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
         .get();
 
     final charges = chargesRows.map((c) => c.toDomain()).toList();
@@ -113,16 +124,19 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
         connectionState == BleConnectionState.authenticated;
 
     if (isConnected && liveSnapshot != null) {
-      latestBattery = liveSnapshot.battery;
-      if (liveSnapshot.odo > maxOdometer) {
-        maxOdometer = liveSnapshot.odo;
+      latestBattery = liveSnapshot.batteryPercent;
+      if (liveSnapshot.odometer > maxOdometer) {
+        maxOdometer = liveSnapshot.odometer;
       }
     }
 
     // 3. Reminders
     final remindersRows = await (db.select(db.remindersTable)
           ..where((t) => t.isCompleted.equals(false))
-          ..orderBy([(t) => OrderingTerm(expression: t.targetDate, mode: OrderingMode.asc)]))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.targetDate, mode: OrderingMode.asc)
+          ]))
         .get();
 
     final reminders = remindersRows.map((r) => r.toDomain()).toList();
