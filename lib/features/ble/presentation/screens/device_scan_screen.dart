@@ -128,7 +128,7 @@ class DeviceScanScreen extends HookConsumerWidget {
 
                   return ListView.separated(
                     itemCount: devices.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final device = devices[index];
                       return ScanResultTile(

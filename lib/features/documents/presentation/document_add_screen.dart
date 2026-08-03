@@ -55,7 +55,7 @@ class _DocumentAddScreenState extends ConsumerState<DocumentAddScreen> {
           });
         }
       } else {
-        final result = await FilePicker.platform.pickFiles(
+        final result = await FilePicker.instance.pickFiles(
           type: FileType.custom,
           allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
         );

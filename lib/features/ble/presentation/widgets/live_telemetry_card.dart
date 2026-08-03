@@ -104,7 +104,7 @@ class LiveTelemetryCard extends StatelessWidget {
               ),
               _buildTelemetryTile(
                 context,
-                icon: LucideIcons.bolt,
+                icon: LucideIcons.zap,
                 label: 'Power',
                 value: '${snapshot.power.toStringAsFixed(2)} kW',
                 color: Colors.orange,
@@ -125,7 +125,7 @@ class LiveTelemetryCard extends StatelessWidget {
               ),
               _buildTelemetryTile(
                 context,
-                icon: LucideIcons.route,
+                icon: LucideIcons.navigation,
                 label: 'Trip Distance',
                 value: '${snapshot.tripDistance.toStringAsFixed(1)} km',
                 color: Colors.indigo,
