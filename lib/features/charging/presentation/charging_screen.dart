@@ -185,7 +185,7 @@ class ChargingScreen extends HookConsumerWidget {
                       child: ChargeCard(
                         log: log,
                         onTap: () {
-                          context.push('/charging/${log.id}', extra: log);
+                          context.push('/charging/${log.id}');
                         },
                       ),
                     );

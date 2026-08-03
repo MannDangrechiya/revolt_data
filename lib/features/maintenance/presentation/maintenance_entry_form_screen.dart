@@ -9,31 +9,42 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class MaintenanceEntryFormScreen extends HookConsumerWidget {
   final MaintenanceLog? log;
+  final String? logId;
 
-  const MaintenanceEntryFormScreen({super.key, this.log});
+  const MaintenanceEntryFormScreen({super.key, this.log, this.logId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isEditing = log != null;
+    final fetchedLog = logId != null ? ref.watch(maintenanceLogByIdProvider(logId!)).asData?.value : null;
+    final effectiveLog = log ?? fetchedLog;
+
+    if (logId != null && ref.watch(maintenanceLogByIdProvider(logId!)).isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Edit Maintenance Log')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final isEditing = effectiveLog != null;
     final formKey = useMemoized(() => GlobalKey<FormState>());
-    final date = useState(log?.date ?? DateTime.now());
-    final component = useState(log?.component ?? MaintenanceComponent.other);
-    final descriptionController = useTextEditingController(text: log?.description ?? '');
-    final odoController = useTextEditingController(text: log != null ? log!.odometerReading.toString() : '');
-    final costController = useTextEditingController(text: log != null ? log!.cost.toString() : '');
+    final date = useState(effectiveLog?.date ?? DateTime.now());
+    final component = useState(effectiveLog?.component ?? MaintenanceComponent.other);
+    final descriptionController = useTextEditingController(text: effectiveLog?.description ?? '');
+    final odoController = useTextEditingController(text: effectiveLog != null ? effectiveLog.odometerReading.toString() : '');
+    final costController = useTextEditingController(text: effectiveLog != null ? effectiveLog.cost.toString() : '');
 
     // New fields
-    final serviceCenterController = useTextEditingController(text: log?.serviceCenter ?? '');
-    final partsReplacedController = useTextEditingController(text: log?.partsReplaced ?? ''); // Simplified: just a text field for comma separated for now
-    final labourCostController = useTextEditingController(text: log?.labourCost?.toString() ?? '');
-    final technicianController = useTextEditingController(text: log?.technician ?? '');
-    final notesController = useTextEditingController(text: log?.notes ?? '');
-    final warrantyClaim = useState(log?.warrantyClaim ?? false);
+    final serviceCenterController = useTextEditingController(text: effectiveLog?.serviceCenter ?? '');
+    final partsReplacedController = useTextEditingController(text: effectiveLog?.partsReplaced ?? ''); // Simplified: just a text field for comma separated for now
+    final labourCostController = useTextEditingController(text: effectiveLog?.labourCost?.toString() ?? '');
+    final technicianController = useTextEditingController(text: effectiveLog?.technician ?? '');
+    final notesController = useTextEditingController(text: effectiveLog?.notes ?? '');
+    final warrantyClaim = useState(effectiveLog?.warrantyClaim ?? false);
 
     // Next service (stored as an absolute odometer; reconstruct the interval for editing)
     final serviceIntervalController = useTextEditingController(
-      text: (log?.nextServiceDueOdometer != null)
-          ? (log!.nextServiceDueOdometer! - log!.odometerReading).toString()
+      text: (effectiveLog?.nextServiceDueOdometer != null)
+          ? (effectiveLog!.nextServiceDueOdometer! - effectiveLog.odometerReading).toString()
           : '',
     );
 

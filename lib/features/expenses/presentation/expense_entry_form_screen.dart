@@ -13,19 +13,30 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class ExpenseEntryFormScreen extends HookConsumerWidget {
   final Expense? expense;
+  final String? expenseId;
 
-  const ExpenseEntryFormScreen({super.key, this.expense});
+  const ExpenseEntryFormScreen({super.key, this.expense, this.expenseId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isEditing = expense != null;
+    final fetchedExpense = expenseId != null ? ref.watch(expenseByIdProvider(expenseId!)).asData?.value : null;
+    final effectiveExpense = expense ?? fetchedExpense;
+
+    if (expenseId != null && ref.watch(expenseByIdProvider(expenseId!)).isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Edit Expense')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final isEditing = effectiveExpense != null;
     final formKey = useMemoized(() => GlobalKey<FormState>());
-    final date = useState(expense?.date ?? DateTime.now());
-    final category = useState(expense?.category ?? ExpenseCategory.service);
-    final amountController = useTextEditingController(text: expense != null ? expense!.amount.toString() : '');
-    final notesController = useTextEditingController(text: expense?.notes ?? '');
-    final descriptionController = useTextEditingController(text: expense?.description ?? '');
-    final receiptPhoto = useState<String?>(expense?.receiptPhotoPath);
+    final date = useState(effectiveExpense?.date ?? DateTime.now());
+    final category = useState(effectiveExpense?.category ?? ExpenseCategory.service);
+    final amountController = useTextEditingController(text: effectiveExpense != null ? effectiveExpense.amount.toString() : '');
+    final notesController = useTextEditingController(text: effectiveExpense?.notes ?? '');
+    final descriptionController = useTextEditingController(text: effectiveExpense?.description ?? '');
+    final receiptPhoto = useState<String?>(effectiveExpense?.receiptPhotoPath);
 
     Future<void> pickReceipt() async {
       final picker = ImagePicker();

@@ -8,10 +8,8 @@ import '../features/charging/presentation/charging_screen.dart';
 import '../features/charging/presentation/charge_entry_form_screen.dart';
 import '../features/expenses/presentation/expenses_screen.dart';
 import '../features/expenses/presentation/expense_entry_form_screen.dart';
-import '../features/expenses/domain/expense.dart';
 import '../features/maintenance/presentation/maintenance_screen.dart';
 import '../features/maintenance/presentation/maintenance_entry_form_screen.dart';
-import '../features/maintenance/domain/maintenance_log.dart';
 import '../features/reminders/presentation/reminders_screen.dart';
 import '../features/analytics/presentation/analytics_screen.dart';
 import '../features/analytics/presentation/battery_analytics_screen.dart';
@@ -21,15 +19,11 @@ import '../features/settings/presentation/profile_screen.dart';
 import '../features/bikes/presentation/bike_profile_screen.dart';
 import '../features/bikes/presentation/bike_edit_screen.dart';
 import '../features/rides/presentation/ride_details_screen.dart';
-import '../features/rides/domain/ride.dart';
 import '../features/charging/presentation/charge_details_screen.dart';
-import '../features/charging/domain/charge_log.dart';
 import '../features/documents/presentation/documents_screen.dart';
 import '../features/documents/presentation/document_add_screen.dart';
 import '../features/documents/presentation/document_preview_screen.dart';
-import '../features/documents/domain/document.dart';
 import '../features/reminders/presentation/reminder_add_edit_screen.dart';
-import '../features/reminders/domain/reminder.dart';
 import '../features/reports/presentation/reports_screen.dart';
 import '../features/analytics/presentation/statistics_screen.dart';
 import '../features/ble/presentation/screens/device_status_screen.dart';
@@ -98,22 +92,40 @@ final routerDelegate = GoRouter(
                   pageBuilder: (context, state) => buildPageWithDefaultTransition(
                     context: context,
                     state: state,
-                    child: RideEntryFormScreen(ride: state.extra as Ride?),
+                    child: const RideEntryFormScreen(),
+                  ),
+                ),
+                GoRoute(
+                  path: 'edit/:id',
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                    context: context,
+                    state: state,
+                    child: RideEntryFormScreen(rideId: state.pathParameters['id']),
                   ),
                 ),
                 GoRoute(
                   path: ':id',
                   pageBuilder: (context, state) {
-                    final id = state.pathParameters['id'];
-                    final ride = state.extra as Ride?;
+                    final id = state.pathParameters['id']!;
                     return buildPageWithDefaultTransition(
                       context: context,
                       state: state,
-                      child: RideDetailsScreen(ride: ride!, rideId: id),
+                      child: RideDetailsScreen(rideId: id),
                     );
                   },
                 ),
               ],
+            ),
+            GoRoute(
+              path: '/ride/detail/:id',
+              pageBuilder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return buildPageWithDefaultTransition(
+                  context: context,
+                  state: state,
+                  child: RideDetailsScreen(rideId: id),
+                );
+              },
             ),
           ],
         ),
@@ -140,24 +152,40 @@ final routerDelegate = GoRouter(
                   pageBuilder: (context, state) => buildPageWithDefaultTransition(
                     context: context,
                     state: state,
-                    child: ChargeEntryFormScreen(
-                      log: state.extra as ChargeLog?,
-                    ),
+                    child: const ChargeEntryFormScreen(),
+                  ),
+                ),
+                GoRoute(
+                  path: 'edit/:id',
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                    context: context,
+                    state: state,
+                    child: ChargeEntryFormScreen(logId: state.pathParameters['id']),
                   ),
                 ),
                 GoRoute(
                   path: ':id',
                   pageBuilder: (context, state) {
-                    final id = state.pathParameters['id'];
-                    final log = state.extra as ChargeLog?;
+                    final id = state.pathParameters['id']!;
                     return buildPageWithDefaultTransition(
                       context: context,
                       state: state,
-                      child: ChargeDetailsScreen(log: log!, chargeId: id),
+                      child: ChargeDetailsScreen(chargeId: id),
                     );
                   },
                 ),
               ],
+            ),
+            GoRoute(
+              path: '/charging/detail/:id',
+              pageBuilder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return buildPageWithDefaultTransition(
+                  context: context,
+                  state: state,
+                  child: ChargeDetailsScreen(chargeId: id),
+                );
+              },
             ),
           ],
         ),
@@ -194,7 +222,15 @@ final routerDelegate = GoRouter(
           pageBuilder: (context, state) => buildPageWithDefaultTransition(
             context: context,
             state: state,
-            child: DevicePairScreen(deviceId: state.extra as String?),
+            child: DevicePairScreen(deviceId: state.uri.queryParameters['deviceId']),
+          ),
+        ),
+        GoRoute(
+          path: 'pair/:deviceId',
+          pageBuilder: (context, state) => buildPageWithDefaultTransition(
+            context: context,
+            state: state,
+            child: DevicePairScreen(deviceId: state.pathParameters['deviceId']),
           ),
         ),
       ],
@@ -219,8 +255,11 @@ final routerDelegate = GoRouter(
     ),
     GoRoute(
       path: '/expenses/edit',
-      builder: (context, state) =>
-          ExpenseEntryFormScreen(expense: state.extra as Expense?),
+      builder: (context, state) => const ExpenseEntryFormScreen(),
+    ),
+    GoRoute(
+      path: '/expenses/edit/:id',
+      builder: (context, state) => ExpenseEntryFormScreen(expenseId: state.pathParameters['id']),
     ),
     GoRoute(
       path: '/maintenance',
@@ -232,8 +271,11 @@ final routerDelegate = GoRouter(
     ),
     GoRoute(
       path: '/maintenance/edit',
-      builder: (context, state) =>
-          MaintenanceEntryFormScreen(log: state.extra as MaintenanceLog?),
+      builder: (context, state) => const MaintenanceEntryFormScreen(),
+    ),
+    GoRoute(
+      path: '/maintenance/edit/:id',
+      builder: (context, state) => MaintenanceEntryFormScreen(logId: state.pathParameters['id']),
     ),
     GoRoute(
       path: '/reminders',
@@ -245,8 +287,11 @@ final routerDelegate = GoRouter(
         ),
         GoRoute(
           path: 'edit',
-          builder: (context, state) =>
-              ReminderAddEditScreen(reminder: state.extra as Reminder),
+          builder: (context, state) => const ReminderAddEditScreen(),
+        ),
+        GoRoute(
+          path: 'edit/:id',
+          builder: (context, state) => ReminderAddEditScreen(reminderId: state.pathParameters['id']),
         ),
       ],
     ),
@@ -260,8 +305,11 @@ final routerDelegate = GoRouter(
         ),
         GoRoute(
           path: 'preview',
-          builder: (context, state) =>
-              DocumentPreviewScreen(document: state.extra as Document),
+          builder: (context, state) => DocumentPreviewScreen(documentId: state.uri.queryParameters['id'] ?? ''),
+        ),
+        GoRoute(
+          path: 'preview/:id',
+          builder: (context, state) => DocumentPreviewScreen(documentId: state.pathParameters['id']!),
         ),
       ],
     ),

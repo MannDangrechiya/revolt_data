@@ -9,8 +9,9 @@ import '../domain/reminder.dart';
 
 class ReminderAddEditScreen extends ConsumerStatefulWidget {
   final Reminder? reminder;
+  final String? reminderId;
 
-  const ReminderAddEditScreen({super.key, this.reminder});
+  const ReminderAddEditScreen({super.key, this.reminder, this.reminderId});
 
   @override
   ConsumerState<ReminderAddEditScreen> createState() => _ReminderAddEditScreenState();
@@ -26,6 +27,7 @@ class _ReminderAddEditScreenState extends ConsumerState<ReminderAddEditScreen> {
   
   DateTime? _selectedDate;
   String _selectedType = 'Service';
+  bool _initializedFromProvider = false;
   
   final List<String> _types = [
     'Service',
@@ -49,6 +51,19 @@ class _ReminderAddEditScreenState extends ConsumerState<ReminderAddEditScreen> {
     _selectedDate = widget.reminder?.targetDate;
     if (widget.reminder?.type != null && _types.contains(widget.reminder!.type!)) {
       _selectedType = widget.reminder!.type!;
+    }
+  }
+
+  void _populateFromReminder(Reminder r) {
+    if (_initializedFromProvider) return;
+    _initializedFromProvider = true;
+    _titleController.text = r.title;
+    _bodyController.text = r.body;
+    _odometerController.text = r.targetOdometer?.toString() ?? '';
+    _noteController.text = r.note ?? '';
+    _selectedDate = r.targetDate;
+    if (r.type != null && _types.contains(r.type!)) {
+      _selectedType = r.type!;
     }
   }
 
@@ -97,9 +112,24 @@ class _ReminderAddEditScreenState extends ConsumerState<ReminderAddEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.reminderId != null) {
+      final reminderAsync = ref.watch(reminderByIdProvider(widget.reminderId!));
+      if (reminderAsync.isLoading) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('Edit Reminder')),
+          body: const Center(child: CircularProgressIndicator()),
+        );
+      }
+      if (reminderAsync.value != null) {
+        _populateFromReminder(reminderAsync.value!);
+      }
+    }
+
+    final isEditing = widget.reminder != null || widget.reminderId != null;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.reminder == null ? 'Add Reminder' : 'Edit Reminder'),
+        title: Text(!isEditing ? 'Add Reminder' : 'Edit Reminder'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

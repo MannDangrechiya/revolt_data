@@ -137,7 +137,7 @@ class DeviceScanScreen extends HookConsumerWidget {
                           try {
                             await repo.connect(device.id);
                             if (context.mounted) {
-                              context.push('/device/pair', extra: device.id);
+                              context.push('/device/pair/${device.id}');
                             }
                           } catch (e) {
                             if (context.mounted) {

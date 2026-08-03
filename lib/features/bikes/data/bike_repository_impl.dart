@@ -18,6 +18,12 @@ class BikeRepositoryImpl implements BikeRepository {
   }
 
   @override
+  Future<Bike?> getBikeById(int id) async {
+    final row = await (_db.select(_db.bikesTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+    return row?.toDomain();
+  }
+
+  @override
   Future<void> saveBike(Bike bike) async {
     await _db.into(_db.bikesTable).insert(bike.toCompanion());
   }

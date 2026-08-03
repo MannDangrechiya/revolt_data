@@ -50,3 +50,10 @@ Future<double> totalExpenses(Ref ref) async {
   final map = await ref.watch(expensesByCategoryProvider.future);
   return map.values.fold<double>(0.0, (sum, val) => sum + val);
 }
+
+@riverpod
+Future<Expense?> expenseById(Ref ref, String id) async {
+  final db = ref.watch(databaseProvider);
+  final row = await (db.select(db.expensesTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+  return row?.toDomain();
+}

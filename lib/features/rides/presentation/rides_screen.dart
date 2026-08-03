@@ -238,7 +238,7 @@ class RidesScreen extends HookConsumerWidget {
                   child: RideCard(
                     ride: ride,
                     onTap: () {
-                      context.push('/rides/${ride.id}', extra: ride);
+                      context.push('/rides/${ride.id}');
                     },
                     onLongPress: () {
                       _showRideOptions(context, ref, ride);

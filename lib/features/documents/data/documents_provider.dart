@@ -28,3 +28,12 @@ class Documents extends _$Documents {
     await (db.delete(db.documentsTable)..where((t) => t.id.equals(id))).go();
   }
 }
+
+@riverpod
+Future<Document?> documentById(Ref ref, String id) async {
+  final intId = int.tryParse(id);
+  if (intId == null) return null;
+  final db = ref.watch(databaseProvider);
+  final row = await (db.select(db.documentsTable)..where((t) => t.id.equals(intId))).getSingleOrNull();
+  return row?.toDomain();
+}

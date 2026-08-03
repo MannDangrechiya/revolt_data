@@ -168,7 +168,7 @@ class ExpensesScreen extends HookConsumerWidget {
                             ref.read(expensesProvider.notifier).removeExpense(expense.id);
                           },
                         ),
-                        onTap: () => context.push('/expenses/edit', extra: expense),
+                        onTap: () => context.push('/expenses/edit/${expense.id}'),
                       );
                     },
                     childCount: filteredExpenses.length,

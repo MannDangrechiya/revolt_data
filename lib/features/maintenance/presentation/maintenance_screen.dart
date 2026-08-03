@@ -185,7 +185,7 @@ class MaintenanceScreen extends HookConsumerWidget {
                                     icon: const Icon(Icons.edit),
                                     label: const Text('Edit'),
                                     onPressed: () {
-                                      context.push('/maintenance/edit', extra: log);
+                                      context.push('/maintenance/edit/${log.id}');
                                     },
                                   ),
                                   TextButton.icon(

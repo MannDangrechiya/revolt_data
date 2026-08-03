@@ -44,3 +44,10 @@ Future<Map<MaintenanceComponent, List<MaintenanceLog>>> maintenanceByComponent(R
   }
   return map;
 }
+
+@riverpod
+Future<MaintenanceLog?> maintenanceLogById(Ref ref, String id) async {
+  final db = ref.watch(databaseProvider);
+  final row = await (db.select(db.maintenanceLogsTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+  return row?.toDomain();
+}
