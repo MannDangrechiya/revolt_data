@@ -35,6 +35,7 @@ _ChargeLog _$ChargeLogFromJson(Map<String, dynamic> json) => _ChargeLog(
           .toList() ??
       const [],
   bikeId: (json['bikeId'] as num?)?.toInt(),
+  source: json['source'] as String? ?? 'manual',
 );
 
 Map<String, dynamic> _$ChargeLogToJson(_ChargeLog instance) =>
@@ -59,6 +60,7 @@ Map<String, dynamic> _$ChargeLogToJson(_ChargeLog instance) =>
       'maxChargingPowerKw': instance.maxChargingPowerKw,
       'photoPaths': instance.photoPaths,
       'bikeId': instance.bikeId,
+      'source': instance.source,
     };
 
 const _$PaymentMethodEnumMap = {

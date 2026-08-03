@@ -48,6 +48,7 @@ abstract class ChargeLog with _$ChargeLog {
     double? maxChargingPowerKw,
     @Default([]) List<String> photoPaths,
     int? bikeId,
+    @Default('manual') String source,
   }) = _ChargeLog;
 
   factory ChargeLog.fromJson(Map<String, dynamic> json) => _$ChargeLogFromJson(json);

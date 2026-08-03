@@ -85,7 +85,7 @@ final class ChargingLogsProvider
   ChargingLogs create() => ChargingLogs();
 }
 
-String _$chargingLogsHash() => r'aaad73c14046820e6eb0a7bd4995a01255311f6a';
+String _$chargingLogsHash() => r'5cb10e7f2b246176c2a1f8888913970860faac3a';
 
 abstract class _$ChargingLogs extends $StreamNotifier<List<ChargeLog>> {
   Stream<List<ChargeLog>> build();

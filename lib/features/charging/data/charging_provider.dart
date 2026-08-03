@@ -31,7 +31,7 @@ class ChargingLogs extends _$ChargingLogs {
     });
   }
 
-  Future<void> addChargeLog(ChargeLog log) async {
+  Future<void> addChargeLog(ChargeLog log, {String source = 'manual'}) async {
     final db = ref.watch(databaseProvider);
     // Check for anomaly before adding
     final anomaly = ChargingAnomaly.checkAnomaly(
@@ -45,7 +45,8 @@ class ChargingLogs extends _$ChargingLogs {
       throw Exception(anomaly.message);
     }
 
-    await db.into(db.chargeLogsTable).insert(log.toCompanion());
+    final logWithSource = log.copyWith(source: source);
+    await db.into(db.chargeLogsTable).insert(logWithSource.toCompanion());
   }
 
   Future<void> removeChargeLog(String id) async {

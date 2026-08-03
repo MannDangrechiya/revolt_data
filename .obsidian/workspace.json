@@ -1,0 +1,219 @@
+{
+  "main": {
+    "id": "42ba4fd217869937",
+    "type": "split",
+    "children": [
+      {
+        "id": "a24418d219e65925",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6f33267e555da01d",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Untitled.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 0,
+                  "zoom": 0
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Untitled"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "061a47e27d6c6986",
+    "type": "split",
+    "children": [
+      {
+        "id": "c453812f413f9d4b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7edaf6c1ae57066b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "2fd32fbdafa866d1",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "2095b42c500e095e",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "b60998f9e0679d68",
+    "type": "split",
+    "children": [
+      {
+        "id": "e02f8990cd53d711",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cff3019527651389",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Untitled.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "f84dd8b039728cd6",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Untitled.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "0ce098f7830f2662",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "77d46cbbe61024e2",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "381abc7cd9ee481f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Untitled.canvas",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "6f33267e555da01d",
+  "lastOpenFiles": [
+    "stitch_ui_documentation/Global Doc/21_Behavior_Preservation_Specification.md",
+    "stitch_ui_documentation/Global Doc/20_Final_Green_Light_Report.md",
+    "stitch_ui_documentation/Global Doc/13_Stitch_UI_Blueprint.md",
+    "stitch_ui_documentation/Global Doc/12_UI_Replacement_Guide.md",
+    "stitch_ui_documentation/Global Doc/11_File_Dependency_Map.md",
+    "stitch_ui_documentation/Global Doc/09_Design_System.md",
+    "stitch_ui_documentation/Global Doc/08_Navigation_Map.md",
+    "stitch_ui_documentation/Global Doc/01_Project_Overview.md",
+    "stitch_ui_documentation/Global Doc",
+    "stitch_ui_documentation/New folder",
+    "stitch_ui_documentation.zip",
+    "stitch_ui_documentation/21_Behavior_Preservation_Specification.md",
+    "Untitled.canvas",
+    "stitch_ui_documentation/20_Final_Green_Light_Report.md",
+    "stitch_ui_documentation/19_Files_Requiring_Refactoring.md",
+    "stitch_ui_documentation/18_UI_Safety_Checklist.md",
+    "stitch_ui_documentation/17_Missing_Documentation.md",
+    "stitch_ui_documentation/16_Verification_Report.md",
+    "stitch_ui_documentation/15_Final_Summary.md",
+    "stitch_ui_documentation/02_Application_Flow.md",
+    "stitch_ui_documentation/14_Risk_Assessment.md",
+    "stitch_ui_documentation/13_Stitch_UI_Blueprint.md"
+  ]
+}

@@ -30,7 +30,7 @@ class Rides extends _$Rides {
     );
   }
 
-  Future<void> addRide(Ride ride) async {
+  Future<void> addRide(Ride ride, {String source = 'manual'}) async {
     final db = ref.watch(databaseProvider);
     // Chronological validation
     final currentRides = await db.select(db.ridesTable).get();
@@ -40,7 +40,8 @@ class Rides extends _$Rides {
         throw Exception('Start odometer (${ride.startOdometer}) cannot be less than the latest log\'s end odometer ($latestEndOdo).');
       }
     }
-    await db.into(db.ridesTable).insert(ride.toCompanion());
+    final rideWithSource = ride.copyWith(source: source);
+    await db.into(db.ridesTable).insert(rideWithSource.toCompanion());
   }
 
   Future<void> removeRide(String id) async {

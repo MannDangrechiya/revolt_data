@@ -15,7 +15,7 @@ class MockRidesNotifier extends Rides {
   }
 
   @override
-  Future<void> addRide(Ride ride) async {
+  Future<void> addRide(Ride ride, {String source = 'manual'}) async {
     addRideCalled = true;
     addedRide = ride;
   }

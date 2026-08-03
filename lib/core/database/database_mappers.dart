@@ -38,6 +38,7 @@ extension RideDataMapper on RidesTableData {
       customTags: customTags,
       isFavorite: isFavorite,
       bikeId: bikeId,
+      source: source,
     );
   }
 }
@@ -71,6 +72,7 @@ extension RideMapper on Ride {
       customTags: Value(customTags),
       isFavorite: Value(isFavorite),
       bikeId: Value(bikeId),
+      source: Value(source),
     );
   }
 }
@@ -98,6 +100,7 @@ extension ChargeLogDataMapper on ChargeLogsTableData {
       maxChargingPowerKw: maxChargingPowerKw,
       photoPaths: photoPaths,
       bikeId: bikeId,
+      source: source,
     );
   }
 }
@@ -125,6 +128,7 @@ extension ChargeLogMapper on ChargeLog {
       maxChargingPowerKw: Value(maxChargingPowerKw),
       photoPaths: Value(photoPaths),
       bikeId: Value(bikeId),
+      source: Value(source),
     );
   }
 }

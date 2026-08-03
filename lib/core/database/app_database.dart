@@ -78,7 +78,8 @@ class RidesTable extends Table {
   TextColumn get routeNotes => text().nullable()();
   TextColumn get customTags => text().map(const StringListConverter()).withDefault(const Constant(''))();
   BoolColumn get isFavorite => boolean().withDefault(const Constant(false))();
-  IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+  IntColumn get bikeId => integer().nullable()();
+  TextColumn get source => text().withDefault(const Constant('manual'))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -103,9 +104,10 @@ class ChargeLogsTable extends Table {
   TextColumn get chargingMethod => text().nullable()();
   RealColumn get electricityPrice => real().nullable()();
   TextColumn get photoPaths => text().map(const StringListConverter()).withDefault(const Constant(''))();
-  IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+  IntColumn get bikeId => integer().nullable()();
   TextColumn get providerName => text().nullable()();
   RealColumn get maxChargingPowerKw => real().nullable()();
+  TextColumn get source => text().withDefault(const Constant('manual'))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -120,7 +122,7 @@ class ExpensesTable extends Table {
   TextColumn get receiptPhotoPath => text().nullable()();
   // New fields
   TextColumn get description => text().nullable()();
-  IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+  IntColumn get bikeId => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -155,7 +157,7 @@ class MaintenanceLogsTable extends Table {
   BoolColumn get softwareUpdate => boolean().withDefault(const Constant(false))();
   BoolColumn get generalInspection => boolean().withDefault(const Constant(false))();
   
-  IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+  IntColumn get bikeId => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -168,7 +170,7 @@ class DocumentsTable extends Table {
   TextColumn get filePath => text()();
   DateTimeColumn get uploadDate => dateTime()();
   TextColumn get notes => text().nullable()();
-  IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+  IntColumn get bikeId => integer().nullable()();
 }
 
 class RemindersTable extends Table {
@@ -183,7 +185,7 @@ class RemindersTable extends Table {
   TextColumn get type => text().nullable()();
   TextColumn get note => text().nullable()();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
-  IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+  IntColumn get bikeId => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -194,7 +196,7 @@ class BatteryHealthSnapshotsTable extends Table {
   DateTimeColumn get date => dateTime()();
   RealColumn get healthPercent => real()();
   RealColumn get rangeAtFullCharge => real()();
-  IntColumn get bikeId => integer().nullable().references(BikesTable, #id, onDelete: KeyAction.cascade)();
+  IntColumn get bikeId => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -216,7 +218,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -287,6 +289,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) {
         await m.addColumn(chargeLogsTable, chargeLogsTable.providerName);
         await m.addColumn(chargeLogsTable, chargeLogsTable.maxChargingPowerKw);
+      }
+      if (from < 5) {
+        await m.addColumn(ridesTable, ridesTable.source);
+        await m.addColumn(chargeLogsTable, chargeLogsTable.source);
       }
     },
     beforeOpen: (details) async {

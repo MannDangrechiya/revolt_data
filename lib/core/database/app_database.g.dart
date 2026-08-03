@@ -1510,9 +1510,16 @@ class $RidesTableTable extends RidesTable
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bikes_table (id) ON DELETE CASCADE',
-    ),
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('manual'),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -1542,6 +1549,7 @@ class $RidesTableTable extends RidesTable
     customTags,
     isFavorite,
     bikeId,
+    source,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1729,6 +1737,12 @@ class $RidesTableTable extends RidesTable
         bikeId.isAcceptableOrUnknown(data['bike_id']!, _bikeIdMeta),
       );
     }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    }
     return context;
   }
 
@@ -1850,6 +1864,10 @@ class $RidesTableTable extends RidesTable
         DriftSqlType.int,
         data['${effectivePrefix}bike_id'],
       ),
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
     );
   }
 
@@ -1895,6 +1913,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
   final List<String> customTags;
   final bool isFavorite;
   final int? bikeId;
+  final String source;
   const RidesTableData({
     required this.id,
     required this.date,
@@ -1922,6 +1941,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     required this.customTags,
     required this.isFavorite,
     this.bikeId,
+    required this.source,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2000,6 +2020,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     if (!nullToAbsent || bikeId != null) {
       map['bike_id'] = Variable<int>(bikeId);
     }
+    map['source'] = Variable<String>(source);
     return map;
   }
 
@@ -2061,6 +2082,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
       bikeId: bikeId == null && nullToAbsent
           ? const Value.absent()
           : Value(bikeId),
+      source: Value(source),
     );
   }
 
@@ -2102,6 +2124,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
       customTags: serializer.fromJson<List<String>>(json['customTags']),
       isFavorite: serializer.fromJson<bool>(json['isFavorite']),
       bikeId: serializer.fromJson<int?>(json['bikeId']),
+      source: serializer.fromJson<String>(json['source']),
     );
   }
   @override
@@ -2140,6 +2163,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
       'customTags': serializer.toJson<List<String>>(customTags),
       'isFavorite': serializer.toJson<bool>(isFavorite),
       'bikeId': serializer.toJson<int?>(bikeId),
+      'source': serializer.toJson<String>(source),
     };
   }
 
@@ -2170,6 +2194,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     List<String>? customTags,
     bool? isFavorite,
     Value<int?> bikeId = const Value.absent(),
+    String? source,
   }) => RidesTableData(
     id: id ?? this.id,
     date: date ?? this.date,
@@ -2205,6 +2230,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     customTags: customTags ?? this.customTags,
     isFavorite: isFavorite ?? this.isFavorite,
     bikeId: bikeId.present ? bikeId.value : this.bikeId,
+    source: source ?? this.source,
   );
   RidesTableData copyWithCompanion(RidesTableCompanion data) {
     return RidesTableData(
@@ -2266,6 +2292,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
           ? data.isFavorite.value
           : this.isFavorite,
       bikeId: data.bikeId.present ? data.bikeId.value : this.bikeId,
+      source: data.source.present ? data.source.value : this.source,
     );
   }
 
@@ -2297,7 +2324,8 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
           ..write('routeNotes: $routeNotes, ')
           ..write('customTags: $customTags, ')
           ..write('isFavorite: $isFavorite, ')
-          ..write('bikeId: $bikeId')
+          ..write('bikeId: $bikeId, ')
+          ..write('source: $source')
           ..write(')'))
         .toString();
   }
@@ -2330,6 +2358,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     customTags,
     isFavorite,
     bikeId,
+    source,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -2360,7 +2389,8 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
           other.routeNotes == this.routeNotes &&
           other.customTags == this.customTags &&
           other.isFavorite == this.isFavorite &&
-          other.bikeId == this.bikeId);
+          other.bikeId == this.bikeId &&
+          other.source == this.source);
 }
 
 class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
@@ -2390,6 +2420,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
   final Value<List<String>> customTags;
   final Value<bool> isFavorite;
   final Value<int?> bikeId;
+  final Value<String> source;
   final Value<int> rowid;
   const RidesTableCompanion({
     this.id = const Value.absent(),
@@ -2418,6 +2449,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     this.customTags = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.bikeId = const Value.absent(),
+    this.source = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RidesTableCompanion.insert({
@@ -2447,6 +2479,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     this.customTags = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.bikeId = const Value.absent(),
+    this.source = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        date = Value(date),
@@ -2483,6 +2516,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     Expression<String>? customTags,
     Expression<bool>? isFavorite,
     Expression<int>? bikeId,
+    Expression<String>? source,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2513,6 +2547,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
       if (customTags != null) 'custom_tags': customTags,
       if (isFavorite != null) 'is_favorite': isFavorite,
       if (bikeId != null) 'bike_id': bikeId,
+      if (source != null) 'source': source,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2544,6 +2579,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     Value<List<String>>? customTags,
     Value<bool>? isFavorite,
     Value<int?>? bikeId,
+    Value<String>? source,
     Value<int>? rowid,
   }) {
     return RidesTableCompanion(
@@ -2574,6 +2610,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
       customTags: customTags ?? this.customTags,
       isFavorite: isFavorite ?? this.isFavorite,
       bikeId: bikeId ?? this.bikeId,
+      source: source ?? this.source,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2669,6 +2706,9 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     if (bikeId.present) {
       map['bike_id'] = Variable<int>(bikeId.value);
     }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2704,6 +2744,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
           ..write('customTags: $customTags, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('bikeId: $bikeId, ')
+          ..write('source: $source, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2900,9 +2941,6 @@ class $ChargeLogsTableTable extends ChargeLogsTable
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bikes_table (id) ON DELETE CASCADE',
-    ),
   );
   static const VerificationMeta _providerNameMeta = const VerificationMeta(
     'providerName',
@@ -2926,6 +2964,16 @@ class $ChargeLogsTableTable extends ChargeLogsTable
         type: DriftSqlType.double,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('manual'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2948,6 +2996,7 @@ class $ChargeLogsTableTable extends ChargeLogsTable
     bikeId,
     providerName,
     maxChargingPowerKw,
+    source,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3098,6 +3147,12 @@ class $ChargeLogsTableTable extends ChargeLogsTable
         ),
       );
     }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    }
     return context;
   }
 
@@ -3193,6 +3248,10 @@ class $ChargeLogsTableTable extends ChargeLogsTable
         DriftSqlType.double,
         data['${effectivePrefix}max_charging_power_kw'],
       ),
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
     );
   }
 
@@ -3231,6 +3290,7 @@ class ChargeLogsTableData extends DataClass
   final int? bikeId;
   final String? providerName;
   final double? maxChargingPowerKw;
+  final String source;
   const ChargeLogsTableData({
     required this.id,
     required this.date,
@@ -3252,6 +3312,7 @@ class ChargeLogsTableData extends DataClass
     this.bikeId,
     this.providerName,
     this.maxChargingPowerKw,
+    required this.source,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3308,6 +3369,7 @@ class ChargeLogsTableData extends DataClass
     if (!nullToAbsent || maxChargingPowerKw != null) {
       map['max_charging_power_kw'] = Variable<double>(maxChargingPowerKw);
     }
+    map['source'] = Variable<String>(source);
     return map;
   }
 
@@ -3353,6 +3415,7 @@ class ChargeLogsTableData extends DataClass
       maxChargingPowerKw: maxChargingPowerKw == null && nullToAbsent
           ? const Value.absent()
           : Value(maxChargingPowerKw),
+      source: Value(source),
     );
   }
 
@@ -3388,6 +3451,7 @@ class ChargeLogsTableData extends DataClass
       maxChargingPowerKw: serializer.fromJson<double?>(
         json['maxChargingPowerKw'],
       ),
+      source: serializer.fromJson<String>(json['source']),
     );
   }
   @override
@@ -3418,6 +3482,7 @@ class ChargeLogsTableData extends DataClass
       'bikeId': serializer.toJson<int?>(bikeId),
       'providerName': serializer.toJson<String?>(providerName),
       'maxChargingPowerKw': serializer.toJson<double?>(maxChargingPowerKw),
+      'source': serializer.toJson<String>(source),
     };
   }
 
@@ -3442,6 +3507,7 @@ class ChargeLogsTableData extends DataClass
     Value<int?> bikeId = const Value.absent(),
     Value<String?> providerName = const Value.absent(),
     Value<double?> maxChargingPowerKw = const Value.absent(),
+    String? source,
   }) => ChargeLogsTableData(
     id: id ?? this.id,
     date: date ?? this.date,
@@ -3469,6 +3535,7 @@ class ChargeLogsTableData extends DataClass
     maxChargingPowerKw: maxChargingPowerKw.present
         ? maxChargingPowerKw.value
         : this.maxChargingPowerKw,
+    source: source ?? this.source,
   );
   ChargeLogsTableData copyWithCompanion(ChargeLogsTableCompanion data) {
     return ChargeLogsTableData(
@@ -3516,6 +3583,7 @@ class ChargeLogsTableData extends DataClass
       maxChargingPowerKw: data.maxChargingPowerKw.present
           ? data.maxChargingPowerKw.value
           : this.maxChargingPowerKw,
+      source: data.source.present ? data.source.value : this.source,
     );
   }
 
@@ -3541,13 +3609,14 @@ class ChargeLogsTableData extends DataClass
           ..write('photoPaths: $photoPaths, ')
           ..write('bikeId: $bikeId, ')
           ..write('providerName: $providerName, ')
-          ..write('maxChargingPowerKw: $maxChargingPowerKw')
+          ..write('maxChargingPowerKw: $maxChargingPowerKw, ')
+          ..write('source: $source')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     date,
     durationMinutes,
@@ -3568,7 +3637,8 @@ class ChargeLogsTableData extends DataClass
     bikeId,
     providerName,
     maxChargingPowerKw,
-  );
+    source,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3592,7 +3662,8 @@ class ChargeLogsTableData extends DataClass
           other.photoPaths == this.photoPaths &&
           other.bikeId == this.bikeId &&
           other.providerName == this.providerName &&
-          other.maxChargingPowerKw == this.maxChargingPowerKw);
+          other.maxChargingPowerKw == this.maxChargingPowerKw &&
+          other.source == this.source);
 }
 
 class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
@@ -3616,6 +3687,7 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
   final Value<int?> bikeId;
   final Value<String?> providerName;
   final Value<double?> maxChargingPowerKw;
+  final Value<String> source;
   final Value<int> rowid;
   const ChargeLogsTableCompanion({
     this.id = const Value.absent(),
@@ -3638,6 +3710,7 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     this.bikeId = const Value.absent(),
     this.providerName = const Value.absent(),
     this.maxChargingPowerKw = const Value.absent(),
+    this.source = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChargeLogsTableCompanion.insert({
@@ -3661,6 +3734,7 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     this.bikeId = const Value.absent(),
     this.providerName = const Value.absent(),
     this.maxChargingPowerKw = const Value.absent(),
+    this.source = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        date = Value(date),
@@ -3692,6 +3766,7 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     Expression<int>? bikeId,
     Expression<String>? providerName,
     Expression<double>? maxChargingPowerKw,
+    Expression<String>? source,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3716,6 +3791,7 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
       if (providerName != null) 'provider_name': providerName,
       if (maxChargingPowerKw != null)
         'max_charging_power_kw': maxChargingPowerKw,
+      if (source != null) 'source': source,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3741,6 +3817,7 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     Value<int?>? bikeId,
     Value<String?>? providerName,
     Value<double?>? maxChargingPowerKw,
+    Value<String>? source,
     Value<int>? rowid,
   }) {
     return ChargeLogsTableCompanion(
@@ -3764,6 +3841,7 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
       bikeId: bikeId ?? this.bikeId,
       providerName: providerName ?? this.providerName,
       maxChargingPowerKw: maxChargingPowerKw ?? this.maxChargingPowerKw,
+      source: source ?? this.source,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3839,6 +3917,9 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
     if (maxChargingPowerKw.present) {
       map['max_charging_power_kw'] = Variable<double>(maxChargingPowerKw.value);
     }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3868,6 +3949,7 @@ class ChargeLogsTableCompanion extends UpdateCompanion<ChargeLogsTableData> {
           ..write('bikeId: $bikeId, ')
           ..write('providerName: $providerName, ')
           ..write('maxChargingPowerKw: $maxChargingPowerKw, ')
+          ..write('source: $source, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3955,9 +4037,6 @@ class $ExpensesTableTable extends ExpensesTable
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bikes_table (id) ON DELETE CASCADE',
-    ),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -4704,9 +4783,6 @@ class $MaintenanceLogsTableTable extends MaintenanceLogsTable
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bikes_table (id) ON DELETE CASCADE',
-    ),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -5911,9 +5987,6 @@ class $DocumentsTableTable extends DocumentsTable
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bikes_table (id) ON DELETE CASCADE',
-    ),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -6408,9 +6481,6 @@ class $RemindersTableTable extends RemindersTable
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bikes_table (id) ON DELETE CASCADE',
-    ),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -7011,9 +7081,6 @@ class $BatteryHealthSnapshotsTableTable extends BatteryHealthSnapshotsTable
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bikes_table (id) ON DELETE CASCADE',
-    ),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -7366,60 +7433,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     remindersTable,
     batteryHealthSnapshotsTable,
   ];
-  @override
-  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'bikes_table',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('rides_table', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'bikes_table',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('charge_logs_table', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'bikes_table',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('expenses_table', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'bikes_table',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('maintenance_logs_table', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'bikes_table',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('documents_table', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'bikes_table',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('reminders_table', kind: UpdateKind.delete)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
-        'bikes_table',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [
-        TableUpdate('battery_health_snapshots_table', kind: UpdateKind.delete),
-      ],
-    ),
-  ]);
 }
 
 typedef $$BikesTableTableCreateCompanionBuilder =
@@ -7472,162 +7485,6 @@ typedef $$BikesTableTableUpdateCompanionBuilder =
       Value<String?> customNotes,
       Value<String?> photoPath,
     });
-
-final class $$BikesTableTableReferences
-    extends BaseReferences<_$AppDatabase, $BikesTableTable, BikesTableData> {
-  $$BikesTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$RidesTableTable, List<RidesTableData>>
-  _ridesTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.ridesTable,
-    aliasName: $_aliasNameGenerator(db.bikesTable.id, db.ridesTable.bikeId),
-  );
-
-  $$RidesTableTableProcessedTableManager get ridesTableRefs {
-    final manager = $$RidesTableTableTableManager(
-      $_db,
-      $_db.ridesTable,
-    ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_ridesTableRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$ChargeLogsTableTable, List<ChargeLogsTableData>>
-  _chargeLogsTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.chargeLogsTable,
-    aliasName: $_aliasNameGenerator(
-      db.bikesTable.id,
-      db.chargeLogsTable.bikeId,
-    ),
-  );
-
-  $$ChargeLogsTableTableProcessedTableManager get chargeLogsTableRefs {
-    final manager = $$ChargeLogsTableTableTableManager(
-      $_db,
-      $_db.chargeLogsTable,
-    ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _chargeLogsTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$ExpensesTableTable, List<ExpensesTableData>>
-  _expensesTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.expensesTable,
-    aliasName: $_aliasNameGenerator(db.bikesTable.id, db.expensesTable.bikeId),
-  );
-
-  $$ExpensesTableTableProcessedTableManager get expensesTableRefs {
-    final manager = $$ExpensesTableTableTableManager(
-      $_db,
-      $_db.expensesTable,
-    ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_expensesTableRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $MaintenanceLogsTableTable,
-    List<MaintenanceLogsTableData>
-  >
-  _maintenanceLogsTableRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.maintenanceLogsTable,
-        aliasName: $_aliasNameGenerator(
-          db.bikesTable.id,
-          db.maintenanceLogsTable.bikeId,
-        ),
-      );
-
-  $$MaintenanceLogsTableTableProcessedTableManager
-  get maintenanceLogsTableRefs {
-    final manager = $$MaintenanceLogsTableTableTableManager(
-      $_db,
-      $_db.maintenanceLogsTable,
-    ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _maintenanceLogsTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$DocumentsTableTable, List<DocumentsTableData>>
-  _documentsTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.documentsTable,
-    aliasName: $_aliasNameGenerator(db.bikesTable.id, db.documentsTable.bikeId),
-  );
-
-  $$DocumentsTableTableProcessedTableManager get documentsTableRefs {
-    final manager = $$DocumentsTableTableTableManager(
-      $_db,
-      $_db.documentsTable,
-    ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_documentsTableRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$RemindersTableTable, List<RemindersTableData>>
-  _remindersTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.remindersTable,
-    aliasName: $_aliasNameGenerator(db.bikesTable.id, db.remindersTable.bikeId),
-  );
-
-  $$RemindersTableTableProcessedTableManager get remindersTableRefs {
-    final manager = $$RemindersTableTableTableManager(
-      $_db,
-      $_db.remindersTable,
-    ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_remindersTableRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $BatteryHealthSnapshotsTableTable,
-    List<BatteryHealthSnapshotsTableData>
-  >
-  _batteryHealthSnapshotsTableRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.batteryHealthSnapshotsTable,
-        aliasName: $_aliasNameGenerator(
-          db.bikesTable.id,
-          db.batteryHealthSnapshotsTable.bikeId,
-        ),
-      );
-
-  $$BatteryHealthSnapshotsTableTableProcessedTableManager
-  get batteryHealthSnapshotsTableRefs {
-    final manager = $$BatteryHealthSnapshotsTableTableTableManager(
-      $_db,
-      $_db.batteryHealthSnapshotsTable,
-    ).filter((f) => f.bikeId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _batteryHealthSnapshotsTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
 
 class $$BikesTableTableFilterComposer
     extends Composer<_$AppDatabase, $BikesTableTable> {
@@ -7747,185 +7604,6 @@ class $$BikesTableTableFilterComposer
     column: $table.photoPath,
     builder: (column) => ColumnFilters(column),
   );
-
-  Expression<bool> ridesTableRefs(
-    Expression<bool> Function($$RidesTableTableFilterComposer f) f,
-  ) {
-    final $$RidesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.ridesTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RidesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.ridesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> chargeLogsTableRefs(
-    Expression<bool> Function($$ChargeLogsTableTableFilterComposer f) f,
-  ) {
-    final $$ChargeLogsTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.chargeLogsTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChargeLogsTableTableFilterComposer(
-            $db: $db,
-            $table: $db.chargeLogsTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> expensesTableRefs(
-    Expression<bool> Function($$ExpensesTableTableFilterComposer f) f,
-  ) {
-    final $$ExpensesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.expensesTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExpensesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.expensesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> maintenanceLogsTableRefs(
-    Expression<bool> Function($$MaintenanceLogsTableTableFilterComposer f) f,
-  ) {
-    final $$MaintenanceLogsTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.maintenanceLogsTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MaintenanceLogsTableTableFilterComposer(
-            $db: $db,
-            $table: $db.maintenanceLogsTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> documentsTableRefs(
-    Expression<bool> Function($$DocumentsTableTableFilterComposer f) f,
-  ) {
-    final $$DocumentsTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.documentsTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$DocumentsTableTableFilterComposer(
-            $db: $db,
-            $table: $db.documentsTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> remindersTableRefs(
-    Expression<bool> Function($$RemindersTableTableFilterComposer f) f,
-  ) {
-    final $$RemindersTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.remindersTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RemindersTableTableFilterComposer(
-            $db: $db,
-            $table: $db.remindersTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> batteryHealthSnapshotsTableRefs(
-    Expression<bool> Function(
-      $$BatteryHealthSnapshotsTableTableFilterComposer f,
-    )
-    f,
-  ) {
-    final $$BatteryHealthSnapshotsTableTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.batteryHealthSnapshotsTable,
-          getReferencedColumn: (t) => t.bikeId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$BatteryHealthSnapshotsTableTableFilterComposer(
-                $db: $db,
-                $table: $db.batteryHealthSnapshotsTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
 }
 
 class $$BikesTableTableOrderingComposer
@@ -8140,186 +7818,6 @@ class $$BikesTableTableAnnotationComposer
 
   GeneratedColumn<String> get photoPath =>
       $composableBuilder(column: $table.photoPath, builder: (column) => column);
-
-  Expression<T> ridesTableRefs<T extends Object>(
-    Expression<T> Function($$RidesTableTableAnnotationComposer a) f,
-  ) {
-    final $$RidesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.ridesTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RidesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.ridesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> chargeLogsTableRefs<T extends Object>(
-    Expression<T> Function($$ChargeLogsTableTableAnnotationComposer a) f,
-  ) {
-    final $$ChargeLogsTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.chargeLogsTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChargeLogsTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.chargeLogsTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> expensesTableRefs<T extends Object>(
-    Expression<T> Function($$ExpensesTableTableAnnotationComposer a) f,
-  ) {
-    final $$ExpensesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.expensesTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExpensesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.expensesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> maintenanceLogsTableRefs<T extends Object>(
-    Expression<T> Function($$MaintenanceLogsTableTableAnnotationComposer a) f,
-  ) {
-    final $$MaintenanceLogsTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.maintenanceLogsTable,
-          getReferencedColumn: (t) => t.bikeId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$MaintenanceLogsTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.maintenanceLogsTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> documentsTableRefs<T extends Object>(
-    Expression<T> Function($$DocumentsTableTableAnnotationComposer a) f,
-  ) {
-    final $$DocumentsTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.documentsTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$DocumentsTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.documentsTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> remindersTableRefs<T extends Object>(
-    Expression<T> Function($$RemindersTableTableAnnotationComposer a) f,
-  ) {
-    final $$RemindersTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.remindersTable,
-      getReferencedColumn: (t) => t.bikeId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$RemindersTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.remindersTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> batteryHealthSnapshotsTableRefs<T extends Object>(
-    Expression<T> Function(
-      $$BatteryHealthSnapshotsTableTableAnnotationComposer a,
-    )
-    f,
-  ) {
-    final $$BatteryHealthSnapshotsTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.batteryHealthSnapshotsTable,
-          getReferencedColumn: (t) => t.bikeId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$BatteryHealthSnapshotsTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.batteryHealthSnapshotsTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
 }
 
 class $$BikesTableTableTableManager
@@ -8333,17 +7831,12 @@ class $$BikesTableTableTableManager
           $$BikesTableTableAnnotationComposer,
           $$BikesTableTableCreateCompanionBuilder,
           $$BikesTableTableUpdateCompanionBuilder,
-          (BikesTableData, $$BikesTableTableReferences),
+          (
+            BikesTableData,
+            BaseReferences<_$AppDatabase, $BikesTableTable, BikesTableData>,
+          ),
           BikesTableData,
-          PrefetchHooks Function({
-            bool ridesTableRefs,
-            bool chargeLogsTableRefs,
-            bool expensesTableRefs,
-            bool maintenanceLogsTableRefs,
-            bool documentsTableRefs,
-            bool remindersTableRefs,
-            bool batteryHealthSnapshotsTableRefs,
-          })
+          PrefetchHooks Function()
         > {
   $$BikesTableTableTableManager(_$AppDatabase db, $BikesTableTable table)
     : super(
@@ -8453,189 +7946,9 @@ class $$BikesTableTableTableManager
                 photoPath: photoPath,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$BikesTableTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback:
-              ({
-                ridesTableRefs = false,
-                chargeLogsTableRefs = false,
-                expensesTableRefs = false,
-                maintenanceLogsTableRefs = false,
-                documentsTableRefs = false,
-                remindersTableRefs = false,
-                batteryHealthSnapshotsTableRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (ridesTableRefs) db.ridesTable,
-                    if (chargeLogsTableRefs) db.chargeLogsTable,
-                    if (expensesTableRefs) db.expensesTable,
-                    if (maintenanceLogsTableRefs) db.maintenanceLogsTable,
-                    if (documentsTableRefs) db.documentsTable,
-                    if (remindersTableRefs) db.remindersTable,
-                    if (batteryHealthSnapshotsTableRefs)
-                      db.batteryHealthSnapshotsTable,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (ridesTableRefs)
-                        await $_getPrefetchedData<
-                          BikesTableData,
-                          $BikesTableTable,
-                          RidesTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$BikesTableTableReferences
-                              ._ridesTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$BikesTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).ridesTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bikeId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (chargeLogsTableRefs)
-                        await $_getPrefetchedData<
-                          BikesTableData,
-                          $BikesTableTable,
-                          ChargeLogsTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$BikesTableTableReferences
-                              ._chargeLogsTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$BikesTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).chargeLogsTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bikeId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (expensesTableRefs)
-                        await $_getPrefetchedData<
-                          BikesTableData,
-                          $BikesTableTable,
-                          ExpensesTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$BikesTableTableReferences
-                              ._expensesTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$BikesTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).expensesTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bikeId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (maintenanceLogsTableRefs)
-                        await $_getPrefetchedData<
-                          BikesTableData,
-                          $BikesTableTable,
-                          MaintenanceLogsTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$BikesTableTableReferences
-                              ._maintenanceLogsTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$BikesTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).maintenanceLogsTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bikeId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (documentsTableRefs)
-                        await $_getPrefetchedData<
-                          BikesTableData,
-                          $BikesTableTable,
-                          DocumentsTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$BikesTableTableReferences
-                              ._documentsTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$BikesTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).documentsTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bikeId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (remindersTableRefs)
-                        await $_getPrefetchedData<
-                          BikesTableData,
-                          $BikesTableTable,
-                          RemindersTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$BikesTableTableReferences
-                              ._remindersTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$BikesTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).remindersTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bikeId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (batteryHealthSnapshotsTableRefs)
-                        await $_getPrefetchedData<
-                          BikesTableData,
-                          $BikesTableTable,
-                          BatteryHealthSnapshotsTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$BikesTableTableReferences
-                              ._batteryHealthSnapshotsTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$BikesTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).batteryHealthSnapshotsTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bikeId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -8650,17 +7963,12 @@ typedef $$BikesTableTableProcessedTableManager =
       $$BikesTableTableAnnotationComposer,
       $$BikesTableTableCreateCompanionBuilder,
       $$BikesTableTableUpdateCompanionBuilder,
-      (BikesTableData, $$BikesTableTableReferences),
+      (
+        BikesTableData,
+        BaseReferences<_$AppDatabase, $BikesTableTable, BikesTableData>,
+      ),
       BikesTableData,
-      PrefetchHooks Function({
-        bool ridesTableRefs,
-        bool chargeLogsTableRefs,
-        bool expensesTableRefs,
-        bool maintenanceLogsTableRefs,
-        bool documentsTableRefs,
-        bool remindersTableRefs,
-        bool batteryHealthSnapshotsTableRefs,
-      })
+      PrefetchHooks Function()
     >;
 typedef $$RidesTableTableCreateCompanionBuilder =
     RidesTableCompanion Function({
@@ -8690,6 +7998,7 @@ typedef $$RidesTableTableCreateCompanionBuilder =
       Value<List<String>> customTags,
       Value<bool> isFavorite,
       Value<int?> bikeId,
+      Value<String> source,
       Value<int> rowid,
     });
 typedef $$RidesTableTableUpdateCompanionBuilder =
@@ -8720,32 +8029,9 @@ typedef $$RidesTableTableUpdateCompanionBuilder =
       Value<List<String>> customTags,
       Value<bool> isFavorite,
       Value<int?> bikeId,
+      Value<String> source,
       Value<int> rowid,
     });
-
-final class $$RidesTableTableReferences
-    extends BaseReferences<_$AppDatabase, $RidesTableTable, RidesTableData> {
-  $$RidesTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $BikesTableTable _bikeIdTable(_$AppDatabase db) =>
-      db.bikesTable.createAlias(
-        $_aliasNameGenerator(db.ridesTable.bikeId, db.bikesTable.id),
-      );
-
-  $$BikesTableTableProcessedTableManager? get bikeId {
-    final $_column = $_itemColumn<int>('bike_id');
-    if ($_column == null) return null;
-    final manager = $$BikesTableTableTableManager(
-      $_db,
-      $_db.bikesTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_bikeIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
 
 class $$RidesTableTableFilterComposer
     extends Composer<_$AppDatabase, $RidesTableTable> {
@@ -8885,28 +8171,15 @@ class $$RidesTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$BikesTableTableFilterComposer get bikeId {
-    final $$BikesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$RidesTableTableOrderingComposer
@@ -9043,28 +8316,15 @@ class $$RidesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$BikesTableTableOrderingComposer get bikeId {
-    final $$BikesTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$RidesTableTableAnnotationComposer
@@ -9186,28 +8446,11 @@ class $$RidesTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$BikesTableTableAnnotationComposer get bikeId {
-    final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  GeneratedColumn<int> get bikeId =>
+      $composableBuilder(column: $table.bikeId, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
 }
 
 class $$RidesTableTableTableManager
@@ -9221,9 +8464,12 @@ class $$RidesTableTableTableManager
           $$RidesTableTableAnnotationComposer,
           $$RidesTableTableCreateCompanionBuilder,
           $$RidesTableTableUpdateCompanionBuilder,
-          (RidesTableData, $$RidesTableTableReferences),
+          (
+            RidesTableData,
+            BaseReferences<_$AppDatabase, $RidesTableTable, RidesTableData>,
+          ),
           RidesTableData,
-          PrefetchHooks Function({bool bikeId})
+          PrefetchHooks Function()
         > {
   $$RidesTableTableTableManager(_$AppDatabase db, $RidesTableTable table)
     : super(
@@ -9264,6 +8510,7 @@ class $$RidesTableTableTableManager
                 Value<List<String>> customTags = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
                 Value<int?> bikeId = const Value.absent(),
+                Value<String> source = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RidesTableCompanion(
                 id: id,
@@ -9292,6 +8539,7 @@ class $$RidesTableTableTableManager
                 customTags: customTags,
                 isFavorite: isFavorite,
                 bikeId: bikeId,
+                source: source,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9322,6 +8570,7 @@ class $$RidesTableTableTableManager
                 Value<List<String>> customTags = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
                 Value<int?> bikeId = const Value.absent(),
+                Value<String> source = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RidesTableCompanion.insert(
                 id: id,
@@ -9350,57 +8599,13 @@ class $$RidesTableTableTableManager
                 customTags: customTags,
                 isFavorite: isFavorite,
                 bikeId: bikeId,
+                source: source,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$RidesTableTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({bikeId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (bikeId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.bikeId,
-                                referencedTable: $$RidesTableTableReferences
-                                    ._bikeIdTable(db),
-                                referencedColumn: $$RidesTableTableReferences
-                                    ._bikeIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -9415,9 +8620,12 @@ typedef $$RidesTableTableProcessedTableManager =
       $$RidesTableTableAnnotationComposer,
       $$RidesTableTableCreateCompanionBuilder,
       $$RidesTableTableUpdateCompanionBuilder,
-      (RidesTableData, $$RidesTableTableReferences),
+      (
+        RidesTableData,
+        BaseReferences<_$AppDatabase, $RidesTableTable, RidesTableData>,
+      ),
       RidesTableData,
-      PrefetchHooks Function({bool bikeId})
+      PrefetchHooks Function()
     >;
 typedef $$ChargeLogsTableTableCreateCompanionBuilder =
     ChargeLogsTableCompanion Function({
@@ -9441,6 +8649,7 @@ typedef $$ChargeLogsTableTableCreateCompanionBuilder =
       Value<int?> bikeId,
       Value<String?> providerName,
       Value<double?> maxChargingPowerKw,
+      Value<String> source,
       Value<int> rowid,
     });
 typedef $$ChargeLogsTableTableUpdateCompanionBuilder =
@@ -9465,41 +8674,9 @@ typedef $$ChargeLogsTableTableUpdateCompanionBuilder =
       Value<int?> bikeId,
       Value<String?> providerName,
       Value<double?> maxChargingPowerKw,
+      Value<String> source,
       Value<int> rowid,
     });
-
-final class $$ChargeLogsTableTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $ChargeLogsTableTable,
-          ChargeLogsTableData
-        > {
-  $$ChargeLogsTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $BikesTableTable _bikeIdTable(_$AppDatabase db) =>
-      db.bikesTable.createAlias(
-        $_aliasNameGenerator(db.chargeLogsTable.bikeId, db.bikesTable.id),
-      );
-
-  $$BikesTableTableProcessedTableManager? get bikeId {
-    final $_column = $_itemColumn<int>('bike_id');
-    if ($_column == null) return null;
-    final manager = $$BikesTableTableTableManager(
-      $_db,
-      $_db.bikesTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_bikeIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
 
 class $$ChargeLogsTableTableFilterComposer
     extends Composer<_$AppDatabase, $ChargeLogsTableTable> {
@@ -9598,6 +8775,11 @@ class $$ChargeLogsTableTableFilterComposer
     builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
+  ColumnFilters<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get providerName => $composableBuilder(
     column: $table.providerName,
     builder: (column) => ColumnFilters(column),
@@ -9608,28 +8790,10 @@ class $$ChargeLogsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$BikesTableTableFilterComposer get bikeId {
-    final $$BikesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$ChargeLogsTableTableOrderingComposer
@@ -9726,6 +8890,11 @@ class $$ChargeLogsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get providerName => $composableBuilder(
     column: $table.providerName,
     builder: (column) => ColumnOrderings(column),
@@ -9736,28 +8905,10 @@ class $$ChargeLogsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$BikesTableTableOrderingComposer get bikeId {
-    final $$BikesTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ChargeLogsTableTableAnnotationComposer
@@ -9843,6 +8994,9 @@ class $$ChargeLogsTableTableAnnotationComposer
         builder: (column) => column,
       );
 
+  GeneratedColumn<int> get bikeId =>
+      $composableBuilder(column: $table.bikeId, builder: (column) => column);
+
   GeneratedColumn<String> get providerName => $composableBuilder(
     column: $table.providerName,
     builder: (column) => column,
@@ -9853,28 +9007,8 @@ class $$ChargeLogsTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$BikesTableTableAnnotationComposer get bikeId {
-    final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
 }
 
 class $$ChargeLogsTableTableTableManager
@@ -9888,9 +9022,16 @@ class $$ChargeLogsTableTableTableManager
           $$ChargeLogsTableTableAnnotationComposer,
           $$ChargeLogsTableTableCreateCompanionBuilder,
           $$ChargeLogsTableTableUpdateCompanionBuilder,
-          (ChargeLogsTableData, $$ChargeLogsTableTableReferences),
+          (
+            ChargeLogsTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $ChargeLogsTableTable,
+              ChargeLogsTableData
+            >,
+          ),
           ChargeLogsTableData,
-          PrefetchHooks Function({bool bikeId})
+          PrefetchHooks Function()
         > {
   $$ChargeLogsTableTableTableManager(
     _$AppDatabase db,
@@ -9927,6 +9068,7 @@ class $$ChargeLogsTableTableTableManager
                 Value<int?> bikeId = const Value.absent(),
                 Value<String?> providerName = const Value.absent(),
                 Value<double?> maxChargingPowerKw = const Value.absent(),
+                Value<String> source = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChargeLogsTableCompanion(
                 id: id,
@@ -9949,6 +9091,7 @@ class $$ChargeLogsTableTableTableManager
                 bikeId: bikeId,
                 providerName: providerName,
                 maxChargingPowerKw: maxChargingPowerKw,
+                source: source,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9973,6 +9116,7 @@ class $$ChargeLogsTableTableTableManager
                 Value<int?> bikeId = const Value.absent(),
                 Value<String?> providerName = const Value.absent(),
                 Value<double?> maxChargingPowerKw = const Value.absent(),
+                Value<String> source = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChargeLogsTableCompanion.insert(
                 id: id,
@@ -9995,59 +9139,13 @@ class $$ChargeLogsTableTableTableManager
                 bikeId: bikeId,
                 providerName: providerName,
                 maxChargingPowerKw: maxChargingPowerKw,
+                source: source,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$ChargeLogsTableTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({bikeId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (bikeId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.bikeId,
-                                referencedTable:
-                                    $$ChargeLogsTableTableReferences
-                                        ._bikeIdTable(db),
-                                referencedColumn:
-                                    $$ChargeLogsTableTableReferences
-                                        ._bikeIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -10062,9 +9160,16 @@ typedef $$ChargeLogsTableTableProcessedTableManager =
       $$ChargeLogsTableTableAnnotationComposer,
       $$ChargeLogsTableTableCreateCompanionBuilder,
       $$ChargeLogsTableTableUpdateCompanionBuilder,
-      (ChargeLogsTableData, $$ChargeLogsTableTableReferences),
+      (
+        ChargeLogsTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $ChargeLogsTableTable,
+          ChargeLogsTableData
+        >,
+      ),
       ChargeLogsTableData,
-      PrefetchHooks Function({bool bikeId})
+      PrefetchHooks Function()
     >;
 typedef $$ExpensesTableTableCreateCompanionBuilder =
     ExpensesTableCompanion Function({
@@ -10090,35 +9195,6 @@ typedef $$ExpensesTableTableUpdateCompanionBuilder =
       Value<int?> bikeId,
       Value<int> rowid,
     });
-
-final class $$ExpensesTableTableReferences
-    extends
-        BaseReferences<_$AppDatabase, $ExpensesTableTable, ExpensesTableData> {
-  $$ExpensesTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $BikesTableTable _bikeIdTable(_$AppDatabase db) =>
-      db.bikesTable.createAlias(
-        $_aliasNameGenerator(db.expensesTable.bikeId, db.bikesTable.id),
-      );
-
-  $$BikesTableTableProcessedTableManager? get bikeId {
-    final $_column = $_itemColumn<int>('bike_id');
-    if ($_column == null) return null;
-    final manager = $$BikesTableTableTableManager(
-      $_db,
-      $_db.bikesTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_bikeIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
 
 class $$ExpensesTableTableFilterComposer
     extends Composer<_$AppDatabase, $ExpensesTableTable> {
@@ -10165,28 +9241,10 @@ class $$ExpensesTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$BikesTableTableFilterComposer get bikeId {
-    final $$BikesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$ExpensesTableTableOrderingComposer
@@ -10233,28 +9291,10 @@ class $$ExpensesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$BikesTableTableOrderingComposer get bikeId {
-    final $$BikesTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ExpensesTableTableAnnotationComposer
@@ -10291,28 +9331,8 @@ class $$ExpensesTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$BikesTableTableAnnotationComposer get bikeId {
-    final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  GeneratedColumn<int> get bikeId =>
+      $composableBuilder(column: $table.bikeId, builder: (column) => column);
 }
 
 class $$ExpensesTableTableTableManager
@@ -10326,9 +9346,16 @@ class $$ExpensesTableTableTableManager
           $$ExpensesTableTableAnnotationComposer,
           $$ExpensesTableTableCreateCompanionBuilder,
           $$ExpensesTableTableUpdateCompanionBuilder,
-          (ExpensesTableData, $$ExpensesTableTableReferences),
+          (
+            ExpensesTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $ExpensesTableTable,
+              ExpensesTableData
+            >,
+          ),
           ExpensesTableData,
-          PrefetchHooks Function({bool bikeId})
+          PrefetchHooks Function()
         > {
   $$ExpensesTableTableTableManager(_$AppDatabase db, $ExpensesTableTable table)
     : super(
@@ -10386,54 +9413,9 @@ class $$ExpensesTableTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$ExpensesTableTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({bikeId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (bikeId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.bikeId,
-                                referencedTable: $$ExpensesTableTableReferences
-                                    ._bikeIdTable(db),
-                                referencedColumn: $$ExpensesTableTableReferences
-                                    ._bikeIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -10448,9 +9430,12 @@ typedef $$ExpensesTableTableProcessedTableManager =
       $$ExpensesTableTableAnnotationComposer,
       $$ExpensesTableTableCreateCompanionBuilder,
       $$ExpensesTableTableUpdateCompanionBuilder,
-      (ExpensesTableData, $$ExpensesTableTableReferences),
+      (
+        ExpensesTableData,
+        BaseReferences<_$AppDatabase, $ExpensesTableTable, ExpensesTableData>,
+      ),
       ExpensesTableData,
-      PrefetchHooks Function({bool bikeId})
+      PrefetchHooks Function()
     >;
 typedef $$MaintenanceLogsTableTableCreateCompanionBuilder =
     MaintenanceLogsTableCompanion Function({
@@ -10510,39 +9495,6 @@ typedef $$MaintenanceLogsTableTableUpdateCompanionBuilder =
       Value<int?> bikeId,
       Value<int> rowid,
     });
-
-final class $$MaintenanceLogsTableTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $MaintenanceLogsTableTable,
-          MaintenanceLogsTableData
-        > {
-  $$MaintenanceLogsTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $BikesTableTable _bikeIdTable(_$AppDatabase db) =>
-      db.bikesTable.createAlias(
-        $_aliasNameGenerator(db.maintenanceLogsTable.bikeId, db.bikesTable.id),
-      );
-
-  $$BikesTableTableProcessedTableManager? get bikeId {
-    final $_column = $_itemColumn<int>('bike_id');
-    if ($_column == null) return null;
-    final manager = $$BikesTableTableTableManager(
-      $_db,
-      $_db.bikesTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_bikeIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
 
 class $$MaintenanceLogsTableTableFilterComposer
     extends Composer<_$AppDatabase, $MaintenanceLogsTableTable> {
@@ -10678,28 +9630,10 @@ class $$MaintenanceLogsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$BikesTableTableFilterComposer get bikeId {
-    final $$BikesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$MaintenanceLogsTableTableOrderingComposer
@@ -10831,28 +9765,10 @@ class $$MaintenanceLogsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$BikesTableTableOrderingComposer get bikeId {
-    final $$BikesTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$MaintenanceLogsTableTableAnnotationComposer
@@ -10962,28 +9878,8 @@ class $$MaintenanceLogsTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$BikesTableTableAnnotationComposer get bikeId {
-    final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  GeneratedColumn<int> get bikeId =>
+      $composableBuilder(column: $table.bikeId, builder: (column) => column);
 }
 
 class $$MaintenanceLogsTableTableTableManager
@@ -10997,9 +9893,16 @@ class $$MaintenanceLogsTableTableTableManager
           $$MaintenanceLogsTableTableAnnotationComposer,
           $$MaintenanceLogsTableTableCreateCompanionBuilder,
           $$MaintenanceLogsTableTableUpdateCompanionBuilder,
-          (MaintenanceLogsTableData, $$MaintenanceLogsTableTableReferences),
+          (
+            MaintenanceLogsTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $MaintenanceLogsTableTable,
+              MaintenanceLogsTableData
+            >,
+          ),
           MaintenanceLogsTableData,
-          PrefetchHooks Function({bool bikeId})
+          PrefetchHooks Function()
         > {
   $$MaintenanceLogsTableTableTableManager(
     _$AppDatabase db,
@@ -11133,56 +10036,9 @@ class $$MaintenanceLogsTableTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$MaintenanceLogsTableTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({bikeId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (bikeId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.bikeId,
-                                referencedTable:
-                                    $$MaintenanceLogsTableTableReferences
-                                        ._bikeIdTable(db),
-                                referencedColumn:
-                                    $$MaintenanceLogsTableTableReferences
-                                        ._bikeIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -11197,9 +10053,16 @@ typedef $$MaintenanceLogsTableTableProcessedTableManager =
       $$MaintenanceLogsTableTableAnnotationComposer,
       $$MaintenanceLogsTableTableCreateCompanionBuilder,
       $$MaintenanceLogsTableTableUpdateCompanionBuilder,
-      (MaintenanceLogsTableData, $$MaintenanceLogsTableTableReferences),
+      (
+        MaintenanceLogsTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $MaintenanceLogsTableTable,
+          MaintenanceLogsTableData
+        >,
+      ),
       MaintenanceLogsTableData,
-      PrefetchHooks Function({bool bikeId})
+      PrefetchHooks Function()
     >;
 typedef $$DocumentsTableTableCreateCompanionBuilder =
     DocumentsTableCompanion Function({
@@ -11221,39 +10084,6 @@ typedef $$DocumentsTableTableUpdateCompanionBuilder =
       Value<String?> notes,
       Value<int?> bikeId,
     });
-
-final class $$DocumentsTableTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $DocumentsTableTable,
-          DocumentsTableData
-        > {
-  $$DocumentsTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $BikesTableTable _bikeIdTable(_$AppDatabase db) =>
-      db.bikesTable.createAlias(
-        $_aliasNameGenerator(db.documentsTable.bikeId, db.bikesTable.id),
-      );
-
-  $$BikesTableTableProcessedTableManager? get bikeId {
-    final $_column = $_itemColumn<int>('bike_id');
-    if ($_column == null) return null;
-    final manager = $$BikesTableTableTableManager(
-      $_db,
-      $_db.bikesTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_bikeIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
 
 class $$DocumentsTableTableFilterComposer
     extends Composer<_$AppDatabase, $DocumentsTableTable> {
@@ -11294,28 +10124,10 @@ class $$DocumentsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$BikesTableTableFilterComposer get bikeId {
-    final $$BikesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$DocumentsTableTableOrderingComposer
@@ -11357,28 +10169,10 @@ class $$DocumentsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$BikesTableTableOrderingComposer get bikeId {
-    final $$BikesTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DocumentsTableTableAnnotationComposer
@@ -11410,28 +10204,8 @@ class $$DocumentsTableTableAnnotationComposer
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
-  $$BikesTableTableAnnotationComposer get bikeId {
-    final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  GeneratedColumn<int> get bikeId =>
+      $composableBuilder(column: $table.bikeId, builder: (column) => column);
 }
 
 class $$DocumentsTableTableTableManager
@@ -11445,9 +10219,16 @@ class $$DocumentsTableTableTableManager
           $$DocumentsTableTableAnnotationComposer,
           $$DocumentsTableTableCreateCompanionBuilder,
           $$DocumentsTableTableUpdateCompanionBuilder,
-          (DocumentsTableData, $$DocumentsTableTableReferences),
+          (
+            DocumentsTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $DocumentsTableTable,
+              DocumentsTableData
+            >,
+          ),
           DocumentsTableData,
-          PrefetchHooks Function({bool bikeId})
+          PrefetchHooks Function()
         > {
   $$DocumentsTableTableTableManager(
     _$AppDatabase db,
@@ -11499,55 +10280,9 @@ class $$DocumentsTableTableTableManager
                 bikeId: bikeId,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$DocumentsTableTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({bikeId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (bikeId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.bikeId,
-                                referencedTable: $$DocumentsTableTableReferences
-                                    ._bikeIdTable(db),
-                                referencedColumn:
-                                    $$DocumentsTableTableReferences
-                                        ._bikeIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -11562,9 +10297,12 @@ typedef $$DocumentsTableTableProcessedTableManager =
       $$DocumentsTableTableAnnotationComposer,
       $$DocumentsTableTableCreateCompanionBuilder,
       $$DocumentsTableTableUpdateCompanionBuilder,
-      (DocumentsTableData, $$DocumentsTableTableReferences),
+      (
+        DocumentsTableData,
+        BaseReferences<_$AppDatabase, $DocumentsTableTable, DocumentsTableData>,
+      ),
       DocumentsTableData,
-      PrefetchHooks Function({bool bikeId})
+      PrefetchHooks Function()
     >;
 typedef $$RemindersTableTableCreateCompanionBuilder =
     RemindersTableCompanion Function({
@@ -11596,39 +10334,6 @@ typedef $$RemindersTableTableUpdateCompanionBuilder =
       Value<int?> bikeId,
       Value<int> rowid,
     });
-
-final class $$RemindersTableTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $RemindersTableTable,
-          RemindersTableData
-        > {
-  $$RemindersTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $BikesTableTable _bikeIdTable(_$AppDatabase db) =>
-      db.bikesTable.createAlias(
-        $_aliasNameGenerator(db.remindersTable.bikeId, db.bikesTable.id),
-      );
-
-  $$BikesTableTableProcessedTableManager? get bikeId {
-    final $_column = $_itemColumn<int>('bike_id');
-    if ($_column == null) return null;
-    final manager = $$BikesTableTableTableManager(
-      $_db,
-      $_db.bikesTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_bikeIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
 
 class $$RemindersTableTableFilterComposer
     extends Composer<_$AppDatabase, $RemindersTableTable> {
@@ -11689,28 +10394,10 @@ class $$RemindersTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$BikesTableTableFilterComposer get bikeId {
-    final $$BikesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$RemindersTableTableOrderingComposer
@@ -11772,28 +10459,10 @@ class $$RemindersTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$BikesTableTableOrderingComposer get bikeId {
-    final $$BikesTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$RemindersTableTableAnnotationComposer
@@ -11843,28 +10512,8 @@ class $$RemindersTableTableAnnotationComposer
   GeneratedColumn<bool> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
 
-  $$BikesTableTableAnnotationComposer get bikeId {
-    final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  GeneratedColumn<int> get bikeId =>
+      $composableBuilder(column: $table.bikeId, builder: (column) => column);
 }
 
 class $$RemindersTableTableTableManager
@@ -11878,9 +10527,16 @@ class $$RemindersTableTableTableManager
           $$RemindersTableTableAnnotationComposer,
           $$RemindersTableTableCreateCompanionBuilder,
           $$RemindersTableTableUpdateCompanionBuilder,
-          (RemindersTableData, $$RemindersTableTableReferences),
+          (
+            RemindersTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $RemindersTableTable,
+              RemindersTableData
+            >,
+          ),
           RemindersTableData,
-          PrefetchHooks Function({bool bikeId})
+          PrefetchHooks Function()
         > {
   $$RemindersTableTableTableManager(
     _$AppDatabase db,
@@ -11952,55 +10608,9 @@ class $$RemindersTableTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$RemindersTableTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({bikeId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (bikeId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.bikeId,
-                                referencedTable: $$RemindersTableTableReferences
-                                    ._bikeIdTable(db),
-                                referencedColumn:
-                                    $$RemindersTableTableReferences
-                                        ._bikeIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -12015,9 +10625,12 @@ typedef $$RemindersTableTableProcessedTableManager =
       $$RemindersTableTableAnnotationComposer,
       $$RemindersTableTableCreateCompanionBuilder,
       $$RemindersTableTableUpdateCompanionBuilder,
-      (RemindersTableData, $$RemindersTableTableReferences),
+      (
+        RemindersTableData,
+        BaseReferences<_$AppDatabase, $RemindersTableTable, RemindersTableData>,
+      ),
       RemindersTableData,
-      PrefetchHooks Function({bool bikeId})
+      PrefetchHooks Function()
     >;
 typedef $$BatteryHealthSnapshotsTableTableCreateCompanionBuilder =
     BatteryHealthSnapshotsTableCompanion Function({
@@ -12037,42 +10650,6 @@ typedef $$BatteryHealthSnapshotsTableTableUpdateCompanionBuilder =
       Value<int?> bikeId,
       Value<int> rowid,
     });
-
-final class $$BatteryHealthSnapshotsTableTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $BatteryHealthSnapshotsTableTable,
-          BatteryHealthSnapshotsTableData
-        > {
-  $$BatteryHealthSnapshotsTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $BikesTableTable _bikeIdTable(_$AppDatabase db) =>
-      db.bikesTable.createAlias(
-        $_aliasNameGenerator(
-          db.batteryHealthSnapshotsTable.bikeId,
-          db.bikesTable.id,
-        ),
-      );
-
-  $$BikesTableTableProcessedTableManager? get bikeId {
-    final $_column = $_itemColumn<int>('bike_id');
-    if ($_column == null) return null;
-    final manager = $$BikesTableTableTableManager(
-      $_db,
-      $_db.bikesTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_bikeIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
 
 class $$BatteryHealthSnapshotsTableTableFilterComposer
     extends Composer<_$AppDatabase, $BatteryHealthSnapshotsTableTable> {
@@ -12103,28 +10680,10 @@ class $$BatteryHealthSnapshotsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$BikesTableTableFilterComposer get bikeId {
-    final $$BikesTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableFilterComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$BatteryHealthSnapshotsTableTableOrderingComposer
@@ -12156,28 +10715,10 @@ class $$BatteryHealthSnapshotsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$BikesTableTableOrderingComposer get bikeId {
-    final $$BikesTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<int> get bikeId => $composableBuilder(
+    column: $table.bikeId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BatteryHealthSnapshotsTableTableAnnotationComposer
@@ -12205,28 +10746,8 @@ class $$BatteryHealthSnapshotsTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$BikesTableTableAnnotationComposer get bikeId {
-    final $$BikesTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.bikeId,
-      referencedTable: $db.bikesTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BikesTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.bikesTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  GeneratedColumn<int> get bikeId =>
+      $composableBuilder(column: $table.bikeId, builder: (column) => column);
 }
 
 class $$BatteryHealthSnapshotsTableTableTableManager
@@ -12242,10 +10763,14 @@ class $$BatteryHealthSnapshotsTableTableTableManager
           $$BatteryHealthSnapshotsTableTableUpdateCompanionBuilder,
           (
             BatteryHealthSnapshotsTableData,
-            $$BatteryHealthSnapshotsTableTableReferences,
+            BaseReferences<
+              _$AppDatabase,
+              $BatteryHealthSnapshotsTableTable,
+              BatteryHealthSnapshotsTableData
+            >,
           ),
           BatteryHealthSnapshotsTableData,
-          PrefetchHooks Function({bool bikeId})
+          PrefetchHooks Function()
         > {
   $$BatteryHealthSnapshotsTableTableTableManager(
     _$AppDatabase db,
@@ -12302,56 +10827,9 @@ class $$BatteryHealthSnapshotsTableTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$BatteryHealthSnapshotsTableTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({bikeId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (bikeId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.bikeId,
-                                referencedTable:
-                                    $$BatteryHealthSnapshotsTableTableReferences
-                                        ._bikeIdTable(db),
-                                referencedColumn:
-                                    $$BatteryHealthSnapshotsTableTableReferences
-                                        ._bikeIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -12368,10 +10846,14 @@ typedef $$BatteryHealthSnapshotsTableTableProcessedTableManager =
       $$BatteryHealthSnapshotsTableTableUpdateCompanionBuilder,
       (
         BatteryHealthSnapshotsTableData,
-        $$BatteryHealthSnapshotsTableTableReferences,
+        BaseReferences<
+          _$AppDatabase,
+          $BatteryHealthSnapshotsTableTable,
+          BatteryHealthSnapshotsTableData
+        >,
       ),
       BatteryHealthSnapshotsTableData,
-      PrefetchHooks Function({bool bikeId})
+      PrefetchHooks Function()
     >;
 
 class $AppDatabaseManager {

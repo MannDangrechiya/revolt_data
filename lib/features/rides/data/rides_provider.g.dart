@@ -84,7 +84,7 @@ final class RidesProvider extends $StreamNotifierProvider<Rides, List<Ride>> {
   Rides create() => Rides();
 }
 
-String _$ridesHash() => r'ec54c7ec129b42e3ea21b673de6b72034950bb64';
+String _$ridesHash() => r'59a73d4b2f946271eae156e7ef32be63c48ad436';
 
 abstract class _$Rides extends $StreamNotifier<List<Ride>> {
   Stream<List<Ride>> build();
