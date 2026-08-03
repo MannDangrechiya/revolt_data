@@ -6,11 +6,14 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../../shared/ui/volt_app_bar.dart';
 import '../../../../shared/ui/volt_card.dart';
 import '../../../rides/domain/ride.dart';
+import '../../domain/ble_charge_state.dart';
 import '../../domain/ble_trip_state.dart';
 import '../../domain/connection_state.dart';
+import '../providers/ble_charge_provider.dart';
 import '../providers/ble_connection_provider.dart';
 import '../providers/ble_trip_provider.dart';
 import '../providers/vehicle_snapshot_provider.dart';
+import '../widgets/charging_status_card.dart';
 import '../widgets/connection_status_badge.dart';
 import '../widgets/live_telemetry_card.dart';
 import '../widgets/trip_status_card.dart';
@@ -28,6 +31,7 @@ class DeviceStatusScreen extends HookConsumerWidget {
 
     final effectiveState = connectionStateAsync.value ?? currentState;
     final tripState = ref.watch(bleTripProvider);
+    final chargeState = ref.watch(bleChargeProvider);
 
     // Listen for trip saved notification
     ref.listen<BleTripState>(bleTripProvider, (prev, next) {
@@ -39,6 +43,23 @@ class DeviceStatusScreen extends HookConsumerWidget {
           SnackBar(
             content: Text('Trip Auto-Saved: $distStr km (Source: BLE)'),
             backgroundColor: Colors.green.shade700,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    });
+
+    // Listen for charge log saved notification
+    ref.listen<BleChargeState>(bleChargeProvider, (prev, next) {
+      if (prev?.status != BleChargeStatus.completed &&
+          next.status == BleChargeStatus.completed &&
+          next.lastSavedChargeLog != null) {
+        final gainedStr = next.batteryGained;
+        final kwhStr = next.kwhAdded.toStringAsFixed(2);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Charge Log Auto-Saved: +$gainedStr% ($kwhStr kWh)'),
+            backgroundColor: Colors.amber.shade800,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -104,6 +125,10 @@ class DeviceStatusScreen extends HookConsumerWidget {
             if (tripState.status != BleTripStatus.idle) ...[
               const SizedBox(height: 20),
               TripStatusCard(tripState: tripState),
+            ],
+            if (chargeState.status != BleChargeStatus.idle) ...[
+              const SizedBox(height: 20),
+              ChargingStatusCard(chargeState: chargeState),
             ],
             const SizedBox(height: 24),
             snapshotAsync.when(
