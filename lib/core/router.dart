@@ -36,6 +36,7 @@ import '../features/ble/presentation/screens/device_status_screen.dart';
 import '../features/ble/presentation/screens/device_scan_screen.dart';
 import '../features/ble/presentation/screens/device_pair_screen.dart';
 
+/// Helper function to build custom page transition with Curves.easeInOutCirc fade.
 CustomTransitionPage buildPageWithDefaultTransition<T>({
   required BuildContext context,
   required GoRouterState state,
@@ -55,10 +56,12 @@ CustomTransitionPage buildPageWithDefaultTransition<T>({
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+/// Primary GoRouter configuration for Revolt app navigation.
 final routerDelegate = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
   routes: [
+    // Bottom navigation shell containing 4 main tab branches
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return AppShell(navigationShell: navigationShell);
@@ -76,22 +79,38 @@ final routerDelegate = GoRouter(
           routes: [
             GoRoute(
               path: '/rides',
-              pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const RidesScreen()),
+              pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                context: context,
+                state: state,
+                child: const RidesScreen(),
+              ),
               routes: [
                 GoRoute(
                   path: 'add',
-                  pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const RideEntryFormScreen()),
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                    context: context,
+                    state: state,
+                    child: const RideEntryFormScreen(),
+                  ),
                 ),
                 GoRoute(
                   path: 'edit',
-                  pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: RideEntryFormScreen(ride: state.extra as Ride?)),
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                    context: context,
+                    state: state,
+                    child: RideEntryFormScreen(ride: state.extra as Ride?),
+                  ),
                 ),
                 GoRoute(
                   path: ':id',
                   pageBuilder: (context, state) {
                     final id = state.pathParameters['id'];
                     final ride = state.extra as Ride?;
-                    return buildPageWithDefaultTransition(context: context, state: state, child: RideDetailsScreen(ride: ride!, rideId: id));
+                    return buildPageWithDefaultTransition(
+                      context: context,
+                      state: state,
+                      child: RideDetailsScreen(ride: ride!, rideId: id),
+                    );
                   },
                 ),
               ],
@@ -102,22 +121,40 @@ final routerDelegate = GoRouter(
           routes: [
             GoRoute(
               path: '/charging',
-              pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const ChargingScreen()),
+              pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                context: context,
+                state: state,
+                child: const ChargingScreen(),
+              ),
               routes: [
                 GoRoute(
                   path: 'add',
-                  pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: const ChargeEntryFormScreen()),
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                    context: context,
+                    state: state,
+                    child: const ChargeEntryFormScreen(),
+                  ),
                 ),
                 GoRoute(
                   path: 'edit',
-                  pageBuilder: (context, state) => buildPageWithDefaultTransition(context: context, state: state, child: ChargeEntryFormScreen(log: state.extra as ChargeLog?)),
+                  pageBuilder: (context, state) => buildPageWithDefaultTransition(
+                    context: context,
+                    state: state,
+                    child: ChargeEntryFormScreen(
+                      log: state.extra as ChargeLog?,
+                    ),
+                  ),
                 ),
                 GoRoute(
                   path: ':id',
                   pageBuilder: (context, state) {
-                     final id = state.pathParameters['id'];
-                     final log = state.extra as ChargeLog?;
-                     return buildPageWithDefaultTransition(context: context, state: state, child: ChargeDetailsScreen(log: log!, chargeId: id));
+                    final id = state.pathParameters['id'];
+                    final log = state.extra as ChargeLog?;
+                    return buildPageWithDefaultTransition(
+                      context: context,
+                      state: state,
+                      child: ChargeDetailsScreen(log: log!, chargeId: id),
+                    );
                   },
                 ),
               ],
@@ -134,6 +171,8 @@ final routerDelegate = GoRouter(
         ),
       ],
     ),
+
+    // Top-level BLE device routes (overlay on top of shell with back navigation)
     GoRoute(
       path: '/device',
       pageBuilder: (context, state) => buildPageWithDefaultTransition(
@@ -160,6 +199,8 @@ final routerDelegate = GoRouter(
         ),
       ],
     ),
+
+    // Additional top-level application feature routes
     GoRoute(
       path: '/battery-analytics',
       builder: (context, state) => const BatteryAnalyticsScreen(),
@@ -178,7 +219,8 @@ final routerDelegate = GoRouter(
     ),
     GoRoute(
       path: '/expenses/edit',
-      builder: (context, state) => ExpenseEntryFormScreen(expense: state.extra as Expense?),
+      builder: (context, state) =>
+          ExpenseEntryFormScreen(expense: state.extra as Expense?),
     ),
     GoRoute(
       path: '/maintenance',
@@ -190,7 +232,8 @@ final routerDelegate = GoRouter(
     ),
     GoRoute(
       path: '/maintenance/edit',
-      builder: (context, state) => MaintenanceEntryFormScreen(log: state.extra as MaintenanceLog?),
+      builder: (context, state) =>
+          MaintenanceEntryFormScreen(log: state.extra as MaintenanceLog?),
     ),
     GoRoute(
       path: '/reminders',
@@ -202,9 +245,10 @@ final routerDelegate = GoRouter(
         ),
         GoRoute(
           path: 'edit',
-          builder: (context, state) => ReminderAddEditScreen(reminder: state.extra as Reminder),
+          builder: (context, state) =>
+              ReminderAddEditScreen(reminder: state.extra as Reminder),
         ),
-      ]
+      ],
     ),
     GoRoute(
       path: '/documents',
@@ -216,9 +260,10 @@ final routerDelegate = GoRouter(
         ),
         GoRoute(
           path: 'preview',
-          builder: (context, state) => DocumentPreviewScreen(document: state.extra as Document),
+          builder: (context, state) =>
+              DocumentPreviewScreen(document: state.extra as Document),
         ),
-      ]
+      ],
     ),
     GoRoute(
       path: '/reports',
