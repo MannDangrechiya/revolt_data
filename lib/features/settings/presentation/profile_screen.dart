@@ -25,7 +25,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final themeMode = ref.watch(themeNotifierProvider);
+    final themeMode = ref.watch(themeProvider);
     final bikeAsync = ref.watch(currentBikeProvider);
 
     final bikeName = bikeAsync.asData?.value?.name ?? 'Revolt Rider';
@@ -140,7 +140,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ],
                         selected: {themeMode},
                         onSelectionChanged: (newSelection) {
-                          ref.read(themeNotifierProvider.notifier).setThemeMode(newSelection.first);
+                          ref.read(themeProvider.notifier).setThemeMode(newSelection.first);
                         },
                         showSelectedIcon: false,
                       ),
@@ -252,7 +252,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           color: Colors.grey.withValues(alpha: isDark ? 0.2 : 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(LucideIcons.github, color: Colors.grey, size: 22),
+                        child: const Icon(LucideIcons.folderGit2, color: Colors.grey, size: 22),
                       ),
                       title: const Text('GitHub', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                       subtitle: const Text('MannDangrechiya/revolt_data'),
