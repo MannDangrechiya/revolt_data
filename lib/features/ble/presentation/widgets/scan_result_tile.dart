@@ -4,7 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../shared/ui/volt_card.dart';
 import '../../domain/ble_device_info.dart';
 
-/// Card tile rendering a discovered BLE device result.
+/// Card tile rendering a discovered BLE device result using VoltCard.
 class ScanResultTile extends StatelessWidget {
   final BleDeviceInfo device;
   final VoidCallback onConnect;

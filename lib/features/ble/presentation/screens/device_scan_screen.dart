@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../shared/ui/volt_app_bar.dart';
+import '../../../../shared/ui/volt_card.dart';
 import '../providers/ble_connection_provider.dart';
 import '../providers/scanned_devices_provider.dart';
 import '../widgets/scan_result_tile.dart';
@@ -13,7 +14,7 @@ import '../widgets/scan_result_tile.dart';
 class DeviceScanScreen extends HookConsumerWidget {
   const DeviceScanScreen({super.key});
 
-  Future<void> _checkPermissionsAndScan(WidgetRef ref) async {
+  Future<void> _checkPermissionsAndScan(WidgetRef ref, BuildContext context) async {
     final statuses = await [
       Permission.bluetoothScan,
       Permission.bluetoothConnect,
@@ -26,6 +27,16 @@ class DeviceScanScreen extends HookConsumerWidget {
 
     if (scanGranted && connectGranted) {
       await ref.read(scannedDevicesProvider.notifier).startScan();
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Bluetooth scan & connect permissions are required to locate nearby RV400 bikes.',
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -40,7 +51,7 @@ class DeviceScanScreen extends HookConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.refreshCw),
-            onPressed: () => _checkPermissionsAndScan(ref),
+            onPressed: () => _checkPermissionsAndScan(ref, context),
             tooltip: 'Rescan',
           ),
         ],
@@ -50,9 +61,20 @@ class DeviceScanScreen extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Select your Revolt RV400 bike from the list below to connect via Bluetooth Low Energy.',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            const VoltCard(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(LucideIcons.info, color: Colors.blue),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Select your Revolt RV400 bike from the list below to connect via Bluetooth Low Energy.',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -77,7 +99,7 @@ class DeviceScanScreen extends HookConsumerWidget {
                       Text('Scan Error: $err'),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () => _checkPermissionsAndScan(ref),
+                        onPressed: () => _checkPermissionsAndScan(ref, context),
                         child: const Text('Try Again'),
                       ),
                     ],
@@ -95,7 +117,7 @@ class DeviceScanScreen extends HookConsumerWidget {
                           const Text('No RV400 bikes found nearby'),
                           const SizedBox(height: 16),
                           ElevatedButton.icon(
-                            onPressed: () => _checkPermissionsAndScan(ref),
+                            onPressed: () => _checkPermissionsAndScan(ref, context),
                             icon: const Icon(LucideIcons.search),
                             label: const Text('Start Scan'),
                           ),

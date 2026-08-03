@@ -118,7 +118,7 @@ class RevoltBleRepository implements BleVehicleRepository {
     _packetSubscription?.cancel();
     _packetSubscription = _client.listen().listen((packet) {
       if (packet.direction == PacketDirection.notify) {
-        final snapshot = _parsePacketToSnapshot(packet.value);
+        final snapshot = VehicleSnapshot.parseRawBytes(packet.value);
         if (snapshot != null && !_snapshotController.isClosed) {
           _snapshotController.add(snapshot);
         }
@@ -126,83 +126,6 @@ class RevoltBleRepository implements BleVehicleRepository {
     }, onError: (Object err) {
       debugPrint('Error reading BLE telemetry stream: $err');
     });
-  }
-
-  /// Parses raw characteristic bytes into a [VehicleSnapshot].
-  /// Handles standard telemetry payload formats or generates parsed telemetry structure.
-  VehicleSnapshot? _parsePacketToSnapshot(Uint8List data) {
-    if (data.isEmpty) return null;
-
-    try {
-      // Basic telemetry parser:
-      // Byte 0: Battery percentage (0-100)
-      // Byte 1-2: Voltage (mV -> V)
-      // Byte 3-4: Current (mA -> A)
-      // Byte 5: Temperature (°C)
-      // Byte 6-7: Speed (km/h * 10)
-      // Byte 8-11: Odometer (km * 10)
-      // Byte 12: Mode (1: Eco, 2: Normal, 3: Sport)
-      int battery = 100;
-      double voltage = 72.0;
-      double current = 0.0;
-      int temp = 30;
-      double speed = 0.0;
-      double odo = 1200.0;
-      String mode = 'Eco';
-      List<String> faults = [];
-
-      if (data.length >= 1) {
-        battery = data[0].clamp(0, 100);
-      }
-      if (data.length >= 3) {
-        voltage = ((data[1] << 8) | data[2]) / 100.0;
-      }
-      if (data.length >= 5) {
-        current = ((data[3] << 8) | data[4]) / 100.0;
-      }
-      if (data.length >= 6) {
-        temp = data[5];
-      }
-      if (data.length >= 8) {
-        speed = ((data[6] << 8) | data[7]) / 10.0;
-      }
-      if (data.length >= 12) {
-        odo = ((data[8] << 24) | (data[9] << 16) | (data[10] << 8) | data[11]) /
-            10.0;
-      }
-      if (data.length >= 13) {
-        switch (data[12]) {
-          case 1:
-            mode = 'Eco';
-            break;
-          case 2:
-            mode = 'Normal';
-            break;
-          case 3:
-            mode = 'Sport';
-            break;
-          default:
-            mode = 'Eco';
-        }
-      }
-
-      final range = (battery * 1.5);
-
-      return VehicleSnapshot(
-        battery: battery,
-        voltage: voltage > 0 ? voltage : 72.0,
-        current: current,
-        temp: temp > 0 ? temp : 28,
-        speed: speed,
-        odo: odo,
-        range: range,
-        mode: mode,
-        faults: faults,
-        timestamp: DateTime.now(),
-      );
-    } catch (_) {
-      return null;
-    }
   }
 
   @override

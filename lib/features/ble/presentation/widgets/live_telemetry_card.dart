@@ -48,7 +48,7 @@ class LiveTelemetryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Mode: ${snapshot.mode}',
+                  'Mode: ${snapshot.rideMode}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -63,7 +63,7 @@ class LiveTelemetryCard extends StatelessWidget {
             crossAxisCount: 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 2.3,
+            childAspectRatio: 2.2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
             children: [
@@ -71,8 +71,8 @@ class LiveTelemetryCard extends StatelessWidget {
                 context,
                 icon: LucideIcons.battery,
                 label: 'Battery',
-                value: '${snapshot.battery}%',
-                color: snapshot.battery > 20 ? Colors.green : Colors.red,
+                value: '${snapshot.batteryPercent}%',
+                color: snapshot.batteryPercent > 20 ? Colors.green : Colors.red,
               ),
               _buildTelemetryTile(
                 context,
@@ -92,26 +92,54 @@ class LiveTelemetryCard extends StatelessWidget {
                 context,
                 icon: LucideIcons.zap,
                 label: 'Voltage',
-                value: '${snapshot.voltage.toStringAsFixed(1)} V',
+                value: '${snapshot.batteryVoltage.toStringAsFixed(1)} V',
                 color: Colors.amber,
               ),
               _buildTelemetryTile(
                 context,
                 icon: LucideIcons.cpu,
                 label: 'Current',
-                value: '${snapshot.current.toStringAsFixed(1)} A',
+                value: '${snapshot.batteryCurrent.toStringAsFixed(1)} A',
                 color: Colors.purple,
               ),
               _buildTelemetryTile(
                 context,
+                icon: LucideIcons.bolt,
+                label: 'Power',
+                value: '${snapshot.power.toStringAsFixed(2)} kW',
+                color: Colors.orange,
+              ),
+              _buildTelemetryTile(
+                context,
                 icon: LucideIcons.thermometer,
-                label: 'Temperature',
-                value: '${snapshot.temp} °C',
-                color: snapshot.temp > 50 ? Colors.orange : Colors.blueGrey,
+                label: 'Battery Temp',
+                value: '${snapshot.batteryTemp} °C',
+                color: snapshot.batteryTemp > 50 ? Colors.red : Colors.blueGrey,
+              ),
+              _buildTelemetryTile(
+                context,
+                icon: LucideIcons.flame,
+                label: 'Motor Temp',
+                value: '${snapshot.motorTemp} °C',
+                color: snapshot.motorTemp > 60 ? Colors.red : Colors.blueGrey,
+              ),
+              _buildTelemetryTile(
+                context,
+                icon: LucideIcons.route,
+                label: 'Trip Distance',
+                value: '${snapshot.tripDistance.toStringAsFixed(1)} km',
+                color: Colors.indigo,
+              ),
+              _buildTelemetryTile(
+                context,
+                icon: LucideIcons.milestone,
+                label: 'Odometer',
+                value: '${snapshot.odometer.toStringAsFixed(1)} km',
+                color: Colors.deepPurple,
               ),
             ],
           ),
-          if (snapshot.faults.isNotEmpty) ...[
+          if (snapshot.faultCodes.isNotEmpty) ...[
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
@@ -127,7 +155,7 @@ class LiveTelemetryCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Faults: ${snapshot.faults.join(", ")}',
+                      'Fault Codes: ${snapshot.faultCodes.join(", ")}',
                       style: const TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.bold,
@@ -154,7 +182,10 @@ class LiveTelemetryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
