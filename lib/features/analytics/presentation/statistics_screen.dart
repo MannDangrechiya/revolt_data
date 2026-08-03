@@ -194,7 +194,7 @@ class StatisticsScreen extends ConsumerWidget {
             BarChartData(
               alignment: BarChartAlignment.spaceAround,
               maxY: stats.monthlyExpenses.values.reduce((a, b) => a > b ? a : b) * 1.2,
-              barTouchData: BarTouchData(enabled: false),
+              barTouchData: const BarTouchData(enabled: false),
               titlesData: FlTitlesData(
                 show: true,
                 bottomTitles: AxisTitles(

@@ -128,7 +128,7 @@ class ReportGeneratorService extends _$ReportGeneratorService {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text('Revolt EV Logbook Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+        pw.Text('Revolt EV Logbook Report', style: const pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 8),
         pw.Text('Period: ${DateFormat.yMMMd().format(startDate)} to ${DateFormat.yMMMd().format(endDate)}'),
         pw.Divider(),
@@ -156,7 +156,7 @@ class ReportGeneratorService extends _$ReportGeneratorService {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text('Summary', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+        pw.Text('Summary', style: const pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 10),
         pw.Table(
           border: pw.TableBorder.all(color: PdfColors.grey300),
@@ -194,14 +194,14 @@ class ReportGeneratorService extends _$ReportGeneratorService {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text('Rides Detailed', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+        pw.Text('Rides Detailed', style: const pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 10),
         pw.Table(
           border: pw.TableBorder.all(color: PdfColors.grey300),
           children: [
             pw.TableRow(
               decoration: const pw.BoxDecoration(color: PdfColors.grey100),
-              children: ['Date', 'Start Odo', 'End Odo', 'Distance'].map((t) => pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text(t, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)))).toList(),
+              children: ['Date', 'Start Odo', 'End Odo', 'Distance'].map((t) => pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text(t, style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)))).toList(),
             ),
             ...rides.map((r) => pw.TableRow(
               children: [
@@ -223,14 +223,14 @@ class ReportGeneratorService extends _$ReportGeneratorService {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text('Charges Detailed', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+        pw.Text('Charges Detailed', style: const pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 10),
         pw.Table(
           border: pw.TableBorder.all(color: PdfColors.grey300),
           children: [
             pw.TableRow(
               decoration: const pw.BoxDecoration(color: PdfColors.grey100),
-              children: ['Date', 'kWh', 'Cost'].map((t) => pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text(t, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)))).toList(),
+              children: ['Date', 'kWh', 'Cost'].map((t) => pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text(t, style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)))).toList(),
             ),
             ...charges.map((c) => pw.TableRow(
               children: [
@@ -251,14 +251,14 @@ class ReportGeneratorService extends _$ReportGeneratorService {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text('Expenses Detailed', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+        pw.Text('Expenses Detailed', style: const pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 10),
         pw.Table(
           border: pw.TableBorder.all(color: PdfColors.grey300),
           children: [
             pw.TableRow(
               decoration: const pw.BoxDecoration(color: PdfColors.grey100),
-              children: ['Date', 'Category', 'Amount'].map((t) => pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text(t, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)))).toList(),
+              children: ['Date', 'Category', 'Amount'].map((t) => pw.Padding(padding: const pw.EdgeInsets.all(4), child: pw.Text(t, style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)))).toList(),
             ),
             ...expenses.map((e) => pw.TableRow(
               children: [

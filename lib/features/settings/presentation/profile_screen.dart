@@ -121,7 +121,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             color: Colors.indigo.withValues(alpha: isDark ? 0.2 : 0.12),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(LucideIcons.sun, color: Colors.indigo, size: 22),
+                          child: const Icon(LucideIcons.sun, color: Colors.indigo, size: 22),
                         ),
                         const SizedBox(width: 12),
                         const Text('Theme', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),

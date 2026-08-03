@@ -52,7 +52,7 @@ class EfficiencyChart extends HookConsumerWidget {
                             color: theme.colorScheme.secondary,
                             barWidth: 3,
                             isStrokeCapRound: true,
-                            dotData: FlDotData(show: false),
+                            dotData: const FlDotData(show: false),
                             belowBarData: BarAreaData(
                               show: true,
                               color: theme.colorScheme.secondary.withValues(alpha: 0.2),
@@ -60,8 +60,8 @@ class EfficiencyChart extends HookConsumerWidget {
                           ),
                         ],
                         borderData: FlBorderData(show: false),
-                        gridData: FlGridData(show: false),
-                        titlesData: FlTitlesData(
+                        gridData: const FlGridData(show: false),
+                        titlesData: const FlTitlesData(
                           leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
