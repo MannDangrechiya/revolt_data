@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../data/maintenance_provider.dart';
 import '../domain/maintenance_log.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class MaintenanceEntryFormScreen extends HookConsumerWidget {
   final MaintenanceLog? log;

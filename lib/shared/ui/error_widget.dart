@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/sizes.dart';
 import '../../core/theme/theme_extension.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class VoltErrorWidget extends StatelessWidget {
   final String message;

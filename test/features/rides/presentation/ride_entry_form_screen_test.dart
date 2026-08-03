@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:revolt_data/features/rides/presentation/ride_entry_form_screen.dart';
 import 'package:revolt_data/features/rides/data/rides_provider.dart';
 import 'package:revolt_data/features/rides/domain/ride.dart';
@@ -24,6 +25,7 @@ class MockRidesNotifier extends Rides {
 void main() {
   group('RideEntryFormScreen Widget Tests', () {
     testWidgets('validation fails on empty fields', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
       final mockNotifier = MockRidesNotifier();
 
       await tester.pumpWidget(
@@ -37,10 +39,8 @@ void main() {
         ),
       );
 
-      // Tap the submit button (Save Ride)
-      final submitButton = find.text('Save Ride Log');
-      await tester.scrollUntilVisible(submitButton, 50.0);
-      await tester.tap(submitButton);
+      // Tap the AppBar submit button (check icon)
+      await tester.tap(find.byIcon(LucideIcons.check));
       await tester.pumpAndSettle();
 
       expect(find.text('Required'), findsWidgets);
@@ -48,6 +48,7 @@ void main() {
     });
 
     testWidgets('validation fails when end odometer is less than start', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
       final mockNotifier = MockRidesNotifier();
 
       await tester.pumpWidget(
@@ -66,8 +67,8 @@ void main() {
       await tester.enterText(find.bySemanticsLabel('Battery Before (%)*'), '100');
       await tester.enterText(find.bySemanticsLabel('Battery After (%)*'), '90');
 
-      final submitButton = find.text('Save Ride Log');
-      await tester.scrollUntilVisible(submitButton, 50.0);
+      final submitButton = find.byType(FilledButton);
+      await tester.scrollUntilVisible(submitButton, 100.0, scrollable: find.byType(Scrollable).first);
       await tester.tap(submitButton);
       await tester.pumpAndSettle();
 

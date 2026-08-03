@@ -9,7 +9,7 @@ import 'package:path/path.dart' as path;
 
 import '../data/expenses_provider.dart';
 import '../domain/expense.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class ExpenseEntryFormScreen extends HookConsumerWidget {
   final Expense? expense;

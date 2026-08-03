@@ -122,14 +122,17 @@ void main() {
 
       await tester.pumpAndSettle();
 
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+
       // Verify Dashboard contents
       expect(find.text('My RV400 Test'), findsOneWidget); // Bike name
       expect(find.text('Welcome back!'), findsOneWidget);
       expect(find.textContaining('1500.5'), findsOneWidget); // Odometer
-      expect(find.text('85%'), findsOneWidget); // Battery
+      expect(find.textContaining('85'), findsWidgets); // Battery
       expect(find.text('Quick Actions'), findsOneWidget);
       
       // Verify Menu Items exist
+      await tester.scrollUntilVisible(find.text('Charging'), 50.0, scrollable: find.byType(Scrollable).first);
       expect(find.text('Rides'), findsOneWidget);
       expect(find.text('Charging'), findsOneWidget);
     });

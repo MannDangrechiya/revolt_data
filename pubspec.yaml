@@ -31,7 +31,6 @@ dependencies:
   csv: ^8.0.0
   share_plus: ^13.3.0
   intl: ^0.20.3
-  lucide_icons: ^0.257.0
   connectivity_plus: ^7.2.0
   shimmer: ^3.0.0
   lottie: ^3.3.3
@@ -42,6 +41,7 @@ dependencies:
   revolt_ble_sdk:
     path: ../revolt_ble_sdk
   permission_handler: ^11.0.0
+  lucide_icons_flutter: ^3.1.15
 
 dev_dependencies:
   build_runner: ^2.4.0
