@@ -11,3 +11,11 @@ Stream<VehicleSnapshot> vehicleSnapshot(Ref ref) {
   final repository = ref.watch(bleRepositoryProvider);
   return repository.getVehicleSnapshotStream();
 }
+
+/// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
+@riverpod
+VehicleSnapshot? lastKnownVehicleSnapshot(Ref ref) {
+  final snapshotAsync = ref.watch(vehicleSnapshotProvider);
+  final repository = ref.watch(bleRepositoryProvider);
+  return snapshotAsync.value ?? repository.lastCachedSnapshot;
+}

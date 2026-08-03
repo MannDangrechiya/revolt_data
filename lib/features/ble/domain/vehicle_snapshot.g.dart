@@ -24,6 +24,8 @@ _VehicleSnapshot _$VehicleSnapshotFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      batteryHealth: (json['batteryHealth'] as num?)?.toInt(),
+      gpsCoords: json['gpsCoords'] as String?,
       timestamp: json['timestamp'] == null
           ? null
           : DateTime.parse(json['timestamp'] as String),
@@ -43,5 +45,7 @@ Map<String, dynamic> _$VehicleSnapshotToJson(_VehicleSnapshot instance) =>
       'range': instance.range,
       'power': instance.power,
       'faultCodes': instance.faultCodes,
+      'batteryHealth': instance.batteryHealth,
+      'gpsCoords': instance.gpsCoords,
       'timestamp': instance.timestamp?.toIso8601String(),
     };

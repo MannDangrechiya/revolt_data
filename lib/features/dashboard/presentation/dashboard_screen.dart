@@ -138,9 +138,16 @@ class DashboardScreen extends HookConsumerWidget {
                       const SizedBox(height: 20),
                       _buildBatteryStatusCard(
                         context,
+                        ref: ref,
                         data: data,
                         isConnected: isConnected,
                       ),
+                      if (data.liveSnapshot != null &&
+                          data.liveSnapshot!.faultCodes.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        _buildFaultAlertCard(
+                            context, data.liveSnapshot!.faultCodes),
+                      ],
                       const SizedBox(height: 20),
                       _buildQuickStatsRow(context, data),
 
@@ -253,8 +260,50 @@ class DashboardScreen extends HookConsumerWidget {
     );
   }
 
+  Widget _buildFaultAlertCard(BuildContext context, List<String> faultCodes) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.red.shade300),
+      ),
+      child: Row(
+        children: [
+          const Icon(LucideIcons.alertTriangle, color: Colors.red, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Vehicle Fault Warning',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Fault codes reported: ${faultCodes.join(", ")}',
+                  style: TextStyle(
+                    color: Colors.red.shade900,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBatteryStatusCard(
     BuildContext context, {
+    required WidgetRef ref,
     required DashboardData data,
     required bool isConnected,
   }) {
@@ -264,9 +313,10 @@ class DashboardScreen extends HookConsumerWidget {
         ? liveSnapshot.batteryPercent
         : data.latestBatteryPercentage;
 
+    // Direct telemetry range when connected; manual log calculation without multiplier when disconnected.
     final rangeValue = isConnected && liveSnapshot != null
         ? liveSnapshot.range
-        : (batteryPercent * 1.5);
+        : batteryPercent.toDouble();
 
     final speedValue = isConnected && liveSnapshot != null
         ? liveSnapshot.speed
@@ -284,6 +334,11 @@ class DashboardScreen extends HookConsumerWidget {
     final borderColor = isConnected
         ? Colors.green
         : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2);
+
+    final healthValue = liveSnapshot?.batteryHealth;
+    final healthText = healthValue != null && healthValue > 0
+        ? '$healthValue%'
+        : (isConnected ? 'N/A' : 'Connect for health');
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -327,47 +382,52 @@ class DashboardScreen extends HookConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  if (isConnected)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(LucideIcons.radio, size: 10, color: Colors.white),
-                          SizedBox(width: 4),
-                          Text(
-                            'LIVE',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: isConnected
+                        ? Container(
+                            key: const ValueKey('live_chip'),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(LucideIcons.radio,
+                                    size: 10, color: Colors.white),
+                                SizedBox(width: 4),
+                                Text(
+                                  'LIVE',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Container(
+                            key: const ValueKey('est_chip'),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.shade800,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              'ESTIMATED',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  else
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade800,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        'ESTIMATED',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                  ),
                 ],
               ),
               if (isConnected && liveSnapshot != null)
@@ -460,17 +520,44 @@ class DashboardScreen extends HookConsumerWidget {
               ),
             ],
           ),
+          if (isConnected && liveSnapshot != null) ...[
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Batt: ${liveSnapshot.batteryTemp}°C  •  Motor: ${liveSnapshot.motorTemp}°C',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                Text(
+                  'Health: $healthText',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 14),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              isConnected
-                  ? '• Connected to RV400 via BLE Telemetry Stream'
-                  : '• Disconnected — Last updated from manual log history',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: isConnected ? Colors.green : Colors.grey,
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: Align(
+              key: ValueKey(isConnected),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                isConnected
+                    ? '• Connected to RV400 via BLE Telemetry Stream'
+                    : '• Disconnected — Last updated from manual log history',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: isConnected ? Colors.green : Colors.grey,
+                ),
               ),
             ),
           ),

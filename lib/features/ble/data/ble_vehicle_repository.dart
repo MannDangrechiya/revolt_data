@@ -24,4 +24,10 @@ abstract class BleVehicleRepository {
 
   /// Returns a stream of real-time vehicle telemetry snapshots.
   Stream<VehicleSnapshot> getVehicleSnapshotStream();
+
+  /// Returns the last valid VehicleSnapshot cached in memory.
+  VehicleSnapshot? get lastCachedSnapshot;
+
+  /// Clears the cached telemetry snapshot (e.g. on logout or app restart).
+  Future<void> clearSnapshotCache();
 }

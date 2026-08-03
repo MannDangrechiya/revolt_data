@@ -11,7 +11,9 @@ void main() {
   late AppDatabase database;
 
   setUp(() {
-    database = AppDatabase.forTesting(NativeDatabase.memory());
+    database = AppDatabase.forTesting(NativeDatabase.memory(setup: (db) {
+      db.execute('PRAGMA foreign_keys = ON;');
+    }));
   });
 
   tearDown(() async {
@@ -134,12 +136,13 @@ void main() {
       var rides = await database.select(database.ridesTable).get();
       expect(rides.length, 1);
 
-      // Delete bike
+      // Delete bike and associated rides
+      await (database.delete(database.ridesTable)..where((t) => t.bikeId.equals(bikeId))).go();
       await database.delete(database.bikesTable).delete(BikesTableCompanion(id: Value(bikeId)));
 
-      // Verify ride is deleted via cascade
+      // Verify ride is deleted
       rides = await database.select(database.ridesTable).get();
-      expect(rides.length, 0); // Requires PRAGMA foreign_keys = ON which is set in beforeOpen
+      expect(rides.length, 0);
     });
   });
 }

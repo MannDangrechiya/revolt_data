@@ -79,8 +79,8 @@ String _$powerEfficiencyHash() => r'df961f3c5a50edc3b6aec29461c4f00a7ee5e606';
 final batteryHealthEstimateProvider = BatteryHealthEstimateProvider._();
 
 final class BatteryHealthEstimateProvider
-    extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
-    with $FutureModifier<double>, $FutureProvider<double> {
+    extends $FunctionalProvider<int?, int?, int?>
+    with $Provider<int?> {
   BatteryHealthEstimateProvider._()
     : super(
         from: null,
@@ -97,14 +97,22 @@ final class BatteryHealthEstimateProvider
 
   @$internal
   @override
-  $FutureProviderElement<double> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $ProviderElement<int?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
-  FutureOr<double> create(Ref ref) {
+  int? create(Ref ref) {
     return batteryHealthEstimate(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int?>(value),
+    );
   }
 }
 
 String _$batteryHealthEstimateHash() =>
-    r'432a05a81f8ad42b0dc402b1d3049f55dcf37649';
+    r'8d66ebbd1138e68608170d9a670a00700551903b';
