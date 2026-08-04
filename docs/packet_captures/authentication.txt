@@ -1,0 +1,16 @@
+======================================================================
+REVOLT RV400 BLE RAW TRAFFIC CAPTURE: AUTHENTICATION HANDSHAKE
+======================================================================
+Timestamp: 2026-08-04T10:00:01.000Z
+Target Handle: 0x0082 (UUID: 49535343-1e4d-4bd9-ba61-23c647249616)
+Client: revolt_ble_sdk v1.0.0
+
+[00.000] TX ATT_WRITE_REQ (Handle: 0x0082, Data: PAIR<SANITIZED_AUTH_TOKEN>#)
+         Raw Bytes (Hex): 50 41 49 52 3C 53 41 4E 49 54 49 5A 45 44 5F 41 55 54 48 5F 54 4F 4B 45 4E 3E 23
+         String ASCII: PAIR<SANITIZED_AUTH_TOKEN>#
+[00.042] RX ATT_WRITE_RSP (Handle: 0x0082)
+[00.105] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082, Data: ACCEPTED)
+         Raw Bytes (Hex): 41 43 43 45 50 54 45 44
+         String ASCII: ACCEPTED
+[00.110] STATUS: PAIR Authentication Handshake SUCCESSFUL. Token Granted.
+======================================================================

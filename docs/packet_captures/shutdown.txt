@@ -1,0 +1,16 @@
+======================================================================
+REVOLT RV400 BLE RAW TRAFFIC CAPTURE: SHUTDOWN & DISCONNECT
+======================================================================
+Timestamp: 2026-08-04T12:00:00.000Z
+Target Handle: 0x0082 (UUID: 49535343-1e4d-4bd9-ba61-23c647249616)
+Client: revolt_ble_sdk v1.0.0
+
+[00.000] TX ATT_WRITE_REQ (Handle: 0x0082, Data: VS,OFF)
+         Raw Bytes (Hex): 56 53 2C 4F 46 46
+         String ASCII: VS,OFF
+[00.035] RX ATT_WRITE_RSP (Handle: 0x0082)
+[00.120] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082, Data: LD,80,50.2,0.0,32,33,0.0,1245.2,Eco,62,0,0,98,18.5220,73.8578)
+         Parsed: Vehicle Speed = 0.0 km/h, Ignition = OFF
+[01.500] RX HCI_EVT_DISCONNECTION_COMPLETE (Handle: 0x0001, Reason: 0x16 - Connection Terminated By Local Host)
+[01.505] STATUS: Session Gracefully Closed. Ride State Finalized cleanly.
+======================================================================
