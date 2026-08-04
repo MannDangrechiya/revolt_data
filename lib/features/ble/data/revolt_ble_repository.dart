@@ -13,6 +13,7 @@ class RevoltBleRepository implements BleVehicleRepository {
   final _connectionStateController =
       StreamController<BleConnectionState>.broadcast();
   final _snapshotController = StreamController<VehicleSnapshot>.broadcast();
+  final _rawPacketController = StreamController<RawPacket>.broadcast();
 
   BleConnectionState _currentState = BleConnectionState.disconnected;
   StreamSubscription<RawPacket>? _packetSubscription;
@@ -40,6 +41,9 @@ class RevoltBleRepository implements BleVehicleRepository {
 
   @override
   BleConnectionState get currentConnectionState => _currentState;
+
+  @override
+  Stream<RawPacket> get rawPacketStream => _rawPacketController.stream;
 
   @override
   VehicleSnapshot? get lastCachedSnapshot => _lastSnapshot;
@@ -126,6 +130,9 @@ class RevoltBleRepository implements BleVehicleRepository {
   void _startListening() {
     _packetSubscription?.cancel();
     _packetSubscription = _client.listen().listen((packet) {
+      if (!_rawPacketController.isClosed) {
+        _rawPacketController.add(packet);
+      }
       if (packet.direction == PacketDirection.notify) {
         final snapshot = VehicleSnapshot.parseRawBytes(packet.value);
         if (snapshot != null) {
@@ -148,5 +155,6 @@ class RevoltBleRepository implements BleVehicleRepository {
     _packetSubscription?.cancel();
     _connectionStateController.close();
     _snapshotController.close();
+    _rawPacketController.close();
   }
 }

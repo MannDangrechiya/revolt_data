@@ -20,7 +20,7 @@ final class BleTripNotifierProvider
         argument: null,
         retry: null,
         name: r'bleTripProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -41,7 +41,7 @@ final class BleTripNotifierProvider
   }
 }
 
-String _$bleTripNotifierHash() => r'7620ecb4da8ddda18b5c5f855e9090179a1f0979';
+String _$bleTripNotifierHash() => r'8b6da69b7de5ff37d50c2ca4e6e79c3da98b29f6';
 
 abstract class _$BleTripNotifier extends $Notifier<BleTripState> {
   BleTripState build();

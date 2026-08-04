@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../charging/data/charging_provider.dart';
@@ -11,7 +12,7 @@ import 'vehicle_snapshot_provider.dart';
 
 part 'ble_charge_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BleChargeNotifier extends _$BleChargeNotifier {
   Timer? _noIncreaseTimer;
   Timer? _tricklePlateauTimer;
@@ -230,6 +231,44 @@ class BleChargeNotifier extends _$BleChargeNotifier {
 
   /// Manually force-stop a charge session (useful for testing or explicit UI triggers).
   Future<void> manualStopCharge() async {
+    await _finalizeChargeSession();
+  }
+
+  /// Force-starts a charge session (Debug mode only).
+  void forceStart() {
+    assert(kDebugMode, 'forceStart only available in debug mode');
+    if (!kDebugMode) return;
+
+    final snapshot = VehicleSnapshot(
+      batteryPercent: 40,
+      batteryVoltage: 68.0,
+      batteryCurrent: 5.0,
+      batteryTemp: 28,
+      motorTemp: 28,
+      speed: 0.0,
+      tripDistance: 0.0,
+      odometer: 1250.0,
+      rideMode: 'Eco',
+      range: 40.0,
+      power: 0.34,
+      timestamp: DateTime.now(),
+    );
+    _startChargeSession(snapshot, DateTime.now());
+  }
+
+  /// Force-stops a charge session (Debug mode only).
+  Future<void> forceStop() async {
+    assert(kDebugMode, 'forceStop only available in debug mode');
+    if (!kDebugMode) return;
+
+    if (state.status == BleChargeStatus.charging) {
+      state = state.copyWith(
+        currentBattery: state.startBattery + 25,
+        batteryGained: 25,
+        kwhAdded: 3.24 * 0.25,
+        durationSeconds: 1800,
+      );
+    }
     await _finalizeChargeSession();
   }
 }

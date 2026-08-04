@@ -20,7 +20,7 @@ final class BleChargeNotifierProvider
         argument: null,
         retry: null,
         name: r'bleChargeProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -41,7 +41,7 @@ final class BleChargeNotifierProvider
   }
 }
 
-String _$bleChargeNotifierHash() => r'b0e9abc4dcafd83fcbdc21c93b415868697adaee';
+String _$bleChargeNotifierHash() => r'4da909cdf92344a40531c487c33af1748bbf0242';
 
 abstract class _$BleChargeNotifier extends $Notifier<BleChargeState> {
   BleChargeState build();

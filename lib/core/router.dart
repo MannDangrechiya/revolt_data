@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -29,6 +30,7 @@ import '../features/analytics/presentation/statistics_screen.dart';
 import '../features/ble/presentation/screens/device_status_screen.dart';
 import '../features/ble/presentation/screens/device_scan_screen.dart';
 import '../features/ble/presentation/screens/device_pair_screen.dart';
+import '../features/ble/presentation/screens/ble_debug_screen.dart';
 
 /// Helper function to build custom page transition with Curves.easeInOutCirc fade.
 CustomTransitionPage buildPageWithDefaultTransition<T>({
@@ -209,6 +211,20 @@ final routerDelegate = GoRouter(
         child: const DeviceStatusScreen(),
       ),
       routes: [
+        GoRoute(
+          path: 'debug',
+          redirect: (context, state) {
+            if (kReleaseMode) {
+              return '/device';
+            }
+            return null;
+          },
+          pageBuilder: (context, state) => buildPageWithDefaultTransition(
+            context: context,
+            state: state,
+            child: const BleDebugScreen(),
+          ),
+        ),
         GoRoute(
           path: 'scan',
           pageBuilder: (context, state) => buildPageWithDefaultTransition(
