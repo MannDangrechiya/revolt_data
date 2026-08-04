@@ -11,17 +11,10 @@
             "id": "6f33267e555da01d",
             "type": "leaf",
             "state": {
-              "type": "canvas",
-              "state": {
-                "file": "Untitled.canvas",
-                "viewState": {
-                  "x": 0,
-                  "y": 0,
-                  "zoom": 0
-                }
-              },
-              "icon": "lucide-layout-dashboard",
-              "title": "Untitled"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
             }
           }
         ]
@@ -193,6 +186,7 @@
   },
   "active": "6f33267e555da01d",
   "lastOpenFiles": [
+    "Untitled.canvas",
     "stitch_ui_documentation/Global Doc/21_Behavior_Preservation_Specification.md",
     "stitch_ui_documentation/Global Doc/20_Final_Green_Light_Report.md",
     "stitch_ui_documentation/Global Doc/13_Stitch_UI_Blueprint.md",
@@ -205,7 +199,6 @@
     "stitch_ui_documentation/New folder",
     "stitch_ui_documentation.zip",
     "stitch_ui_documentation/21_Behavior_Preservation_Specification.md",
-    "Untitled.canvas",
     "stitch_ui_documentation/20_Final_Green_Light_Report.md",
     "stitch_ui_documentation/19_Files_Requiring_Refactoring.md",
     "stitch_ui_documentation/18_UI_Safety_Checklist.md",

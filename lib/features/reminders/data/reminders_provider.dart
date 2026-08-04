@@ -91,3 +91,10 @@ class Reminders extends _$Reminders {
     }
   }
 }
+
+@riverpod
+Future<Reminder?> reminderById(Ref ref, String id) async {
+  final db = ref.watch(databaseProvider);
+  final row = await (db.select(db.remindersTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+  return row?.toDomain();
+}

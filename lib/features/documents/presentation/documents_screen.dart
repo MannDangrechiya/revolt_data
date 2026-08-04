@@ -111,7 +111,7 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.push('/documents/preview', extra: doc),
+        onTap: () => context.push('/documents/preview/${doc.id}'),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(

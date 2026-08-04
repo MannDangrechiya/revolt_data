@@ -70,17 +70,17 @@ class ReportGeneratorService {
             children: [
               pw.Header(
                 level: 0,
-                child: pw.Text('VoltLog - Vehicle Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                child: pw.Text('VoltLog - Vehicle Report', style: const pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
               ),
               pw.SizedBox(height: 20),
-              pw.Text('Summary Overview', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.Text('Summary Overview', style: const pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 10),
               pw.Text('Total Distance Logged: ${totalDistance.toStringAsFixed(1)} km', style: const pw.TextStyle(fontSize: 14)),
               pw.Text('Total Operating Expenses: ₹${totalExpenses.toStringAsFixed(2)}', style: const pw.TextStyle(fontSize: 14)),
               pw.Text('Estimated Charge Cycles: $totalChargeCycles', style: const pw.TextStyle(fontSize: 14)),
               
               pw.SizedBox(height: 30),
-              pw.Text('Recent Maintenance Logs', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.Text('Recent Maintenance Logs', style: const pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 10),
               if (maintenanceLogs.isEmpty)
                 pw.Text('No maintenance logs recorded.')

@@ -16,6 +16,7 @@ class RevoltBleRepository implements BleVehicleRepository {
 
   BleConnectionState _currentState = BleConnectionState.disconnected;
   StreamSubscription<RawPacket>? _packetSubscription;
+  VehicleSnapshot? _lastSnapshot;
 
   RevoltBleRepository({RevoltBleClient? client})
       : _client = client ??
@@ -39,6 +40,14 @@ class RevoltBleRepository implements BleVehicleRepository {
 
   @override
   BleConnectionState get currentConnectionState => _currentState;
+
+  @override
+  VehicleSnapshot? get lastCachedSnapshot => _lastSnapshot;
+
+  @override
+  Future<void> clearSnapshotCache() async {
+    _lastSnapshot = null;
+  }
 
   @override
   Future<List<BleDeviceInfo>> scan({
@@ -119,8 +128,11 @@ class RevoltBleRepository implements BleVehicleRepository {
     _packetSubscription = _client.listen().listen((packet) {
       if (packet.direction == PacketDirection.notify) {
         final snapshot = VehicleSnapshot.parseRawBytes(packet.value);
-        if (snapshot != null && !_snapshotController.isClosed) {
-          _snapshotController.add(snapshot);
+        if (snapshot != null) {
+          _lastSnapshot = snapshot;
+          if (!_snapshotController.isClosed) {
+            _snapshotController.add(snapshot);
+          }
         }
       }
     }, onError: (Object err) {

@@ -106,3 +106,10 @@ Future<List<Ride>> filteredRides(Ref ref) async {
     return true;
   }).toList();
 }
+
+@riverpod
+Future<Ride?> rideById(Ref ref, String id) async {
+  final db = ref.watch(databaseProvider);
+  final row = await (db.select(db.ridesTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+  return row?.toDomain();
+}

@@ -13,46 +13,57 @@ import '../domain/ride.dart';
 
 class RideEntryFormScreen extends HookConsumerWidget {
   final Ride? ride;
+  final String? rideId;
 
-  const RideEntryFormScreen({super.key, this.ride});
+  const RideEntryFormScreen({super.key, this.ride, this.rideId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isEditing = ride != null;
+    final fetchedRide = rideId != null ? ref.watch(rideByIdProvider(rideId!)).asData?.value : null;
+    final effectiveRide = ride ?? fetchedRide;
+
+    if (rideId != null && ref.watch(rideByIdProvider(rideId!)).isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Edit Ride')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final isEditing = effectiveRide != null;
     final formKey = useMemoized(() => GlobalKey<FormState>());
 
-    final selectedDate = useState(ride?.date ?? DateTime.now());
+    final selectedDate = useState(effectiveRide?.date ?? DateTime.now());
     final startTime = useState<TimeOfDay?>(
-      ride?.startTime != null ? TimeOfDay.fromDateTime(ride!.startTime!) : null,
+      effectiveRide?.startTime != null ? TimeOfDay.fromDateTime(effectiveRide!.startTime!) : null,
     );
     final endTime = useState<TimeOfDay?>(
-      ride?.endTime != null ? TimeOfDay.fromDateTime(ride!.endTime!) : null,
+      effectiveRide?.endTime != null ? TimeOfDay.fromDateTime(effectiveRide!.endTime!) : null,
     );
 
-    final startOdoController = useTextEditingController(text: ride != null ? ride!.startOdometer.toString() : '');
-    final endOdoController = useTextEditingController(text: ride != null ? ride!.endOdometer.toString() : '');
-    final batteryBeforeController = useTextEditingController(text: ride != null ? ride!.batteryBefore.toString() : '');
-    final batteryAfterController = useTextEditingController(text: ride != null ? ride!.batteryAfter.toString() : '');
+    final startOdoController = useTextEditingController(text: effectiveRide != null ? effectiveRide.startOdometer.toString() : '');
+    final endOdoController = useTextEditingController(text: effectiveRide != null ? effectiveRide.endOdometer.toString() : '');
+    final batteryBeforeController = useTextEditingController(text: effectiveRide != null ? effectiveRide.batteryBefore.toString() : '');
+    final batteryAfterController = useTextEditingController(text: effectiveRide != null ? effectiveRide.batteryAfter.toString() : '');
 
-    final estRemainingRangeController = useTextEditingController(text: ride?.estimatedRemainingRange?.toString() ?? '');
-    final avgSpeedController = useTextEditingController(text: ride?.averageSpeed?.toString() ?? '');
-    final maxSpeedController = useTextEditingController(text: ride?.maxSpeed?.toString() ?? '');
-    final passengerCountController = useTextEditingController(text: ride?.passengerCount?.toString() ?? '1');
+    final estRemainingRangeController = useTextEditingController(text: effectiveRide?.estimatedRemainingRange?.toString() ?? '');
+    final avgSpeedController = useTextEditingController(text: effectiveRide?.averageSpeed?.toString() ?? '');
+    final maxSpeedController = useTextEditingController(text: effectiveRide?.maxSpeed?.toString() ?? '');
+    final passengerCountController = useTextEditingController(text: effectiveRide?.passengerCount?.toString() ?? '1');
 
-    final startLocationController = useTextEditingController(text: ride?.startLocation ?? '');
-    final endLocationController = useTextEditingController(text: ride?.endLocation ?? '');
+    final startLocationController = useTextEditingController(text: effectiveRide?.startLocation ?? '');
+    final endLocationController = useTextEditingController(text: effectiveRide?.endLocation ?? '');
 
-    final notesController = useTextEditingController(text: ride?.notes ?? '');
-    final routeNotesController = useTextEditingController(text: ride?.routeNotes ?? '');
-    final customTagsController = useTextEditingController(text: ride?.customTags.join(', ') ?? '');
+    final notesController = useTextEditingController(text: effectiveRide?.notes ?? '');
+    final routeNotesController = useTextEditingController(text: effectiveRide?.routeNotes ?? '');
+    final customTagsController = useTextEditingController(text: effectiveRide?.customTags.join(', ') ?? '');
 
-    final rideMode = useState(ride?.rideMode ?? RideMode.normal);
-    final roadCondition = useState(ride?.roadCondition ?? RoadCondition.average);
-    final weather = useState<String?>(ride?.weather);
-    final roadType = useState<String?>(ride?.roadType);
-    final ridePurpose = useState<String?>(ride?.ridePurpose);
+    final rideMode = useState(effectiveRide?.rideMode ?? RideMode.normal);
+    final roadCondition = useState(effectiveRide?.roadCondition ?? RoadCondition.average);
+    final weather = useState<String?>(effectiveRide?.weather);
+    final roadType = useState<String?>(effectiveRide?.roadType);
+    final ridePurpose = useState<String?>(effectiveRide?.ridePurpose);
 
-    final photoPaths = useState<List<String>>(ride?.photoPaths ?? []);
+    final photoPaths = useState<List<String>>(effectiveRide?.photoPaths ?? []);
     final isSubmitting = useState(false);
 
     Future<void> pickImage() async {

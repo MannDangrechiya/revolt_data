@@ -25,7 +25,7 @@ void main() {
     });
 
     test('saveBike inserts a bike into the database', () async {
-      final newBike = Bike(
+      final newBike = const Bike(
         id: 0,
         name: 'My Volt',
         brand: 'Revolt',
@@ -44,12 +44,12 @@ void main() {
     test('updateBike updates an existing bike in the database', () async {
       // First insert
       await database.into(database.bikesTable).insert(
-        BikesTableCompanion(
-          name: const Value('Old Name'),
-          brand: const Value('Revolt'),
-          model: const Value('RV400'),
-          color: const Value('Black'),
-          registrationNumber: const Value('MH01AB1234'),
+        const BikesTableCompanion(
+          name: Value('Old Name'),
+          brand: Value('Revolt'),
+          model: Value('RV400'),
+          color: Value('Black'),
+          registrationNumber: Value('MH01AB1234'),
         )
       );
 

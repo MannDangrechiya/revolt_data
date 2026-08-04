@@ -51,3 +51,55 @@ final class VehicleSnapshotProvider
 }
 
 String _$vehicleSnapshotHash() => r'dd918359b1657e19bf4f616f92c1c14c3cad8454';
+
+/// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
+
+@ProviderFor(lastKnownVehicleSnapshot)
+final lastKnownVehicleSnapshotProvider = LastKnownVehicleSnapshotProvider._();
+
+/// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
+
+final class LastKnownVehicleSnapshotProvider
+    extends
+        $FunctionalProvider<
+          VehicleSnapshot?,
+          VehicleSnapshot?,
+          VehicleSnapshot?
+        >
+    with $Provider<VehicleSnapshot?> {
+  /// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
+  LastKnownVehicleSnapshotProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'lastKnownVehicleSnapshotProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$lastKnownVehicleSnapshotHash();
+
+  @$internal
+  @override
+  $ProviderElement<VehicleSnapshot?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  VehicleSnapshot? create(Ref ref) {
+    return lastKnownVehicleSnapshot(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(VehicleSnapshot? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<VehicleSnapshot?>(value),
+    );
+  }
+}
+
+String _$lastKnownVehicleSnapshotHash() =>
+    r'0b2e7acf001189cf8e0c37b2edbfee5a06dc53d3';

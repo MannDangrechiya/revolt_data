@@ -124,3 +124,10 @@ Future<double> averageChargingSpeed(Ref ref) async {
   final totalSpeed = logs.fold<double>(0.0, (sum, log) => sum + log.chargingSpeedKw);
   return totalSpeed / logs.length;
 }
+
+@riverpod
+Future<ChargeLog?> chargeLogById(Ref ref, String id) async {
+  final db = ref.watch(databaseProvider);
+  final row = await (db.select(db.chargeLogsTable)..where((t) => t.id.equals(id))).getSingleOrNull();
+  return row?.toDomain();
+}

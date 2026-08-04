@@ -1,23 +1,44 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../domain/document.dart';
+import '../../../core/widgets/not_found_widget.dart';
+import '../data/documents_provider.dart';
 
-class DocumentPreviewScreen extends StatelessWidget {
-  final Document document;
+class DocumentPreviewScreen extends ConsumerWidget {
+  final String documentId;
 
-  const DocumentPreviewScreen({super.key, required this.document});
+  const DocumentPreviewScreen({super.key, required this.documentId});
 
   @override
-  Widget build(BuildContext context) {
-    final isPdf = document.filePath.toLowerCase().endsWith('.pdf');
-    final file = File(document.filePath);
-    final fileExists = file.existsSync();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final docAsync = ref.watch(documentByIdProvider(documentId));
 
-    return Scaffold(
+    return docAsync.when(
+      loading: () => Scaffold(
+        appBar: AppBar(title: const Text('Document Preview')),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (err, stack) => NotFoundWidget(
+        message: 'Error loading document: $err',
+        returnRoute: '/documents',
+      ),
+      data: (document) {
+        if (document == null) {
+          return const NotFoundWidget(
+            message: 'Document not found or deleted.',
+            returnRoute: '/documents',
+          );
+        }
+
+        final isPdf = document.filePath.toLowerCase().endsWith('.pdf');
+        final file = File(document.filePath);
+        final fileExists = file.existsSync();
+
+        return Scaffold(
       appBar: AppBar(
         title: Text(document.name),
         actions: [
@@ -57,5 +78,7 @@ class DocumentPreviewScreen extends StatelessWidget {
                   ),
                 ),
     );
+  },
+);
   }
 }

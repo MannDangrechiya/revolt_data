@@ -12,7 +12,7 @@ class BatteryHealthDashboard extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cycles = ref.watch(totalChargeCyclesProvider).asData?.value ?? 0;
     final efficiency = ref.watch(powerEfficiencyProvider).asData?.value ?? 0.0;
-    final health = ref.watch(batteryHealthEstimateProvider).asData?.value ?? 100.0;
+    final health = ref.watch(batteryHealthEstimateProvider);
     final totalCost = ref.watch(totalChargingCostProvider).asData?.value ?? 0.0;
     final avgSpeed = ref.watch(averageChargingSpeedProvider).asData?.value ?? 0.0;
     final distribution = ref.watch(chargingLocationDistributionProvider).asData?.value ?? {};
@@ -24,7 +24,7 @@ class BatteryHealthDashboard extends HookConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: _buildMetricCard(theme, 'Health', '${health.toStringAsFixed(1)}%', Icons.health_and_safety, Colors.green)),
+            Expanded(child: _buildMetricCard(theme, 'Health', health != null ? '$health%' : 'N/A', Icons.health_and_safety, Colors.green)),
             Expanded(child: _buildMetricCard(theme, 'Cycles', '$cycles', Icons.loop, Colors.blue)),
           ],
         ),

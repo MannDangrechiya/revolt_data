@@ -1,29 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/widgets/not_found_widget.dart';
+import '../data/charging_provider.dart';
 import '../domain/charge_log.dart';
 
-class ChargeDetailsScreen extends StatelessWidget {
-  final ChargeLog log;
-  final String? chargeId;
+class ChargeDetailsScreen extends ConsumerWidget {
+  final String chargeId;
   
-  const ChargeDetailsScreen({super.key, required this.log, this.chargeId});
+  const ChargeDetailsScreen({super.key, required this.chargeId});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Charge Details'),
-        actions: [
-          IconButton(
-            icon: const Icon(LucideIcons.pencil),
-            tooltip: 'Edit',
-            onPressed: () => context.push('/charging/edit', extra: log),
-          ),
-        ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final logAsync = ref.watch(chargeLogByIdProvider(chargeId));
+
+    return logAsync.when(
+      loading: () => Scaffold(
+        appBar: AppBar(title: const Text('Charge Details')),
+        body: const Center(child: CircularProgressIndicator()),
       ),
-      body: CustomScrollView(
+      error: (err, stack) => NotFoundWidget(
+        message: 'Error loading charge log details: $err',
+        returnRoute: '/charging',
+      ),
+      data: (log) {
+        if (log == null) {
+          return const NotFoundWidget(
+            message: 'Charge log details not found or deleted.',
+            returnRoute: '/charging',
+          );
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Charge Details'),
+            actions: [
+              IconButton(
+                icon: const Icon(LucideIcons.pencil),
+                tooltip: 'Edit',
+                onPressed: () => context.push('/charging/edit/${log.id}'),
+              ),
+            ],
+          ),
+          body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
@@ -91,6 +112,8 @@ class ChargeDetailsScreen extends StatelessWidget {
         ],
       ),
     );
+  },
+);
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {

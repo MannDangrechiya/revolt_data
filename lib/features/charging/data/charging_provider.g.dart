@@ -254,3 +254,77 @@ final class AverageChargingSpeedProvider
 
 String _$averageChargingSpeedHash() =>
     r'754f37ffb4409bba447dfa3211ce590e5e116856';
+
+@ProviderFor(chargeLogById)
+final chargeLogByIdProvider = ChargeLogByIdFamily._();
+
+final class ChargeLogByIdProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ChargeLog?>,
+          ChargeLog?,
+          FutureOr<ChargeLog?>
+        >
+    with $FutureModifier<ChargeLog?>, $FutureProvider<ChargeLog?> {
+  ChargeLogByIdProvider._({
+    required ChargeLogByIdFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'chargeLogByIdProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$chargeLogByIdHash();
+
+  @override
+  String toString() {
+    return r'chargeLogByIdProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ChargeLog?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ChargeLog?> create(Ref ref) {
+    final argument = this.argument as String;
+    return chargeLogById(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ChargeLogByIdProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$chargeLogByIdHash() => r'3341bbc15d5e091e5df0c4b543cc5bf2bc6fabb0';
+
+final class ChargeLogByIdFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ChargeLog?>, String> {
+  ChargeLogByIdFamily._()
+    : super(
+        retry: null,
+        name: r'chargeLogByIdProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ChargeLogByIdProvider call(String id) =>
+      ChargeLogByIdProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'chargeLogByIdProvider';
+}

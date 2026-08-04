@@ -9,30 +9,41 @@ import '../domain/charge_log.dart';
 
 class ChargeEntryFormScreen extends HookConsumerWidget {
   final ChargeLog? log;
+  final String? logId;
 
-  const ChargeEntryFormScreen({super.key, this.log});
+  const ChargeEntryFormScreen({super.key, this.log, this.logId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isEditing = log != null;
+    final fetchedLog = logId != null ? ref.watch(chargeLogByIdProvider(logId!)).asData?.value : null;
+    final effectiveLog = log ?? fetchedLog;
+
+    if (logId != null && ref.watch(chargeLogByIdProvider(logId!)).isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Edit Charge')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final isEditing = effectiveLog != null;
     final formKey = useMemoized(() => GlobalKey<FormState>());
 
-    final date = useState(log?.date ?? DateTime.now());
-    final durationController = useTextEditingController(text: log != null ? log!.durationMinutes.toString() : '');
-    final kwhController = useTextEditingController(text: log != null ? log!.kwhAdded.toString() : '');
-    final costController = useTextEditingController(text: log != null ? log!.cost.toString() : '');
-    final startBatteryController = useTextEditingController(text: log != null ? log!.startBattery.toString() : '');
-    final endBatteryController = useTextEditingController(text: log != null ? log!.endBattery.toString() : '');
-    final locationNameController = useTextEditingController(text: log?.locationName ?? '');
-    final notesController = useTextEditingController(text: log?.notes ?? '');
+    final date = useState(effectiveLog?.date ?? DateTime.now());
+    final durationController = useTextEditingController(text: effectiveLog != null ? effectiveLog.durationMinutes.toString() : '');
+    final kwhController = useTextEditingController(text: effectiveLog != null ? effectiveLog.kwhAdded.toString() : '');
+    final costController = useTextEditingController(text: effectiveLog != null ? effectiveLog.cost.toString() : '');
+    final startBatteryController = useTextEditingController(text: effectiveLog != null ? effectiveLog.startBattery.toString() : '');
+    final endBatteryController = useTextEditingController(text: effectiveLog != null ? effectiveLog.endBattery.toString() : '');
+    final locationNameController = useTextEditingController(text: effectiveLog?.locationName ?? '');
+    final notesController = useTextEditingController(text: effectiveLog?.notes ?? '');
 
-    final chargerTypeController = useTextEditingController(text: log?.chargerType ?? '');
-    final providerNameController = useTextEditingController(text: log?.providerName ?? '');
-    final maxPowerController = useTextEditingController(text: log?.maxChargingPowerKw?.toString() ?? '');
+    final chargerTypeController = useTextEditingController(text: effectiveLog?.chargerType ?? '');
+    final providerNameController = useTextEditingController(text: effectiveLog?.providerName ?? '');
+    final maxPowerController = useTextEditingController(text: effectiveLog?.maxChargingPowerKw?.toString() ?? '');
     final speedController = useTextEditingController();
 
-    final paymentMethod = useState(log?.paymentMethod ?? PaymentMethod.creditCard);
-    final locationType = useState(log?.locationType ?? LocationType.home);
+    final paymentMethod = useState(effectiveLog?.paymentMethod ?? PaymentMethod.creditCard);
+    final locationType = useState(effectiveLog?.locationType ?? LocationType.home);
 
     final isSubmitting = useState(false);
 

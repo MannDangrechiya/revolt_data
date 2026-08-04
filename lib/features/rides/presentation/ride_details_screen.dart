@@ -1,35 +1,56 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../core/widgets/not_found_widget.dart';
+import '../data/rides_provider.dart';
 import '../domain/ride.dart';
 
-class RideDetailsScreen extends StatelessWidget {
-  final Ride ride;
-  final String? rideId;
+class RideDetailsScreen extends ConsumerWidget {
+  final String rideId;
   
-  const RideDetailsScreen({super.key, required this.ride, this.rideId});
+  const RideDetailsScreen({super.key, required this.rideId});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ride Details'),
-        actions: [
-          if (ride.isFavorite)
-            const Padding(
-              padding: EdgeInsets.only(right: 8.0),
-              child: Icon(Icons.star, color: Colors.amber),
-            ),
-          IconButton(
-            icon: const Icon(LucideIcons.pencil),
-            tooltip: 'Edit',
-            onPressed: () => context.push('/rides/edit', extra: ride),
-          ),
-        ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final rideAsync = ref.watch(rideByIdProvider(rideId));
+
+    return rideAsync.when(
+      loading: () => Scaffold(
+        appBar: AppBar(title: const Text('Ride Details')),
+        body: const Center(child: CircularProgressIndicator()),
       ),
-      body: CustomScrollView(
+      error: (err, stack) => NotFoundWidget(
+        message: 'Error loading ride details: $err',
+        returnRoute: '/rides',
+      ),
+      data: (ride) {
+        if (ride == null) {
+          return const NotFoundWidget(
+            message: 'Ride details not found or deleted.',
+            returnRoute: '/rides',
+          );
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Ride Details'),
+            actions: [
+              if (ride.isFavorite)
+                const Padding(
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Icon(Icons.star, color: Colors.amber),
+                ),
+              IconButton(
+                icon: const Icon(LucideIcons.pencil),
+                tooltip: 'Edit',
+                onPressed: () => context.push('/rides/edit/${ride.id}'),
+              ),
+            ],
+          ),
+          body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
           if (ride.photoPaths.isNotEmpty)
@@ -138,6 +159,8 @@ class RideDetailsScreen extends StatelessWidget {
         ],
       ),
     );
+  },
+);
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {

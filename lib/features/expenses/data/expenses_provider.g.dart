@@ -127,3 +127,73 @@ final class TotalExpensesProvider
 }
 
 String _$totalExpensesHash() => r'16be79435e111538d150405167607cf7f6c187c4';
+
+@ProviderFor(expenseById)
+final expenseByIdProvider = ExpenseByIdFamily._();
+
+final class ExpenseByIdProvider
+    extends
+        $FunctionalProvider<AsyncValue<Expense?>, Expense?, FutureOr<Expense?>>
+    with $FutureModifier<Expense?>, $FutureProvider<Expense?> {
+  ExpenseByIdProvider._({
+    required ExpenseByIdFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'expenseByIdProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$expenseByIdHash();
+
+  @override
+  String toString() {
+    return r'expenseByIdProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<Expense?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Expense?> create(Ref ref) {
+    final argument = this.argument as String;
+    return expenseById(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExpenseByIdProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$expenseByIdHash() => r'3f04053a9c8b750001617595ff61c11f76098470';
+
+final class ExpenseByIdFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<Expense?>, String> {
+  ExpenseByIdFamily._()
+    : super(
+        retry: null,
+        name: r'expenseByIdProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ExpenseByIdProvider call(String id) =>
+      ExpenseByIdProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'expenseByIdProvider';
+}

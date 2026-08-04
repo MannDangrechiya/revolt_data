@@ -106,7 +106,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         clipBehavior: Clip.antiAlias,
         child: ListTile(
-          onTap: () => context.push('/reminders/edit', extra: reminder),
+          onTap: () => context.push('/reminders/edit/${reminder.id}'),
           leading: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(

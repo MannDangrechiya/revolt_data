@@ -21,6 +21,8 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
     required double range,
     required double power,
     @Default([]) List<String> faultCodes,
+    int? batteryHealth,
+    String? gpsCoords,
     DateTime? timestamp,
   }) = _VehicleSnapshot;
 
@@ -30,7 +32,7 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
   /// Decodes a raw BLE notification packet into a typed [VehicleSnapshot].
   ///
   /// Supports comma-separated ASCII string format starting with "LD,"
-  /// (e.g., "LD,batteryPercent,batteryVoltage,batteryCurrent,batteryTemp,motorTemp,speed,tripDistance,odometer,rideMode,range,power,faultCodes")
+  /// (e.g., "LD,batteryPercent,batteryVoltage,batteryCurrent,batteryTemp,motorTemp,speed,tripDistance,odometer,rideMode,range,power,faultCodes,batteryHealth,gpsCoords")
   /// as well as structured binary fallbacks.
   static VehicleSnapshot? parseRawBytes(Uint8List bytes) {
     if (bytes.isEmpty) return null;
@@ -74,6 +76,16 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
         faultCodes = parts[12].split(';').where((f) => f.isNotEmpty).toList();
       }
 
+      int? batteryHealth;
+      if (parts.length > 13 && parts[13].isNotEmpty) {
+        batteryHealth = int.tryParse(parts[13]);
+      }
+
+      String? gpsCoords;
+      if (parts.length > 14 && parts[14].isNotEmpty) {
+        gpsCoords = parts[14];
+      }
+
       return VehicleSnapshot(
         batteryPercent: batteryPercent,
         batteryVoltage: batteryVoltage,
@@ -87,6 +99,8 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
         range: range,
         power: power,
         faultCodes: faultCodes,
+        batteryHealth: batteryHealth,
+        gpsCoords: gpsCoords,
         timestamp: DateTime.now(),
       );
     } catch (_) {
@@ -110,6 +124,8 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
     double range = 150.0;
     double power = 0.0;
     List<String> faultCodes = [];
+    int? batteryHealth;
+    String? gpsCoords;
 
     if (data.isNotEmpty) {
       batteryPercent = data[0].clamp(0, 100);
@@ -152,8 +168,11 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
           rideMode = 'Eco';
       }
     }
+    if (data.length >= 17) {
+      batteryHealth = data[16].clamp(0, 100);
+    }
 
-    range = batteryPercent * 1.5;
+    range = batteryPercent.toDouble();
     power = (batteryVoltage * batteryCurrent) / 1000.0;
 
     return VehicleSnapshot(
@@ -169,6 +188,8 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
       range: range,
       power: power,
       faultCodes: faultCodes,
+      batteryHealth: batteryHealth,
+      gpsCoords: gpsCoords,
       timestamp: DateTime.now(),
     );
   }

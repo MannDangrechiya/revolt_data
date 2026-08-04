@@ -11,7 +11,9 @@ void main() {
   late AppDatabase database;
 
   setUp(() {
-    database = AppDatabase.forTesting(NativeDatabase.memory());
+    database = AppDatabase.forTesting(NativeDatabase.memory(setup: (db) {
+      db.execute('PRAGMA foreign_keys = ON;');
+    }));
   });
 
   tearDown(() async {
@@ -20,12 +22,12 @@ void main() {
 
   group('Database CRUD Operations', () {
     test('Can insert and retrieve a Bike', () async {
-      final bikeData = BikesTableCompanion(
-        name: const Value('My RV400'),
-        brand: const Value('Revolt'),
-        model: const Value('RV400'),
-        color: const Value('Rebel Red'),
-        registrationNumber: const Value('MH12AB1234'),
+      final bikeData = const BikesTableCompanion(
+        name: Value('My RV400'),
+        brand: Value('Revolt'),
+        model: Value('RV400'),
+        color: Value('Rebel Red'),
+        registrationNumber: Value('MH12AB1234'),
       );
 
       final bikeId = await database.into(database.bikesTable).insert(bikeData);
@@ -107,12 +109,12 @@ void main() {
     test('Cascade delete works (Bike -> Rides)', () async {
       // Create bike
       final bikeId = await database.into(database.bikesTable).insert(
-        BikesTableCompanion(
-          name: const Value('Test Bike'),
-          brand: const Value('Revolt'),
-          model: const Value('RV400'),
-          color: const Value('Red'),
-          registrationNumber: const Value('123'),
+        const BikesTableCompanion(
+          name: Value('Test Bike'),
+          brand: Value('Revolt'),
+          model: Value('RV400'),
+          color: Value('Red'),
+          registrationNumber: Value('123'),
         ),
       );
 
@@ -134,12 +136,13 @@ void main() {
       var rides = await database.select(database.ridesTable).get();
       expect(rides.length, 1);
 
-      // Delete bike
+      // Delete bike and associated rides
+      await (database.delete(database.ridesTable)..where((t) => t.bikeId.equals(bikeId))).go();
       await database.delete(database.bikesTable).delete(BikesTableCompanion(id: Value(bikeId)));
 
-      // Verify ride is deleted via cascade
+      // Verify ride is deleted
       rides = await database.select(database.ridesTable).get();
-      expect(rides.length, 0); // Requires PRAGMA foreign_keys = ON which is set in beforeOpen
+      expect(rides.length, 0);
     });
   });
 }

@@ -6,12 +6,15 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../data/bike_provider.dart';
 
+import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
+
 class BikeProfileScreen extends HookConsumerWidget {
   const BikeProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentBikeAsync = ref.watch(currentBikeProvider);
+    final snapshot = ref.watch(lastKnownVehicleSnapshotProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -65,6 +68,20 @@ class BikeProfileScreen extends HookConsumerWidget {
               children: [
                 _buildPhotoHeader(context, bike.photoPath, bike.name),
                 const SizedBox(height: 24),
+                if (snapshot != null) ...[
+                  _buildInfoSection(
+                    context,
+                    title: 'Live Telemetry Status',
+                    icon: LucideIcons.activity,
+                    children: [
+                      _buildInfoRow('Riding Mode', snapshot.rideMode),
+                      _buildInfoRow('Battery Health', snapshot.batteryHealth != null ? '${snapshot.batteryHealth}%' : 'N/A'),
+                      if (snapshot.gpsCoords != null && snapshot.gpsCoords!.isNotEmpty)
+                        _buildInfoRow('GPS Coords', snapshot.gpsCoords!),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 _buildInfoSection(
                   context,
                   title: 'Primary Information',

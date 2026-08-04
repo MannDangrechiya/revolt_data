@@ -52,3 +52,77 @@ abstract class _$Documents extends $StreamNotifier<List<Document>> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(documentById)
+final documentByIdProvider = DocumentByIdFamily._();
+
+final class DocumentByIdProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Document?>,
+          Document?,
+          FutureOr<Document?>
+        >
+    with $FutureModifier<Document?>, $FutureProvider<Document?> {
+  DocumentByIdProvider._({
+    required DocumentByIdFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'documentByIdProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$documentByIdHash();
+
+  @override
+  String toString() {
+    return r'documentByIdProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<Document?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Document?> create(Ref ref) {
+    final argument = this.argument as String;
+    return documentById(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is DocumentByIdProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$documentByIdHash() => r'd912587fe57d5e6e6b230a089da517ab53ed1dcd';
+
+final class DocumentByIdFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<Document?>, String> {
+  DocumentByIdFamily._()
+    : super(
+        retry: null,
+        name: r'documentByIdProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  DocumentByIdProvider call(String id) =>
+      DocumentByIdProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'documentByIdProvider';
+}

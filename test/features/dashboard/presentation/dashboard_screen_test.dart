@@ -82,7 +82,7 @@ void main() {
     });
 
     testWidgets('shows dashboard data when successfully loaded', (tester) async {
-      final dashboardData = DashboardData(
+      final dashboardData = const DashboardData(
         currentOdometer: 1500.5,
         todayDistance: 15.0,
         weeklyDistance: 100.0,
@@ -95,7 +95,7 @@ void main() {
         latestBatteryPercentage: 85,
       );
 
-      final bike = Bike(
+      final bike = const Bike(
         id: 1,
         name: 'My RV400 Test',
         brand: 'Revolt',

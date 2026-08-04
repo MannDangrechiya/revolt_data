@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../../rides/data/rides_provider.dart';
 import '../../rides/domain/ride.dart';
 import '../domain/charge_log.dart';
@@ -31,10 +32,10 @@ Future<double> powerEfficiency(Ref ref) async {
 }
 
 @riverpod
-Future<double> batteryHealthEstimate(Ref ref) async {
-  final cycles = await ref.watch(totalChargeCyclesProvider.future);
-  
-  // Simple heuristic: subtract 0.01% health per cycle, max 100%, min 0%
-  double health = 100.0 - (cycles * 0.01);
-  return health.clamp(0.0, 100.0);
+int? batteryHealthEstimate(Ref ref) {
+  final snapshot = ref.watch(lastKnownVehicleSnapshotProvider);
+  if (snapshot == null) return null;
+  final health = snapshot.batteryHealth;
+  if (health == null || health <= 0) return null;
+  return health;
 }
