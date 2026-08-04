@@ -12,11 +12,11 @@ This document presents the final validation report and sign-off summary for the 
 | Validation Metric | Metric Value | Benchmark Target | Status |
 | :--- | :--- | :--- | :---: |
 | **Automated Test Pass Rate** | **100%** (53/53 tests) | 100% | **PASSED** |
-| **Protocol Coverage** | **88.2%** (15/17 opcodes/handles) | ≥ 85% | **PASSED** |
-| **Known & Mapped Opcodes** | **15** opcodes / frames | -- | Verified |
+| **Mapped Protocol Coverage** | **88.2%** (15/17 opcodes/handles) | ≥ 85% | **PASSED** |
+| **Known & Mapped Opcodes** | **15** opcodes / frames | -- | Covered by automated tests |
 | **Unknown / Unobserved Handles** | **2** handles (85 & 87) | < 3 | Documented |
 | **Software Stack Stability Rating**| **A+ (99.9%)** | A | **PASSED** |
-| **Physical Hardware Audit** | Pending Field Test | 100% Pass | **Pending Real Hardware Validation** |
+| **Real Hardware Validation** | Pending Real Hardware Validation | 100% Pass | **Pending Real Hardware Validation** |
 
 ---
 
@@ -76,13 +76,13 @@ Protocol Opcode & Command Mapping:
 
 ---
 
-## 4. Production Readiness Recommendation
+## 4. Production Status Recommendation
 
-### Decision: **CONDITIONALLY READY FOR PRODUCTION RELEASE**
+### Decision: **PROPOSED PRODUCTION CANDIDATE (v1.0.0)**
 
 > [!TIP]
 > **Production Status Summary**:
-> - **Codebase Architecture & Protocol Parser**: **100% READY**. All data models, state handlers, exception handling, reconnect algorithms, and auto-detection routines are fully implemented, tested, and verified.
-> - **Physical Deployment**: **REQUIRES PHYSICAL SIGN-OFF**. Physical deployment to end-user app stores should follow the execution of `docs/REAL_HARDWARE_PROTOCOL_AUDIT.md` on a physical Revolt RV400 vehicle to populate measured latency and field delta tables.
+> - **Codebase Architecture & Protocol Parser**: **Production Candidate (v1.0.0)**. All data models, state handlers, exception handling, reconnect algorithms, and auto-detection routines are fully implemented and covered by automated tests.
+> - **Real Hardware Validation**: **REQUIRES PHYSICAL SIGN-OFF**. Physical deployment to end-user app stores should follow the execution of `docs/REAL_HARDWARE_PROTOCOL_AUDIT.md` on a physical Revolt RV400 vehicle to populate measured latency and field delta tables.
 
 ---

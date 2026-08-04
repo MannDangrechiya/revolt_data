@@ -2,6 +2,8 @@
 
 # revolt_data
 
+> **Status**: Production Candidate (v1.0.0) — Covered by automated tests. Pending Real Hardware Validation.
+
 A Flutter EV logbook app for the Revolt RV400 — local-only, no backend, all data in an on-device Drift/SQLite database.
 
 ## Getting Started

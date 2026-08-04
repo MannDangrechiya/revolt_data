@@ -1,9 +1,9 @@
 # Real RV400 BLE Hardware Protocol Audit & Validation
 
-This document provides a comprehensive protocol audit and physical validation framework for the **Revolt RV400** Bluetooth Low Energy (BLE) integration across `revolt_ble_toolkit`, `revolt_ble_sdk`, and `revolt_data`.
+This document provides a comprehensive protocol audit and Real Hardware Validation framework for the **Revolt RV400** Bluetooth Low Energy (BLE) integration across `revolt_ble_toolkit`, `revolt_ble_sdk`, and `revolt_data`.
 
 > [!IMPORTANT]
-> **Validation Status**: Automated unit, integration, and simulated BLE stack tests pass at 100% (53/53 tests). All physical hardware measurements are marked as **"Pending Real Hardware Validation"** until tested on a physical Revolt RV400 motorcycle.
+> **Validation Status**: Automated unit, integration, and simulated BLE stack tests pass (53/53 tests). All physical hardware measurements are marked as **"Pending Real Hardware Validation"** until tested on a physical Revolt RV400 motorcycle.
 
 ---
 
@@ -14,11 +14,11 @@ This document provides a comprehensive protocol audit and physical validation fr
 | **Bike Model** | Revolt RV400 / RV400 BRZ | Pending Real Hardware Validation |
 | **Bike Firmware Version** | `v2.4.12-RV` (ECU / MCU Controller) | Pending Real Hardware Validation |
 | **Phone Model** | Google Pixel 8 Pro / Samsung Galaxy S23 | Pending Real Hardware Validation |
-| **Android Version** | Android 14 / Android 15 (API 34/35) | Verified Environment |
-| **Flutter SDK Version** | `3.27.x` | Verified Environment |
-| **SDK Package Version** | `revolt_ble_sdk v1.0.0` | Verified Environment |
-| **Toolkit Package Version** | `revolt_ble_toolkit v1.0.0` | Verified Environment |
-| **App Version** | `revolt_data v1.0.0` | Verified Environment |
+| **Android Version** | Android 14 / Android 15 (API 34/35) | Covered by automated tests |
+| **Flutter SDK Version** | `3.27.x` | Covered by automated tests |
+| **SDK Package Version** | `revolt_ble_sdk v1.0.0` | Covered by automated tests |
+| **Toolkit Package Version** | `revolt_ble_toolkit v1.0.0` | Covered by automated tests |
+| **App Version** | `revolt_data v1.0.0` | Covered by automated tests |
 | **Date of Testing** | 2026-08-04 | Audit Timestamp |
 
 ---
