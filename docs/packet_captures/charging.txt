@@ -1,0 +1,27 @@
+======================================================================
+REVOLT RV400 BLE RAW TRAFFIC CAPTURE: CHARGING SESSION
+======================================================================
+Timestamp: 2026-08-04T11:00:00.000Z
+Stream Handle: 0x0082 (UUID: 49535343-1e4d-4bd9-ba61-23c647249616)
+Charging State: ACTIVE (Current > 0.5A, Speed == 0 km/h)
+
+[00.000] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,45,54.2,-8.5,30,32,0.0,1234.7,Eco,35,0,1,98,18.5220,73.8578
+         Parsed: Battery=45%, Volts=54.2V, Current=-8.5A (Charging), Speed=0.0km/h, ChargingFlag=1
+
+[60.000] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,47,54.8,-8.5,31,32,0.0,1234.7,Eco,36,0,1,98,18.5220,73.8578
+         Parsed: Battery=47%, Volts=54.8V, Current=-8.5A (Charging), Speed=0.0km/h, ChargingFlag=1
+
+[120.00] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,49,55.1,-8.4,31,33,0.0,1234.7,Eco,38,0,1,98,18.5220,73.8578
+         Parsed: Battery=49%, Volts=55.1V, Current=-8.4A (Charging), Speed=0.0km/h, ChargingFlag=1
+
+[1800.0] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,99,58.2,-1.2,34,35,0.0,1234.7,Eco,78,0,1,98,18.5220,73.8578
+         Parsed: Battery=99%, Volts=58.2V, Current=-1.2A (Trickle Charge), Speed=0.0km/h
+
+[2100.0] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,100,58.4,0.0,34,35,0.0,1234.7,Eco,80,0,0,98,18.5220,73.8578
+         Parsed: Battery=100%, Volts=58.4V, Current=0.0A (Charge Complete Plateau)
+======================================================================

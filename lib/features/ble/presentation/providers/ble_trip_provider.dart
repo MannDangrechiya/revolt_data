@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../rides/data/rides_provider.dart';
@@ -11,7 +12,7 @@ import 'vehicle_snapshot_provider.dart';
 
 part 'ble_trip_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BleTripNotifier extends _$BleTripNotifier {
   Timer? _zeroSpeedTimer;
   Timer? _disconnectGraceTimer;
@@ -161,7 +162,7 @@ class BleTripNotifier extends _$BleTripNotifier {
 
     // Duplicate Prevention Check:
     // If a ride with source='ble' exists within +/- 2 minutes of startTime, skip insertion.
-    final existingRides = await ref.read(ridesProvider.future);
+    final existingRides = ref.read(ridesProvider).value ?? [];
     final isDuplicate = existingRides.any((r) {
       if (r.source != 'ble') return false;
       final diffMinutes = r.date.difference(startTime).inMinutes.abs();
@@ -230,6 +231,45 @@ class BleTripNotifier extends _$BleTripNotifier {
 
   /// Manually force-stop a trip (useful for testing or explicit UI triggers).
   Future<void> manualStopTrip() async {
+    await _finalizeTrip();
+  }
+
+  /// Force-starts a trip (Debug mode only).
+  void forceStart() {
+    assert(kDebugMode, 'forceStart only available in debug mode');
+    if (!kDebugMode) return;
+
+    final snapshot = VehicleSnapshot(
+      batteryPercent: 85,
+      batteryVoltage: 72.4,
+      batteryCurrent: 12.5,
+      batteryTemp: 32,
+      motorTemp: 38,
+      speed: 35.0,
+      tripDistance: 0.0,
+      odometer: 1250.0,
+      rideMode: 'Eco',
+      range: 85.0,
+      power: 0.9,
+      timestamp: DateTime.now(),
+    );
+    _startTrip(snapshot, DateTime.now());
+  }
+
+  /// Force-stops a trip (Debug mode only).
+  Future<void> forceStop() async {
+    assert(kDebugMode, 'forceStop only available in debug mode');
+    if (!kDebugMode) return;
+
+    if (state.status == BleTripStatus.riding) {
+      state = state.copyWith(
+        currentOdometer: state.startOdometer + 3.2,
+        distance: 3.2,
+        durationSeconds: 300,
+        averageSpeed: 32.0,
+        maxSpeed: 45.0,
+      );
+    }
     await _finalizeTrip();
   }
 }

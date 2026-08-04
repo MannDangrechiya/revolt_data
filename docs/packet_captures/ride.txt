@@ -1,0 +1,27 @@
+======================================================================
+REVOLT RV400 BLE RAW TRAFFIC CAPTURE: CONTINUOUS RIDE TELEMETRY
+======================================================================
+Timestamp: 2026-08-04T10:05:00.000Z
+Stream Handle: 0x0082 (UUID: 49535343-1e4d-4bd9-ba61-23c647249616)
+Frequency: 1.0 Hz (1000 ms Interval)
+
+[00.000] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,85,52.4,12.5,35,42,28.5,1234.5,Eco,65,0,0,98,18.5204,73.8567
+         Parsed: Battery=85%, Volts=52.4V, Amps=12.5A, BatTemp=35°C, MotTemp=42°C, Speed=28.5km/h, Odo=1234.5km, Mode=Eco, Range=65km
+
+[01.002] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,85,52.1,18.2,35,44,35.0,1234.5,Eco,65,0,0,98,18.5208,73.8569
+         Parsed: Battery=85%, Volts=52.1V, Amps=18.2A, BatTemp=35°C, MotTemp=44°C, Speed=35.0km/h, Odo=1234.5km, Mode=Eco, Range=65km
+
+[02.005] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,84,51.8,24.0,36,46,42.0,1234.6,Eco,64,0,0,98,18.5212,73.8572
+         Parsed: Battery=84%, Volts=51.8V, Amps=24.0A, BatTemp=36°C, MotTemp=46°C, Speed=42.0km/h, Odo=1234.6km, Mode=Eco, Range=64km
+
+[03.001] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,84,51.6,22.5,36,47,45.0,1234.6,Normal,58,0,0,98,18.5216,73.8575
+         Parsed: Battery=84%, Volts=51.6V, Amps=22.5A, BatTemp=36°C, MotTemp=47°C, Speed=45.0km/h, Odo=1234.6km, Mode=Normal, Range=58km
+
+[04.004] RX ATT_HANDLE_VALUE_NTF (Handle: 0x0082)
+         ASCII: LD,84,51.5,15.0,36,48,40.0,1234.7,Normal,58,0,0,98,18.5220,73.8578
+         Parsed: Battery=84%, Volts=51.5V, Amps=15.0A, BatTemp=36°C, MotTemp=48°C, Speed=40.0km/h, Odo=1234.7km, Mode=Normal, Range=58km
+======================================================================

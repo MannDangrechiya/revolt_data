@@ -42,7 +42,7 @@ final class ReportGeneratorServiceProvider
 }
 
 String _$reportGeneratorServiceHash() =>
-    r'10b78358109afcef2ed92bcd7c3c49ae466dc3aa';
+    r'20ac7a848a8c6e5694c6a98f743bbbc70a5e362a';
 
 abstract class _$ReportGeneratorService extends $Notifier<void> {
   void build();

@@ -1,3 +1,5 @@
+import 'package:revolt_ble_sdk/revolt_ble_sdk.dart';
+
 import '../domain/ble_device_info.dart';
 import '../domain/connection_state.dart';
 import '../domain/vehicle_snapshot.dart';
@@ -9,6 +11,9 @@ abstract class BleVehicleRepository {
 
   /// Current connection state snapshot.
   BleConnectionState get currentConnectionState;
+
+  /// Stream of raw BLE packets received from the bike.
+  Stream<RawPacket> get rawPacketStream;
 
   /// Scans for nearby RV400 BLE devices.
   Future<List<BleDeviceInfo>> scan({Duration timeout = const Duration(seconds: 10)});

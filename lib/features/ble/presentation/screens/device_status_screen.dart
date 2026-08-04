@@ -71,6 +71,11 @@ class DeviceStatusScreen extends HookConsumerWidget {
         title: 'Device Status',
         actions: [
           IconButton(
+            icon: const Icon(LucideIcons.bug),
+            onPressed: () => context.push('/device/debug'),
+            tooltip: 'BLE Debug Screen',
+          ),
+          IconButton(
             icon: const Icon(LucideIcons.bluetooth),
             onPressed: () => context.push('/device/scan'),
             tooltip: 'Scan for bikes',
