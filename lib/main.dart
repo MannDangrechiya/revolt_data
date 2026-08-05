@@ -3,17 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
 
 import 'app.dart';
+import 'core/router.dart' as router;
 import 'core/theme/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
+    tz.initializeTimeZones();
     await preloadThemeMode();
+
+    // Request Notification permission
+    await Permission.notification.request();
 
     // Initialize system orientation locker
     await SystemChrome.setPreferredOrientations([
@@ -29,10 +35,6 @@ void main() async {
       ),
     );
 
-    // Drift is initialized lazily
-
-
-
     // Initialize Local Notifications
     await _initializeNotifications();
 
@@ -47,8 +49,6 @@ void main() async {
     runApp(const ProviderScope(child: AppWidget()));
   }
 }
-
-
 
 Future<void> _initializeNotifications() async {
   try {
@@ -68,7 +68,12 @@ Future<void> _initializeNotifications() async {
 
     await notificationsPlugin.initialize(
       settings: initializationSettings,
-      onDidReceiveNotificationResponse: (details) {},
+      onDidReceiveNotificationResponse: (details) {
+        final payload = details.payload;
+        if (payload != null && payload.isNotEmpty) {
+          router.routerDelegate.push('/reminders/edit/$payload');
+        }
+      },
     );
     debugPrint('Local Notifications initialized successfully');
   } catch (e) {
@@ -76,6 +81,3 @@ Future<void> _initializeNotifications() async {
     rethrow;
   }
 }
-
-// Local Notifications placeholder
-// The database is handled by Riverpod.
