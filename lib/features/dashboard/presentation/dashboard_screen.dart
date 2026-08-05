@@ -11,6 +11,7 @@ import '../../reminders/data/reminders_provider.dart';
 import '../../reminders/domain/reminder.dart';
 import '../../intelligence/data/intelligence_provider.dart';
 import '../../intelligence/data/service_intelligence_provider.dart';
+import '../../intelligence/data/range_prediction_provider.dart';
 import '../../ble/domain/connection_state.dart';
 import '../../ble/presentation/widgets/connection_status_badge.dart';
 import '../../../shared/ui/volt_app_bar.dart';
@@ -31,11 +32,17 @@ class DashboardScreen extends HookConsumerWidget {
     final healthScoreAsync = ref.watch(healthScoreProvider);
     final smartAlertsAsync = ref.watch(smartAlertsProvider);
     final serviceIntelligenceAsync = ref.watch(serviceIntelligenceProvider);
+    final rangePredictionAsync = ref.watch(rangePredictionProvider);
 
     return Scaffold(
       appBar: VoltAppBar(
         title: 'EV Companion',
         actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.sparkles),
+            onPressed: () => context.push('/coaches'),
+            tooltip: 'AI Coaches',
+          ),
           IconButton(
             icon: const Icon(LucideIcons.bell),
             onPressed: () => context.push('/notifications'),
@@ -158,6 +165,54 @@ class DashboardScreen extends HookConsumerWidget {
                           isConnected: isConnected,
                         ),
                       ),
+                      if (rangePredictionAsync.hasValue) ...[
+                        const SizedBox(height: 12),
+                        FadeSlideIn(
+                          index: 1,
+                          child: InkWell(
+                            onTap: () => context.push('/coaches'),
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.teal.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(LucideIcons.gauge, color: Colors.teal, size: 20),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Predicted Real-World Range',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${rangePredictionAsync.value!.lowEstimate.round()} - ${rangePredictionAsync.value!.highEstimate.round()} km (${rangePredictionAsync.value!.confidencePercent.round()}% confidence)',
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.teal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(LucideIcons.chevronRight, size: 18, color: Colors.teal),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                       if (data.liveSnapshot != null &&
                           data.liveSnapshot!.faultCodes.isNotEmpty) ...[
                         const SizedBox(height: 12),

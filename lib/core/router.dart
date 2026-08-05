@@ -32,6 +32,7 @@ import '../features/ble/presentation/screens/device_scan_screen.dart';
 import '../features/ble/presentation/screens/device_pair_screen.dart';
 import '../features/ble/presentation/screens/ble_debug_screen.dart';
 import '../features/notifications/presentation/notification_history_screen.dart';
+import '../features/intelligence/presentation/coaches_screen.dart';
 
 /// Helper function to build custom page transition with Curves.easeInOutCirc fade.
 CustomTransitionPage buildPageWithDefaultTransition<T>({
@@ -353,6 +354,10 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/bike/edit',
       builder: (context, state) => const BikeEditScreen(),
+    ),
+    GoRoute(
+      path: '/coaches',
+      builder: (context, state) => const CoachesScreen(),
     ),
   ],
 );
