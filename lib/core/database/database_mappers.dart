@@ -7,6 +7,7 @@ import '../../features/maintenance/domain/maintenance_log.dart';
 import '../../features/reminders/domain/reminder.dart';
 import '../../features/bikes/domain/bike.dart';
 import '../../features/documents/domain/document.dart';
+import '../../features/charging/domain/battery_health_snapshot.dart';
 import 'app_database.dart';
 
 extension RideDataMapper on RidesTableData {
@@ -348,3 +349,28 @@ extension DocumentMapper on Document {
     );
   }
 }
+
+extension BatteryHealthSnapshotDataMapper on BatteryHealthSnapshotsTableData {
+  BatteryHealthSnapshot toDomain() {
+    return BatteryHealthSnapshot(
+      id: id,
+      date: date,
+      healthPercent: healthPercent,
+      rangeAtFullCharge: rangeAtFullCharge,
+      bikeId: bikeId,
+    );
+  }
+}
+
+extension BatteryHealthSnapshotMapper on BatteryHealthSnapshot {
+  BatteryHealthSnapshotsTableCompanion toCompanion() {
+    return BatteryHealthSnapshotsTableCompanion(
+      id: Value(id),
+      date: Value(date),
+      healthPercent: Value(healthPercent),
+      rangeAtFullCharge: Value(rangeAtFullCharge),
+      bikeId: Value(bikeId),
+    );
+  }
+}
+

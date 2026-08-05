@@ -1,10 +1,13 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/database/database_provider.dart';
 import '../../../core/database/database_mappers.dart';
+import '../../bikes/data/bike_provider.dart';
+import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
+import '../domain/battery_health_snapshot.dart';
 import '../domain/charge_log.dart';
 import '../domain/charging_anomaly.dart';
-
 import '../domain/charge_filter.dart';
 
 part 'charging_provider.g.dart';
@@ -47,6 +50,26 @@ class ChargingLogs extends _$ChargingLogs {
 
     final logWithSource = log.copyWith(source: source);
     await db.into(db.chargeLogsTable).insert(logWithSource.toCompanion());
+
+    final snapshot = ref.read(lastKnownVehicleSnapshotProvider);
+    if (snapshot != null && snapshot.batteryHealth != null) {
+      final health = snapshot.batteryHealth!.toDouble();
+      final bike = await ref.read(currentBikeProvider.future);
+      final claimedRange = bike?.claimedRange ?? 150.0;
+      final rangeAtFullCharge = claimedRange * (health / 100.0);
+
+      final healthSnapshot = BatteryHealthSnapshot(
+        id: '${log.id}-health',
+        date: log.date,
+        healthPercent: health,
+        rangeAtFullCharge: rangeAtFullCharge,
+        bikeId: log.bikeId ?? bike?.id,
+      );
+
+      await db
+          .into(db.batteryHealthSnapshotsTable)
+          .insertOnConflictUpdate(healthSnapshot.toCompanion());
+    }
   }
 
   Future<void> removeChargeLog(String id) async {

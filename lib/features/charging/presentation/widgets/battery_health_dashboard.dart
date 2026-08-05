@@ -1,9 +1,9 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../data/battery_health_provider.dart';
 import '../../data/charging_provider.dart';
-
 
 class BatteryHealthDashboard extends HookConsumerWidget {
   const BatteryHealthDashboard({super.key});
@@ -16,9 +16,18 @@ class BatteryHealthDashboard extends HookConsumerWidget {
     final totalCost = ref.watch(totalChargingCostProvider).asData?.value ?? 0.0;
     final avgSpeed = ref.watch(averageChargingSpeedProvider).asData?.value ?? 0.0;
     final distribution = ref.watch(chargingLocationDistributionProvider).asData?.value ?? {};
+    final historyAsync = ref.watch(batteryHealthHistoryProvider);
+    final degradationRate = ref.watch(batteryHealthDegradationRateProvider).asData?.value ?? 0.0;
 
     final theme = Theme.of(context);
-    
+
+    final historySpots = historyAsync.maybeWhen(
+      data: (snapshots) => snapshots.asMap().entries.map((e) {
+        return FlSpot(e.key.toDouble(), e.value.healthPercent);
+      }).toList(),
+      orElse: () => <FlSpot>[],
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -36,6 +45,63 @@ class BatteryHealthDashboard extends HookConsumerWidget {
         ),
         _buildMetricCard(theme, 'Average Speed', '${avgSpeed.toStringAsFixed(1)} kW', Icons.bolt, Colors.amber),
         
+        const SizedBox(height: 16),
+        Card(
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Battery Health Trend', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    if (degradationRate > 0)
+                      Text(
+                        '-${degradationRate.toStringAsFixed(2)}%/mo',
+                        style: theme.textTheme.bodySmall?.copyWith(color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 180,
+                  child: historySpots.length < 2
+                      ? const Center(child: Text('Not enough data yet'))
+                      : LineChart(
+                          LineChartData(
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: historySpots,
+                                isCurved: true,
+                                color: Colors.green,
+                                barWidth: 3,
+                                isStrokeCapRound: true,
+                                dotData: const FlDotData(show: true),
+                                belowBarData: BarAreaData(
+                                  show: true,
+                                  color: Colors.green.withValues(alpha: 0.15),
+                                ),
+                              ),
+                            ],
+                            borderData: FlBorderData(show: false),
+                            gridData: const FlGridData(show: false),
+                            titlesData: const FlTitlesData(
+                              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                            ),
+                          ),
+                          duration: const Duration(milliseconds: 500),
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
         const SizedBox(height: 16),
         Text('Location Distribution', style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),

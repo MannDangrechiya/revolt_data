@@ -1,8 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/database/database_provider.dart';
+import '../../../core/database/database_mappers.dart';
 import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../../rides/data/rides_provider.dart';
 import '../../rides/domain/ride.dart';
+import '../domain/battery_health_snapshot.dart';
 import '../domain/charge_log.dart';
 import 'charging_provider.dart';
 
@@ -39,3 +42,31 @@ int? batteryHealthEstimate(Ref ref) {
   if (health == null || health <= 0) return null;
   return health;
 }
+
+@riverpod
+Stream<List<BatteryHealthSnapshot>> batteryHealthHistory(Ref ref) {
+  final db = ref.watch(databaseProvider);
+  return db.select(db.batteryHealthSnapshotsTable).watch().map((rows) {
+    final snapshots = rows.map((row) => row.toDomain()).toList();
+    snapshots.sort((a, b) => a.date.compareTo(b.date));
+    return snapshots;
+  });
+}
+
+@riverpod
+Future<double> batteryHealthDegradationRate(Ref ref) async {
+  final history = await ref.watch(batteryHealthHistoryProvider.future);
+  if (history.length < 2) return 0.0;
+
+  final first = history.first;
+  final last = history.last;
+
+  final daysDiff = last.date.difference(first.date).inDays;
+  if (daysDiff <= 0) return 0.0;
+
+  final healthLost = first.healthPercent - last.healthPercent;
+  final monthsDiff = daysDiff / 30.4375;
+
+  return healthLost / monthsDiff; // % lost per month
+}
+
