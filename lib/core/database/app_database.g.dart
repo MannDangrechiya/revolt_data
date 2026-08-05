@@ -7462,6 +7462,370 @@ class BatteryHealthSnapshotsTableCompanion
   }
 }
 
+class $NotificationHistoryTableTable extends NotificationHistoryTable
+    with
+        TableInfo<
+          $NotificationHistoryTableTable,
+          NotificationHistoryTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotificationHistoryTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _firedAtMeta = const VerificationMeta(
+    'firedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> firedAt = GeneratedColumn<DateTime>(
+    'fired_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, title, body, firedAt, payload];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notification_history_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NotificationHistoryTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('fired_at')) {
+      context.handle(
+        _firedAtMeta,
+        firedAt.isAcceptableOrUnknown(data['fired_at']!, _firedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firedAtMeta);
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NotificationHistoryTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NotificationHistoryTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      firedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fired_at'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      ),
+    );
+  }
+
+  @override
+  $NotificationHistoryTableTable createAlias(String alias) {
+    return $NotificationHistoryTableTable(attachedDatabase, alias);
+  }
+}
+
+class NotificationHistoryTableData extends DataClass
+    implements Insertable<NotificationHistoryTableData> {
+  final String id;
+  final String title;
+  final String body;
+  final DateTime firedAt;
+  final String? payload;
+  const NotificationHistoryTableData({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.firedAt,
+    this.payload,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    map['fired_at'] = Variable<DateTime>(firedAt);
+    if (!nullToAbsent || payload != null) {
+      map['payload'] = Variable<String>(payload);
+    }
+    return map;
+  }
+
+  NotificationHistoryTableCompanion toCompanion(bool nullToAbsent) {
+    return NotificationHistoryTableCompanion(
+      id: Value(id),
+      title: Value(title),
+      body: Value(body),
+      firedAt: Value(firedAt),
+      payload: payload == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payload),
+    );
+  }
+
+  factory NotificationHistoryTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NotificationHistoryTableData(
+      id: serializer.fromJson<String>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      firedAt: serializer.fromJson<DateTime>(json['firedAt']),
+      payload: serializer.fromJson<String?>(json['payload']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'firedAt': serializer.toJson<DateTime>(firedAt),
+      'payload': serializer.toJson<String?>(payload),
+    };
+  }
+
+  NotificationHistoryTableData copyWith({
+    String? id,
+    String? title,
+    String? body,
+    DateTime? firedAt,
+    Value<String?> payload = const Value.absent(),
+  }) => NotificationHistoryTableData(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    firedAt: firedAt ?? this.firedAt,
+    payload: payload.present ? payload.value : this.payload,
+  );
+  NotificationHistoryTableData copyWithCompanion(
+    NotificationHistoryTableCompanion data,
+  ) {
+    return NotificationHistoryTableData(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      firedAt: data.firedAt.present ? data.firedAt.value : this.firedAt,
+      payload: data.payload.present ? data.payload.value : this.payload,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationHistoryTableData(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('firedAt: $firedAt, ')
+          ..write('payload: $payload')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, title, body, firedAt, payload);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NotificationHistoryTableData &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.firedAt == this.firedAt &&
+          other.payload == this.payload);
+}
+
+class NotificationHistoryTableCompanion
+    extends UpdateCompanion<NotificationHistoryTableData> {
+  final Value<String> id;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<DateTime> firedAt;
+  final Value<String?> payload;
+  final Value<int> rowid;
+  const NotificationHistoryTableCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.firedAt = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NotificationHistoryTableCompanion.insert({
+    required String id,
+    required String title,
+    required String body,
+    required DateTime firedAt,
+    this.payload = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       title = Value(title),
+       body = Value(body),
+       firedAt = Value(firedAt);
+  static Insertable<NotificationHistoryTableData> custom({
+    Expression<String>? id,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<DateTime>? firedAt,
+    Expression<String>? payload,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (firedAt != null) 'fired_at': firedAt,
+      if (payload != null) 'payload': payload,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NotificationHistoryTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? title,
+    Value<String>? body,
+    Value<DateTime>? firedAt,
+    Value<String?>? payload,
+    Value<int>? rowid,
+  }) {
+    return NotificationHistoryTableCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      firedAt: firedAt ?? this.firedAt,
+      payload: payload ?? this.payload,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (firedAt.present) {
+      map['fired_at'] = Variable<DateTime>(firedAt.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationHistoryTableCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('firedAt: $firedAt, ')
+          ..write('payload: $payload, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7477,6 +7841,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $RemindersTableTable remindersTable = $RemindersTableTable(this);
   late final $BatteryHealthSnapshotsTableTable batteryHealthSnapshotsTable =
       $BatteryHealthSnapshotsTableTable(this);
+  late final $NotificationHistoryTableTable notificationHistoryTable =
+      $NotificationHistoryTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7490,6 +7856,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     documentsTable,
     remindersTable,
     batteryHealthSnapshotsTable,
+    notificationHistoryTable,
   ];
 }
 
@@ -10934,6 +11301,225 @@ typedef $$BatteryHealthSnapshotsTableTableProcessedTableManager =
       BatteryHealthSnapshotsTableData,
       PrefetchHooks Function()
     >;
+typedef $$NotificationHistoryTableTableCreateCompanionBuilder =
+    NotificationHistoryTableCompanion Function({
+      required String id,
+      required String title,
+      required String body,
+      required DateTime firedAt,
+      Value<String?> payload,
+      Value<int> rowid,
+    });
+typedef $$NotificationHistoryTableTableUpdateCompanionBuilder =
+    NotificationHistoryTableCompanion Function({
+      Value<String> id,
+      Value<String> title,
+      Value<String> body,
+      Value<DateTime> firedAt,
+      Value<String?> payload,
+      Value<int> rowid,
+    });
+
+class $$NotificationHistoryTableTableFilterComposer
+    extends Composer<_$AppDatabase, $NotificationHistoryTableTable> {
+  $$NotificationHistoryTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get firedAt => $composableBuilder(
+    column: $table.firedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NotificationHistoryTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotificationHistoryTableTable> {
+  $$NotificationHistoryTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get firedAt => $composableBuilder(
+    column: $table.firedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NotificationHistoryTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotificationHistoryTableTable> {
+  $$NotificationHistoryTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get firedAt =>
+      $composableBuilder(column: $table.firedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+}
+
+class $$NotificationHistoryTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NotificationHistoryTableTable,
+          NotificationHistoryTableData,
+          $$NotificationHistoryTableTableFilterComposer,
+          $$NotificationHistoryTableTableOrderingComposer,
+          $$NotificationHistoryTableTableAnnotationComposer,
+          $$NotificationHistoryTableTableCreateCompanionBuilder,
+          $$NotificationHistoryTableTableUpdateCompanionBuilder,
+          (
+            NotificationHistoryTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $NotificationHistoryTableTable,
+              NotificationHistoryTableData
+            >,
+          ),
+          NotificationHistoryTableData,
+          PrefetchHooks Function()
+        > {
+  $$NotificationHistoryTableTableTableManager(
+    _$AppDatabase db,
+    $NotificationHistoryTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotificationHistoryTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$NotificationHistoryTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$NotificationHistoryTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<DateTime> firedAt = const Value.absent(),
+                Value<String?> payload = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationHistoryTableCompanion(
+                id: id,
+                title: title,
+                body: body,
+                firedAt: firedAt,
+                payload: payload,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String title,
+                required String body,
+                required DateTime firedAt,
+                Value<String?> payload = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationHistoryTableCompanion.insert(
+                id: id,
+                title: title,
+                body: body,
+                firedAt: firedAt,
+                payload: payload,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NotificationHistoryTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NotificationHistoryTableTable,
+      NotificationHistoryTableData,
+      $$NotificationHistoryTableTableFilterComposer,
+      $$NotificationHistoryTableTableOrderingComposer,
+      $$NotificationHistoryTableTableAnnotationComposer,
+      $$NotificationHistoryTableTableCreateCompanionBuilder,
+      $$NotificationHistoryTableTableUpdateCompanionBuilder,
+      (
+        NotificationHistoryTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $NotificationHistoryTableTable,
+          NotificationHistoryTableData
+        >,
+      ),
+      NotificationHistoryTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -10957,5 +11543,10 @@ class $AppDatabaseManager {
       $$BatteryHealthSnapshotsTableTableTableManager(
         _db,
         _db.batteryHealthSnapshotsTable,
+      );
+  $$NotificationHistoryTableTableTableManager get notificationHistoryTable =>
+      $$NotificationHistoryTableTableTableManager(
+        _db,
+        _db.notificationHistoryTable,
       );
 }

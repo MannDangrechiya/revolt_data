@@ -37,6 +37,11 @@ class DashboardScreen extends HookConsumerWidget {
         title: 'EV Companion',
         actions: [
           IconButton(
+            icon: const Icon(LucideIcons.bell),
+            onPressed: () => context.push('/notifications'),
+            tooltip: 'Notifications',
+          ),
+          IconButton(
             icon: const Icon(LucideIcons.bluetooth),
             onPressed: () => context.push('/device/scan'),
             tooltip: 'Connect Bike',

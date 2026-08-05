@@ -203,6 +203,17 @@ class BatteryHealthSnapshotsTable extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class NotificationHistoryTable extends Table {
+  TextColumn get id => text()();
+  TextColumn get title => text()();
+  TextColumn get body => text()();
+  DateTimeColumn get firedAt => dateTime()();
+  TextColumn get payload => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(tables: [
   BikesTable,
   RidesTable,
@@ -212,6 +223,7 @@ class BatteryHealthSnapshotsTable extends Table {
   DocumentsTable,
   RemindersTable,
   BatteryHealthSnapshotsTable,
+  NotificationHistoryTable,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -219,7 +231,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -297,6 +309,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 6) {
         await m.addColumn(documentsTable, documentsTable.expiryDate);
+      }
+      if (from < 7) {
+        await m.createTable(notificationHistoryTable);
       }
     },
     beforeOpen: (details) async {
