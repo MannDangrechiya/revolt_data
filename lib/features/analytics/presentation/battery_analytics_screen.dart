@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../application/battery_analytics_service.dart';
+import '../../../core/widgets/error_retry_widget.dart';
 
 class BatteryAnalyticsScreen extends HookConsumerWidget {
   const BatteryAnalyticsScreen({super.key});
@@ -118,7 +119,10 @@ class BatteryAnalyticsScreen extends HookConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Error: $e')),
+        error: (e, st) => ErrorRetryWidget(
+          message: e.toString(),
+          onRetry: () => ref.refresh(batteryAnalyticsProvider),
+        ),
       ),
     );
   }

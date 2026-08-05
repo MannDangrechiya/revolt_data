@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Document {
 
- int? get id; String get name; String get category; String get filePath; DateTime get uploadDate; String? get notes; int? get bikeId;
+ int? get id; String get name; String get category; String get filePath; DateTime get uploadDate; String? get notes; int? get bikeId; DateTime? get expiryDate;
 /// Create a copy of Document
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $DocumentCopyWith<Document> get copyWith => _$DocumentCopyWithImpl<Document>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Document&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.category, category) || other.category == category)&&(identical(other.filePath, filePath) || other.filePath == filePath)&&(identical(other.uploadDate, uploadDate) || other.uploadDate == uploadDate)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.bikeId, bikeId) || other.bikeId == bikeId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Document&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.category, category) || other.category == category)&&(identical(other.filePath, filePath) || other.filePath == filePath)&&(identical(other.uploadDate, uploadDate) || other.uploadDate == uploadDate)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.bikeId, bikeId) || other.bikeId == bikeId)&&(identical(other.expiryDate, expiryDate) || other.expiryDate == expiryDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,category,filePath,uploadDate,notes,bikeId);
+int get hashCode => Object.hash(runtimeType,id,name,category,filePath,uploadDate,notes,bikeId,expiryDate);
 
 @override
 String toString() {
-  return 'Document(id: $id, name: $name, category: $category, filePath: $filePath, uploadDate: $uploadDate, notes: $notes, bikeId: $bikeId)';
+  return 'Document(id: $id, name: $name, category: $category, filePath: $filePath, uploadDate: $uploadDate, notes: $notes, bikeId: $bikeId, expiryDate: $expiryDate)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $DocumentCopyWith<$Res>  {
   factory $DocumentCopyWith(Document value, $Res Function(Document) _then) = _$DocumentCopyWithImpl;
 @useResult
 $Res call({
- int? id, String name, String category, String filePath, DateTime uploadDate, String? notes, int? bikeId
+ int? id, String name, String category, String filePath, DateTime uploadDate, String? notes, int? bikeId, DateTime? expiryDate
 });
 
 
@@ -65,7 +65,7 @@ class _$DocumentCopyWithImpl<$Res>
 
 /// Create a copy of Document
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? category = null,Object? filePath = null,Object? uploadDate = null,Object? notes = freezed,Object? bikeId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? category = null,Object? filePath = null,Object? uploadDate = null,Object? notes = freezed,Object? bikeId = freezed,Object? expiryDate = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -74,7 +74,8 @@ as String,filePath: null == filePath ? _self.filePath : filePath // ignore: cast
 as String,uploadDate: null == uploadDate ? _self.uploadDate : uploadDate // ignore: cast_nullable_to_non_nullable
 as DateTime,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
 as String?,bikeId: freezed == bikeId ? _self.bikeId : bikeId // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,expiryDate: freezed == expiryDate ? _self.expiryDate : expiryDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -159,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name,  String category,  String filePath,  DateTime uploadDate,  String? notes,  int? bikeId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name,  String category,  String filePath,  DateTime uploadDate,  String? notes,  int? bikeId,  DateTime? expiryDate)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Document() when $default != null:
-return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDate,_that.notes,_that.bikeId);case _:
+return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDate,_that.notes,_that.bikeId,_that.expiryDate);case _:
   return orElse();
 
 }
@@ -180,10 +181,10 @@ return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name,  String category,  String filePath,  DateTime uploadDate,  String? notes,  int? bikeId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name,  String category,  String filePath,  DateTime uploadDate,  String? notes,  int? bikeId,  DateTime? expiryDate)  $default,) {final _that = this;
 switch (_that) {
 case _Document():
-return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDate,_that.notes,_that.bikeId);case _:
+return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDate,_that.notes,_that.bikeId,_that.expiryDate);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +201,10 @@ return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name,  String category,  String filePath,  DateTime uploadDate,  String? notes,  int? bikeId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name,  String category,  String filePath,  DateTime uploadDate,  String? notes,  int? bikeId,  DateTime? expiryDate)?  $default,) {final _that = this;
 switch (_that) {
 case _Document() when $default != null:
-return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDate,_that.notes,_that.bikeId);case _:
+return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDate,_that.notes,_that.bikeId,_that.expiryDate);case _:
   return null;
 
 }
@@ -215,7 +216,7 @@ return $default(_that.id,_that.name,_that.category,_that.filePath,_that.uploadDa
 @JsonSerializable()
 
 class _Document implements Document {
-  const _Document({this.id, required this.name, required this.category, required this.filePath, required this.uploadDate, this.notes, this.bikeId});
+  const _Document({this.id, required this.name, required this.category, required this.filePath, required this.uploadDate, this.notes, this.bikeId, this.expiryDate});
   factory _Document.fromJson(Map<String, dynamic> json) => _$DocumentFromJson(json);
 
 @override final  int? id;
@@ -225,6 +226,7 @@ class _Document implements Document {
 @override final  DateTime uploadDate;
 @override final  String? notes;
 @override final  int? bikeId;
+@override final  DateTime? expiryDate;
 
 /// Create a copy of Document
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Document&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.category, category) || other.category == category)&&(identical(other.filePath, filePath) || other.filePath == filePath)&&(identical(other.uploadDate, uploadDate) || other.uploadDate == uploadDate)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.bikeId, bikeId) || other.bikeId == bikeId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Document&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.category, category) || other.category == category)&&(identical(other.filePath, filePath) || other.filePath == filePath)&&(identical(other.uploadDate, uploadDate) || other.uploadDate == uploadDate)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.bikeId, bikeId) || other.bikeId == bikeId)&&(identical(other.expiryDate, expiryDate) || other.expiryDate == expiryDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,category,filePath,uploadDate,notes,bikeId);
+int get hashCode => Object.hash(runtimeType,id,name,category,filePath,uploadDate,notes,bikeId,expiryDate);
 
 @override
 String toString() {
-  return 'Document(id: $id, name: $name, category: $category, filePath: $filePath, uploadDate: $uploadDate, notes: $notes, bikeId: $bikeId)';
+  return 'Document(id: $id, name: $name, category: $category, filePath: $filePath, uploadDate: $uploadDate, notes: $notes, bikeId: $bikeId, expiryDate: $expiryDate)';
 }
 
 
@@ -259,7 +261,7 @@ abstract mixin class _$DocumentCopyWith<$Res> implements $DocumentCopyWith<$Res>
   factory _$DocumentCopyWith(_Document value, $Res Function(_Document) _then) = __$DocumentCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String name, String category, String filePath, DateTime uploadDate, String? notes, int? bikeId
+ int? id, String name, String category, String filePath, DateTime uploadDate, String? notes, int? bikeId, DateTime? expiryDate
 });
 
 
@@ -276,7 +278,7 @@ class __$DocumentCopyWithImpl<$Res>
 
 /// Create a copy of Document
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? category = null,Object? filePath = null,Object? uploadDate = null,Object? notes = freezed,Object? bikeId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? category = null,Object? filePath = null,Object? uploadDate = null,Object? notes = freezed,Object? bikeId = freezed,Object? expiryDate = freezed,}) {
   return _then(_Document(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -285,7 +287,8 @@ as String,filePath: null == filePath ? _self.filePath : filePath // ignore: cast
 as String,uploadDate: null == uploadDate ? _self.uploadDate : uploadDate // ignore: cast_nullable_to_non_nullable
 as DateTime,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
 as String?,bikeId: freezed == bikeId ? _self.bikeId : bikeId // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,expiryDate: freezed == expiryDate ? _self.expiryDate : expiryDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

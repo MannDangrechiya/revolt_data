@@ -116,3 +116,80 @@ final class BatteryHealthEstimateProvider
 
 String _$batteryHealthEstimateHash() =>
     r'8d66ebbd1138e68608170d9a670a00700551903b';
+
+@ProviderFor(batteryHealthHistory)
+final batteryHealthHistoryProvider = BatteryHealthHistoryProvider._();
+
+final class BatteryHealthHistoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<BatteryHealthSnapshot>>,
+          List<BatteryHealthSnapshot>,
+          Stream<List<BatteryHealthSnapshot>>
+        >
+    with
+        $FutureModifier<List<BatteryHealthSnapshot>>,
+        $StreamProvider<List<BatteryHealthSnapshot>> {
+  BatteryHealthHistoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'batteryHealthHistoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$batteryHealthHistoryHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<BatteryHealthSnapshot>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<BatteryHealthSnapshot>> create(Ref ref) {
+    return batteryHealthHistory(ref);
+  }
+}
+
+String _$batteryHealthHistoryHash() =>
+    r'04b1fe319d489800c211601ecb5779609ada089f';
+
+@ProviderFor(batteryHealthDegradationRate)
+final batteryHealthDegradationRateProvider =
+    BatteryHealthDegradationRateProvider._();
+
+final class BatteryHealthDegradationRateProvider
+    extends $FunctionalProvider<AsyncValue<double>, double, FutureOr<double>>
+    with $FutureModifier<double>, $FutureProvider<double> {
+  BatteryHealthDegradationRateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'batteryHealthDegradationRateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$batteryHealthDegradationRateHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<double> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<double> create(Ref ref) {
+    return batteryHealthDegradationRate(ref);
+  }
+}
+
+String _$batteryHealthDegradationRateHash() =>
+    r'fe1328598f4642453a5c1189667a6efc019fad45';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../domain/ride.dart';
+import '../../../intelligence/data/intelligence_provider.dart';
 
 class RideCard extends StatelessWidget {
   final Ride ride;
@@ -69,6 +70,8 @@ class RideCard extends StatelessWidget {
                         ),
                       const SizedBox(width: 8),
                       _buildModeBadge(context, ride.rideMode),
+                      const SizedBox(width: 8),
+                      _buildScoreBadge(context, calculateRideScore(ride)),
                     ],
                   ),
                 ],
@@ -177,6 +180,38 @@ class RideCard extends StatelessWidget {
           fontSize: 10,
           fontWeight: FontWeight.bold,
         ),
+      ),
+    );
+  }
+
+  Widget _buildScoreBadge(BuildContext context, int score) {
+    final color = score >= 80
+        ? Colors.green
+        : score >= 50
+            ? Colors.orange
+            : Colors.red;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(LucideIcons.gauge, size: 10, color: color),
+          const SizedBox(width: 3),
+          Text(
+            '$score',
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

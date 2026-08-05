@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import '../data/documents_provider.dart';
 import '../domain/document.dart';
@@ -35,6 +36,7 @@ class _DocumentAddScreenState extends ConsumerState<DocumentAddScreen> {
   ];
 
   File? _selectedFile;
+  DateTime? _expiryDate;
   bool _isSaving = false;
 
   @override
@@ -105,6 +107,7 @@ class _DocumentAddScreenState extends ConsumerState<DocumentAddScreen> {
         filePath: savedFile.path,
         uploadDate: DateTime.now(),
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        expiryDate: _expiryDate,
       );
 
       await ref.read(documentsProvider.notifier).addDocument(doc);
@@ -274,6 +277,50 @@ class _DocumentAddScreenState extends ConsumerState<DocumentAddScreen> {
                     });
                   }
                 },
+              ),
+              const SizedBox(height: 16),
+              
+              InkWell(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _expiryDate ?? DateTime.now().add(const Duration(days: 365)),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 3650)),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _expiryDate = picked;
+                    });
+                  }
+                },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Expiry Date (Optional)',
+                    prefixIcon: const Icon(LucideIcons.calendar),
+                    suffixIcon: _expiryDate != null
+                        ? IconButton(
+                            icon: const Icon(LucideIcons.x, size: 18),
+                            onPressed: () {
+                              setState(() {
+                                _expiryDate = null;
+                              });
+                            },
+                          )
+                        : null,
+                    border: const OutlineInputBorder(),
+                  ),
+                  child: Text(
+                    _expiryDate != null
+                        ? DateFormat.yMMMd().format(_expiryDate!)
+                        : 'No Expiry Date Selected',
+                    style: TextStyle(
+                      color: _expiryDate != null
+                          ? Theme.of(context).textTheme.bodyMedium?.color
+                          : Theme.of(context).hintColor,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               

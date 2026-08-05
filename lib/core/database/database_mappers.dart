@@ -7,6 +7,8 @@ import '../../features/maintenance/domain/maintenance_log.dart';
 import '../../features/reminders/domain/reminder.dart';
 import '../../features/bikes/domain/bike.dart';
 import '../../features/documents/domain/document.dart';
+import '../../features/charging/domain/battery_health_snapshot.dart';
+import '../../features/notifications/domain/notification_history.dart';
 import 'app_database.dart';
 
 extension RideDataMapper on RidesTableData {
@@ -331,6 +333,7 @@ extension DocumentDataMapper on DocumentsTableData {
       uploadDate: uploadDate,
       notes: notes,
       bikeId: bikeId,
+      expiryDate: expiryDate,
     );
   }
 }
@@ -345,6 +348,56 @@ extension DocumentMapper on Document {
       uploadDate: Value(uploadDate),
       notes: Value(notes),
       bikeId: Value(bikeId),
+      expiryDate: Value(expiryDate),
     );
   }
 }
+
+extension BatteryHealthSnapshotDataMapper on BatteryHealthSnapshotsTableData {
+  BatteryHealthSnapshot toDomain() {
+    return BatteryHealthSnapshot(
+      id: id,
+      date: date,
+      healthPercent: healthPercent,
+      rangeAtFullCharge: rangeAtFullCharge,
+      bikeId: bikeId,
+    );
+  }
+}
+
+extension BatteryHealthSnapshotMapper on BatteryHealthSnapshot {
+  BatteryHealthSnapshotsTableCompanion toCompanion() {
+    return BatteryHealthSnapshotsTableCompanion(
+      id: Value(id),
+      date: Value(date),
+      healthPercent: Value(healthPercent),
+      rangeAtFullCharge: Value(rangeAtFullCharge),
+      bikeId: Value(bikeId),
+    );
+  }
+}
+
+extension NotificationHistoryDataMapper on NotificationHistoryTableData {
+  NotificationHistory toDomain() {
+    return NotificationHistory(
+      id: id,
+      title: title,
+      body: body,
+      firedAt: firedAt,
+      payload: payload,
+    );
+  }
+}
+
+extension NotificationHistoryMapper on NotificationHistory {
+  NotificationHistoryTableCompanion toCompanion() {
+    return NotificationHistoryTableCompanion(
+      id: Value(id),
+      title: Value(title),
+      body: Value(body),
+      firedAt: Value(firedAt),
+      payload: Value(payload),
+    );
+  }
+}
+

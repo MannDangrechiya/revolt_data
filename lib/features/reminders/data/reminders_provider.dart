@@ -36,6 +36,7 @@ class Reminders extends _$Reminders {
         }
         return 0;
       });
+      _syncScheduledNotifications(reminders);
       return reminders;
     });
   }
@@ -51,6 +52,8 @@ class Reminders extends _$Reminders {
   }
 
   Future<void> removeReminder(String id) async {
+    final notificationService = ref.read(notificationServiceProvider);
+    await notificationService.cancelNotification(id.hashCode);
     final db = ref.watch(databaseProvider);
     await (db.delete(db.remindersTable)..where((t) => t.id.equals(id))).go();
   }
@@ -61,6 +64,26 @@ class Reminders extends _$Reminders {
     final reminder = reminders.firstWhere((r) => r.id == id);
     final updated = reminder.copyWith(isCompleted: true);
     await db.update(db.remindersTable).replace(updated);
+  }
+
+  void _syncScheduledNotifications(List<Reminder> reminders) {
+    final notificationService = ref.read(notificationServiceProvider);
+    for (final reminder in reminders) {
+      final notificationId = reminder.id.hashCode;
+      if (reminder.targetDate != null && reminder.isActive && !reminder.isCompleted) {
+        if (reminder.targetDate!.isAfter(DateTime.now())) {
+          notificationService.scheduleNotification(
+            id: notificationId,
+            title: reminder.title,
+            body: reminder.body,
+            scheduledDate: reminder.targetDate!,
+            payload: reminder.id,
+          );
+        }
+      } else {
+        notificationService.cancelNotification(notificationId);
+      }
+    }
   }
 
   Future<void> _evaluateOdometerTargets(double currentOdometer) async {
