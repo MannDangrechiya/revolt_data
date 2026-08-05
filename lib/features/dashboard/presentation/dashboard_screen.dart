@@ -101,33 +101,43 @@ class DashboardScreen extends HookConsumerWidget {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    GestureDetector(
-                                      onTap: () => context.push('/device'),
-                                      child: ConnectionStatusBadge(
-                                        state: data.connectionStatus,
+                                    Semantics(
+                                      button: true,
+                                      label: 'BLE Connection Status',
+                                      hint: 'Navigates to BLE device screen',
+                                      child: GestureDetector(
+                                        onTap: () => context.push('/device'),
+                                        child: ConnectionStatusBadge(
+                                          state: data.connectionStatus,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                InkWell(
-                                  onTap: () => context.push('/bike'),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        bikeName,
-                                        style: const TextStyle(
-                                          fontSize: 26,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: -0.5,
+                                Semantics(
+                                  button: true,
+                                  label: 'Bike: $bikeName',
+                                  hint: 'Navigates to bike details',
+                                  child: InkWell(
+                                    onTap: () => context.push('/bike'),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          bikeName,
+                                          style: const TextStyle(
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: -0.5,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      const Icon(
-                                        LucideIcons.chevronRight,
-                                        size: 22,
-                                      ),
-                                    ],
+                                        const SizedBox(width: 6),
+                                        const Icon(
+                                          LucideIcons.chevronRight,
+                                          size: 22,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -346,7 +356,9 @@ class DashboardScreen extends HookConsumerWidget {
             ? 'Needs attention'
             : 'Check your bike soon';
 
-    return Container(
+    return Semantics(
+      label: 'Vehicle Health Score: ${score.toInt()} out of 100, $subtitle',
+      child: Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -399,7 +411,8 @@ class DashboardScreen extends HookConsumerWidget {
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildSmartAlerts(BuildContext context, List<String> alerts) {
@@ -518,7 +531,11 @@ class DashboardScreen extends HookConsumerWidget {
 
   Widget _buildUpcomingReminder(
       BuildContext context, WidgetRef ref, Reminder reminder) {
-    return InkWell(
+    return Semantics(
+      button: true,
+      label: 'Reminder: ${reminder.title}',
+      hint: 'Marks reminder as completed',
+      child: InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: () =>
           ref.read(remindersProvider.notifier).markCompleted(reminder.id),
@@ -571,6 +588,7 @@ class DashboardScreen extends HookConsumerWidget {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }
