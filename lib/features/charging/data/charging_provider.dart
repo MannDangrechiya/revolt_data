@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' show Value;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/database/database_provider.dart';

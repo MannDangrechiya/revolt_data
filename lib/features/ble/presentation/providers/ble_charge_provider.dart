@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core/constants/app_constants.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../charging/data/charging_provider.dart';
 import '../../../charging/domain/charge_log.dart';
 import '../../domain/ble_charge_state.dart';
