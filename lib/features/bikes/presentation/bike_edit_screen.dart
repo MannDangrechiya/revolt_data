@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
+import '../../../core/constants/app_constants.dart';
 import '../domain/bike.dart';
 import '../data/bike_provider.dart';
 
@@ -40,7 +41,7 @@ class BikeEditScreen extends HookConsumerWidget {
     final warrantyController = useTextEditingController(text: bike?.warranty);
     final batteryWarrantyController = useTextEditingController(text: bike?.batteryWarranty);
     
-    final batteryCapacityController = useTextEditingController(text: bike?.batteryCapacity?.toString() ?? '3.24');
+    final batteryCapacityController = useTextEditingController(text: bike?.batteryCapacity?.toString() ?? '${AppConstants.defaultBatteryCapacityKwh}');
     final motorPowerController = useTextEditingController(text: bike?.motorPower?.toString() ?? '3.0');
     final claimedRangeController = useTextEditingController(text: bike?.claimedRange?.toString() ?? '150');
     final topSpeedController = useTextEditingController(text: bike?.topSpeed?.toString() ?? '85');

@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/database/database_provider.dart';
 
 part 'statistics_service.g.dart';
@@ -57,9 +58,8 @@ Future<StatisticsData> statisticsService(Ref ref) async {
   final avgDist = rides.isEmpty ? 0.0 : totalDist / rides.length;
 
   // 3. Savings vs Petrol & CO2
-  // Assuming 40 km/l mileage for petrol bike and Rs 100/l petrol price
-  final petrolPricePerLitre = 100.0; 
-  final petrolMileage = 40.0;
+  final petrolPricePerLitre = AppConstants.petrolPricePerLitre; 
+  final petrolMileage = AppConstants.petrolMileageKmPerLitre;
   final petrolUsedLiters = totalDist / petrolMileage;
   final expectedPetrolCost = petrolUsedLiters * petrolPricePerLitre;
   
@@ -72,9 +72,9 @@ Future<StatisticsData> statisticsService(Ref ref) async {
   
   final petrolSavings = expectedPetrolCost - totalElectricityCost;
   
-  // CO2: petrol emits ~2.3 kg CO2/L, grid emits ~0.5 kg CO2/kWh
-  final co2Petrol = petrolUsedLiters * 2.3;
-  final co2Ev = totalElectricityKwh * 0.5;
+  // CO2: petrol emits petrolCo2KgPerLitre kg CO2/L, grid emits gridCo2KgPerKwh kg CO2/kWh
+  final co2Petrol = petrolUsedLiters * AppConstants.petrolCo2KgPerLitre;
+  final co2Ev = totalElectricityKwh * AppConstants.gridCo2KgPerKwh;
   final co2Saved = co2Petrol - co2Ev;
 
   // 4. Monthly Spending Chart Data

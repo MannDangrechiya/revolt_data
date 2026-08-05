@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/database/database_provider.dart';
 import '../../../core/database/database_mappers.dart';
@@ -171,8 +172,8 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
       activities = activities.sublist(0, 5);
     }
 
-    final petrolSaved = (totalDistance / 40) * 100;
-    final co2Saved = (totalDistance * 60) / 1000;
+    final petrolSaved = (totalDistance / AppConstants.petrolMileageKmPerLitre) * AppConstants.petrolPricePerLitre;
+    final co2Saved = (totalDistance * AppConstants.dashboardPetrolCo2GramsPerKm) / 1000;
 
     return DashboardData(
       currentOdometer: maxOdometer,

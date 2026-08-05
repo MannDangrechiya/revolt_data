@@ -1,3 +1,5 @@
+import '../../../core/constants/app_constants.dart';
+
 class ChargingAnomaly {
   final String message;
   final bool isError; // If true, the entry should be blocked. If false, it's just a warning.
@@ -9,9 +11,11 @@ class ChargingAnomaly {
     required double durationMinutes,
     required int startBattery,
     required int endBattery,
-    double maxBatteryCapacityKwh = 3.24, // Assumed Revolt RV400 capacity
-    double maxChargingSpeedKw = 5.0, // Assumed maximum charger capacity
+    double maxBatteryCapacityKwh = 3.24,
+    double maxChargingSpeedKw = 5.0,
   }) {
+    maxBatteryCapacityKwh = AppConstants.defaultBatteryCapacityKwh;
+    maxChargingSpeedKw = AppConstants.maxChargingSpeedKw;
     if (endBattery <= startBattery) {
       return ChargingAnomaly(message: 'End battery must be greater than start battery.', isError: true);
     }

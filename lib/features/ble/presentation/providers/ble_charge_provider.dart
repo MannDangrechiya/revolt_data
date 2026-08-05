@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../charging/data/charging_provider.dart';
 import '../../../charging/domain/charge_log.dart';
 import '../../domain/ble_charge_state.dart';
@@ -68,7 +69,7 @@ class BleChargeNotifier extends _$BleChargeNotifier {
 
     // 2. Active Charging Session Tracking
     final batteryGained = (snapshot.batteryPercent - state.startBattery).clamp(0, 100);
-    final kwhAdded = 3.24 * (batteryGained / 100.0);
+    final kwhAdded = AppConstants.defaultBatteryCapacityKwh * (batteryGained / 100.0);
     final peakTemp = snapshot.batteryTemp > state.peakBatteryTemp ? snapshot.batteryTemp : state.peakBatteryTemp;
     final peakPower = snapshot.power > state.peakPowerKw ? snapshot.power : state.peakPowerKw;
     final durationSeconds = state.startTime != null ? now.difference(state.startTime!).inSeconds : 0;
@@ -186,7 +187,7 @@ class BleChargeNotifier extends _$BleChargeNotifier {
 
     if (!isDuplicate) {
       final calculatedMins = (state.durationSeconds / 60.0);
-      final minRequiredMins = (state.kwhAdded / 3.0) * 60.0;
+      final minRequiredMins = (state.kwhAdded / AppConstants.assumedTypicalChargingRateKw) * 60.0;
       final durationMins = (calculatedMins < minRequiredMins ? minRequiredMins : calculatedMins).clamp(1.0, 1440.0);
 
       savedLog = ChargeLog(
@@ -265,7 +266,7 @@ class BleChargeNotifier extends _$BleChargeNotifier {
       state = state.copyWith(
         currentBattery: state.startBattery + 25,
         batteryGained: 25,
-        kwhAdded: 3.24 * 0.25,
+        kwhAdded: AppConstants.defaultBatteryCapacityKwh * 0.25,
         durationSeconds: 1800,
       );
     }
