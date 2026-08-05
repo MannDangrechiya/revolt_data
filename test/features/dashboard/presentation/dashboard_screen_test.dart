@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -8,6 +9,8 @@ import 'package:revolt_data/features/dashboard/domain/dashboard_data.dart';
 import 'package:revolt_data/features/bikes/data/bike_provider.dart';
 import 'package:revolt_data/features/bikes/domain/bike.dart';
 import 'package:revolt_data/core/widgets/skeleton_loader.dart';
+import 'package:revolt_data/core/database/app_database.dart';
+import 'package:revolt_data/core/database/database_provider.dart';
 
 class MockDashboardDataNotifier extends DashboardDataNotifier {
   final AsyncValue<DashboardData> customState;
@@ -47,6 +50,9 @@ void main() {
             dashboardDataProvider.overrideWith(
               () => MockDashboardDataNotifier(const AsyncValue.loading())
             ),
+            databaseProvider.overrideWithValue(
+              AppDatabase.forTesting(NativeDatabase.memory()),
+            ),
           ],
           child: const MaterialApp(
             home: DashboardScreen(),
@@ -56,6 +62,12 @@ void main() {
 
       // Verify that ListSkeletonLoader is shown
       expect(find.byType(ListSkeletonLoader), findsOneWidget);
+
+      // Dispose while we still control pumping, so Drift's stream-query
+      // teardown timer fires before the test framework's own teardown
+      // asserts no timers are pending.
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(Duration.zero);
     });
 
     testWidgets('shows error state when data fails to load', (tester) async {
@@ -66,6 +78,9 @@ void main() {
           overrides: [
             dashboardDataProvider.overrideWith(
               () => MockDashboardDataNotifier(AsyncValue.error(error, StackTrace.empty))
+            ),
+            databaseProvider.overrideWithValue(
+              AppDatabase.forTesting(NativeDatabase.memory()),
             ),
           ],
           child: const MaterialApp(
@@ -79,6 +94,9 @@ void main() {
       // Verify error text is displayed
       expect(find.textContaining('Failed to load dashboard data'), findsOneWidget);
       expect(find.text('Try Again'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(Duration.zero);
     });
 
     testWidgets('shows dashboard data when successfully loaded', (tester) async {
@@ -113,6 +131,9 @@ void main() {
             currentBikeProvider.overrideWith(
               () => MockCurrentBike(AsyncValue.data(bike))
             ),
+            databaseProvider.overrideWithValue(
+              AppDatabase.forTesting(NativeDatabase.memory()),
+            ),
           ],
           child: const MaterialApp(
             home: DashboardScreen(),
@@ -135,6 +156,9 @@ void main() {
       await tester.scrollUntilVisible(find.text('Charging'), 50.0, scrollable: find.byType(Scrollable).first);
       expect(find.text('Rides'), findsOneWidget);
       expect(find.text('Charging'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(Duration.zero);
     });
   });
 }

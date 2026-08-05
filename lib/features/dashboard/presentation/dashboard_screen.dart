@@ -9,6 +9,7 @@ import '../domain/dashboard_data.dart';
 import '../../bikes/data/bike_provider.dart';
 import '../../reminders/data/reminders_provider.dart';
 import '../../reminders/domain/reminder.dart';
+import '../../intelligence/data/intelligence_provider.dart';
 import '../../ble/domain/connection_state.dart';
 import '../../ble/presentation/widgets/connection_status_badge.dart';
 import '../../../shared/ui/volt_app_bar.dart';
@@ -23,6 +24,8 @@ class DashboardScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboardAsync = ref.watch(dashboardDataProvider);
     final bikeAsync = ref.watch(currentBikeProvider);
+    final healthScoreAsync = ref.watch(healthScoreProvider);
+    final smartAlertsAsync = ref.watch(smartAlertsProvider);
 
     return Scaffold(
       appBar: VoltAppBar(
@@ -149,6 +152,16 @@ class DashboardScreen extends HookConsumerWidget {
                         const SizedBox(height: 12),
                         _buildFaultAlertCard(
                             context, data.liveSnapshot!.faultCodes),
+                      ],
+                      if (healthScoreAsync.hasValue) ...[
+                        const SizedBox(height: 20),
+                        _buildHealthScoreCard(
+                            context, healthScoreAsync.value!),
+                      ],
+                      if (smartAlertsAsync.hasValue &&
+                          smartAlertsAsync.value!.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        _buildSmartAlerts(context, smartAlertsAsync.value!),
                       ],
                       const SizedBox(height: 20),
                       _buildQuickStatsRow(context, data),
@@ -566,6 +579,104 @@ class DashboardScreen extends HookConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHealthScoreCard(BuildContext context, int score) {
+    final color = score >= 80
+        ? Colors.green
+        : score >= 50
+            ? Colors.orange
+            : Colors.red;
+    final subtitle = score >= 80
+        ? 'Excellent condition'
+        : score >= 50
+            ? 'Needs attention'
+            : 'Check your bike soon';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Theme.of(context)
+              .colorScheme
+              .outlineVariant
+              .withValues(alpha: 0.4),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(LucideIcons.heartPulse, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Vehicle Health Score',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          AnimatedNumber(
+            value: score,
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmartAlerts(BuildContext context, List<String> alerts) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: alerts
+          .map((alert) => Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.25)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(LucideIcons.lightbulb, color: Colors.blue, size: 16),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        alert,
+                        style: const TextStyle(fontSize: 12.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+          .toList(),
     );
   }
 
