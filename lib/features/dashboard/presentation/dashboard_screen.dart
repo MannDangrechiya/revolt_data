@@ -10,12 +10,16 @@ import '../../bikes/data/bike_provider.dart';
 import '../../reminders/data/reminders_provider.dart';
 import '../../reminders/domain/reminder.dart';
 import '../../intelligence/data/intelligence_provider.dart';
+import '../../intelligence/data/service_intelligence_provider.dart';
 import '../../ble/domain/connection_state.dart';
 import '../../ble/presentation/widgets/connection_status_badge.dart';
 import '../../../shared/ui/volt_app_bar.dart';
 import '../../../core/widgets/animated_number.dart';
 import '../../../core/widgets/skeleton_loader.dart';
 import '../../../core/widgets/error_retry_widget.dart';
+import '../../../core/widgets/fade_slide_in.dart';
+import 'widgets/battery_status_card.dart';
+import 'widgets/quick_actions_grid.dart';
 
 class DashboardScreen extends HookConsumerWidget {
   const DashboardScreen({super.key});
@@ -26,6 +30,7 @@ class DashboardScreen extends HookConsumerWidget {
     final bikeAsync = ref.watch(currentBikeProvider);
     final healthScoreAsync = ref.watch(healthScoreProvider);
     final smartAlertsAsync = ref.watch(smartAlertsProvider);
+    final serviceIntelligenceAsync = ref.watch(serviceIntelligenceProvider);
 
     return Scaffold(
       appBar: VoltAppBar(
@@ -141,35 +146,60 @@ class DashboardScreen extends HookConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      _buildBatteryStatusCard(
-                        context,
-                        ref: ref,
-                        data: data,
-                        isConnected: isConnected,
+                      FadeSlideIn(
+                        index: 0,
+                        child: BatteryStatusCard(
+                          data: data,
+                          isConnected: isConnected,
+                        ),
                       ),
                       if (data.liveSnapshot != null &&
                           data.liveSnapshot!.faultCodes.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        _buildFaultAlertCard(
-                            context, data.liveSnapshot!.faultCodes),
+                        FadeSlideIn(
+                          index: 1,
+                          child: _buildFaultAlertCard(
+                              context, data.liveSnapshot!.faultCodes),
+                        ),
                       ],
                       if (healthScoreAsync.hasValue) ...[
                         const SizedBox(height: 20),
-                        _buildHealthScoreCard(
-                            context, healthScoreAsync.value!),
+                        FadeSlideIn(
+                          index: 2,
+                          child: _buildHealthScoreCard(
+                              context, healthScoreAsync.value!),
+                        ),
                       ],
                       if (smartAlertsAsync.hasValue &&
                           smartAlertsAsync.value!.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        _buildSmartAlerts(context, smartAlertsAsync.value!),
+                        FadeSlideIn(
+                          index: 3,
+                          child:
+                              _buildSmartAlerts(context, smartAlertsAsync.value!),
+                        ),
+                      ],
+                      if (serviceIntelligenceAsync.hasValue) ...[
+                        const SizedBox(height: 12),
+                        FadeSlideIn(
+                          index: 4,
+                          child: _buildServiceIntelligenceCard(
+                              context, serviceIntelligenceAsync.value!),
+                        ),
                       ],
                       const SizedBox(height: 20),
-                      _buildQuickStatsRow(context, data),
+                      FadeSlideIn(
+                        index: 5,
+                        child: _buildQuickStatsRow(context, data),
+                      ),
 
                       if (data.upcomingReminder != null) ...[
                         const SizedBox(height: 20),
-                        _buildUpcomingReminder(
-                            context, ref, data.upcomingReminder!),
+                        FadeSlideIn(
+                          index: 6,
+                          child: _buildUpcomingReminder(
+                              context, ref, data.upcomingReminder!),
+                        ),
                       ],
 
                       const SizedBox(height: 28),
@@ -194,80 +224,7 @@ class DashboardScreen extends HookConsumerWidget {
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                sliver: SliverGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 14,
-                  crossAxisSpacing: 14,
-                  childAspectRatio: 2.2,
-                  children: [
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Connect Bike',
-                      icon: LucideIcons.bluetooth,
-                      color: const Color(0xFF2563EB),
-                      route: '/device/scan',
-                    ),
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Rides',
-                      icon: LucideIcons.bike,
-                      color: const Color(0xFF3B82F6),
-                      route: '/rides',
-                    ),
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Charging',
-                      icon: LucideIcons.batteryCharging,
-                      color: const Color(0xFF10B981),
-                      route: '/charging',
-                    ),
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Expenses',
-                      icon: LucideIcons.wallet,
-                      color: const Color(0xFFF59E0B),
-                      route: '/expenses',
-                    ),
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Maintenance',
-                      icon: LucideIcons.wrench,
-                      color: const Color(0xFFEF4444),
-                      route: '/maintenance',
-                    ),
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Reminders',
-                      icon: LucideIcons.bell,
-                      color: const Color(0xFF8B5CF6),
-                      route: '/reminders',
-                    ),
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Documents',
-                      icon: LucideIcons.fileText,
-                      color: const Color(0xFF6366F1),
-                      route: '/documents',
-                    ),
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Reports',
-                      icon: LucideIcons.fileSpreadsheet,
-                      color: const Color(0xFF06B6D4),
-                      route: '/reports',
-                    ),
-                    _buildSmallMenuCard(
-                      context,
-                      title: 'Statistics',
-                      icon: LucideIcons.pieChart,
-                      color: const Color(0xFF14B8A6),
-                      route: '/statistics',
-                    ),
-                  ],
-                ),
-              ),
+              const QuickActionsGrid(),
               const SliverToBoxAdapter(child: SizedBox(height: 36)),
             ],
           );
@@ -310,271 +267,6 @@ class DashboardScreen extends HookConsumerWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBatteryStatusCard(
-    BuildContext context, {
-    required WidgetRef ref,
-    required DashboardData data,
-    required bool isConnected,
-  }) {
-    final liveSnapshot = data.liveSnapshot;
-
-    final batteryPercent = isConnected && liveSnapshot != null
-        ? liveSnapshot.batteryPercent
-        : data.latestBatteryPercentage;
-
-    // Direct telemetry range when connected; manual log calculation without multiplier when disconnected.
-    final rangeValue = isConnected && liveSnapshot != null
-        ? liveSnapshot.range
-        : batteryPercent.toDouble();
-
-    final speedValue = isConnected && liveSnapshot != null
-        ? liveSnapshot.speed
-        : 0.0;
-
-    Color batteryColor;
-    if (batteryPercent > 50) {
-      batteryColor = Colors.green;
-    } else if (batteryPercent > 20) {
-      batteryColor = Colors.orange;
-    } else {
-      batteryColor = Colors.red;
-    }
-
-    final borderColor = isConnected
-        ? Colors.green
-        : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2);
-
-    final healthValue = liveSnapshot?.batteryHealth;
-    final healthText = healthValue != null && healthValue > 0
-        ? '$healthValue%'
-        : (isConnected ? 'N/A' : 'Connect for health');
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.primaryContainer,
-            Theme.of(context)
-                .colorScheme
-                .primaryContainer
-                .withValues(alpha: 0.5),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: borderColor,
-          width: isConnected ? 2 : 1,
-        ),
-        boxShadow: isConnected
-            ? [
-                BoxShadow(
-                  color: Colors.green.withValues(alpha: 0.25),
-                  blurRadius: 14,
-                  spreadRadius: 2,
-                )
-              ]
-            : null,
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'Battery & Range',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: isConnected
-                        ? Container(
-                            key: const ValueKey('live_chip'),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(LucideIcons.radio,
-                                    size: 10, color: Colors.white),
-                                SizedBox(width: 4),
-                                Text(
-                                  'LIVE',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : Container(
-                            key: const ValueKey('est_chip'),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.amber.shade800,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text(
-                              'ESTIMATED',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                  ),
-                ],
-              ),
-              if (isConnected && liveSnapshot != null)
-                Text(
-                  'Mode: ${liveSnapshot.rideMode}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      AnimatedNumber(
-                        value: batteryPercent,
-                        style: TextStyle(
-                          fontSize: 44,
-                          fontWeight: FontWeight.bold,
-                          color: batteryColor,
-                          height: 1,
-                        ),
-                      ),
-                      Text(
-                        '%',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: batteryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'Battery Charge',
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ],
-              ),
-              if (isConnected)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    AnimatedNumber(
-                      value: speedValue,
-                      suffix: ' km/h',
-                      fractionDigits: 1,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    const Text(
-                      'Live Speed',
-                      style: TextStyle(fontSize: 11, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  AnimatedNumber(
-                    value: rangeValue,
-                    suffix: ' km',
-                    fractionDigits: 0,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'Est. Range',
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          if (isConnected && liveSnapshot != null) ...[
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Batt: ${liveSnapshot.batteryTemp}°C  •  Motor: ${liveSnapshot.motorTemp}°C',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                Text(
-                  'Health: $healthText',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-              ],
-            ),
-          ],
-          const SizedBox(height: 14),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: Align(
-              key: ValueKey(isConnected),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                isConnected
-                    ? '• Connected to RV400 via BLE Telemetry Stream'
-                    : '• Disconnected — Last updated from manual log history',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: isConnected ? Colors.green : Colors.grey,
-                ),
-              ),
             ),
           ),
         ],
@@ -677,6 +369,37 @@ class DashboardScreen extends HookConsumerWidget {
                 ),
               ))
           .toList(),
+    );
+  }
+
+  Widget _buildServiceIntelligenceCard(BuildContext context, String prediction) {
+    final isOverdue = prediction.contains('overdue');
+    final color = isOverdue ? Colors.red : Theme.of(context).colorScheme.primary;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(LucideIcons.wrench, color: color, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              prediction,
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -786,50 +509,6 @@ class DashboardScreen extends HookConsumerWidget {
               size: 22,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSmallMenuCard(
-    BuildContext context, {
-    required String title,
-    required IconData icon,
-    required Color color,
-    required String route,
-  }) {
-    return InkWell(
-      onTap: () => context.push(route),
-      borderRadius: BorderRadius.circular(16),
-      child: Ink(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Theme.of(context)
-                .colorScheme
-                .outlineVariant
-                .withValues(alpha: 0.4),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-          child: Row(
-            children: [
-              Icon(icon, color: color, size: 22),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
