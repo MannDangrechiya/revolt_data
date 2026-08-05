@@ -46,4 +46,4 @@ final class StatisticsServiceProvider
   }
 }
 
-String _$statisticsServiceHash() => r'a89b1004fe517fa17178ad546a2ef6262765c4fc';
+String _$statisticsServiceHash() => r'80fad61f67707fc7ae233ded077b94d9585e88bd';

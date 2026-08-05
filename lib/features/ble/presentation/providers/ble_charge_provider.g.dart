@@ -41,7 +41,7 @@ final class BleChargeNotifierProvider
   }
 }
 
-String _$bleChargeNotifierHash() => r'4da909cdf92344a40531c487c33af1748bbf0242';
+String _$bleChargeNotifierHash() => r'fcccf3284856f1cf26019976cd3f613916ab7d9a';
 
 abstract class _$BleChargeNotifier extends $Notifier<BleChargeState> {
   BleChargeState build();
