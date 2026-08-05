@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../application/statistics_service.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class StatisticsScreen extends ConsumerWidget {
   const StatisticsScreen({super.key});
@@ -40,7 +40,7 @@ class StatisticsScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => ErrorRetryWidget(
+        error: (err, stack) => VoltErrorWidget(
           message: err.toString(),
           onRetry: () => ref.refresh(statisticsServiceProvider),
         ),

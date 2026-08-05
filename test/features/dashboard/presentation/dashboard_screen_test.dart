@@ -93,7 +93,7 @@ void main() {
 
       // Verify error text is displayed
       expect(find.textContaining('Failed to load dashboard data'), findsOneWidget);
-      expect(find.text('Try Again'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
 
       await tester.pumpWidget(const SizedBox());
       await tester.pump(Duration.zero);

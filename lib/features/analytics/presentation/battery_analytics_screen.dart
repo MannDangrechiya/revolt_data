@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../application/battery_analytics_service.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class BatteryAnalyticsScreen extends HookConsumerWidget {
   const BatteryAnalyticsScreen({super.key});
@@ -38,53 +38,24 @@ class BatteryAnalyticsScreen extends HookConsumerWidget {
                   ),
                   _StatCard(
                     title: 'Avg Duration',
-                    value: '${data.averageChargingDurationMins.toStringAsFixed(0)} m',
+                    value: '${data.averageChargingDurationMins.round()}m',
                     icon: Icons.timer,
                   ),
                   _StatCard(
-                    title: 'Health Est.',
-                    value: '${data.currentHealthPercent.toStringAsFixed(1)}%',
-                    icon: Icons.health_and_safety,
+                    title: 'Battery Health',
+                    value: '${data.currentHealthPercent.round()}%',
+                    icon: Icons.favorite,
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              const Text('Range Estimate (Best vs Worst)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: [
-                          const Icon(Icons.trending_up, color: Colors.green, size: 32),
-                          const SizedBox(height: 8),
-                          Text('${data.bestRange.toStringAsFixed(1)} km', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                          const Text('Best Range'),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          const Icon(Icons.trending_down, color: Colors.red, size: 32),
-                          const SizedBox(height: 8),
-                          Text('${data.worstRange.toStringAsFixed(1)} km', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                          const Text('Worst Range'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text('Battery Health Trend', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              const Text('Degradation Curve (Estimated)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
               SizedBox(
                 height: 200,
                 child: Card(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16),
                     child: LineChart(
                       LineChartData(
                         gridData: const FlGridData(show: false),
@@ -119,7 +90,7 @@ class BatteryAnalyticsScreen extends HookConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => ErrorRetryWidget(
+        error: (e, st) => VoltErrorWidget(
           message: e.toString(),
           onRetry: () => ref.refresh(batteryAnalyticsProvider),
         ),

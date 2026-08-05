@@ -8,8 +8,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import '../data/expenses_provider.dart';
 import '../domain/expense.dart';
 import '../../../core/widgets/skeleton_loader.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/empty_state.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class ExpensesScreen extends HookConsumerWidget {
   const ExpensesScreen({super.key});
@@ -141,7 +141,7 @@ class ExpensesScreen extends HookConsumerWidget {
               ),
               if (filteredExpenses.isEmpty)
                 const SliverToBoxAdapter(
-                  child: EmptyStateWidget(
+                  child: EmptyState(
                     title: 'No expenses recorded',
                     message: 'Add an expense to start tracking your spending.',
                     icon: Icons.currency_rupee,
@@ -182,7 +182,7 @@ class ExpensesScreen extends HookConsumerWidget {
           padding: EdgeInsets.all(16.0),
           child: ListSkeletonLoader(itemCount: 5, itemHeight: 80),
         ),
-        error: (e, st) => ErrorRetryWidget(
+        error: (e, st) => VoltErrorWidget(
           message: e.toString(),
           onRetry: () => ref.refresh(expensesProvider),
         ),

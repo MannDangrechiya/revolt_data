@@ -11,8 +11,8 @@ import '../domain/charge_filter.dart';
 import 'widgets/battery_health_dashboard.dart';
 import 'widgets/charge_card.dart';
 import '../../../core/widgets/skeleton_loader.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/empty_state.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class ChargingScreen extends HookConsumerWidget {
   const ChargingScreen({super.key});
@@ -144,7 +144,7 @@ class ChargingScreen extends HookConsumerWidget {
               const SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.all(32.0),
-                  child: EmptyStateWidget(
+                  child: EmptyState(
                     title: 'No logs found',
                     message: 'Start logging your charging sessions to see them here.',
                     icon: LucideIcons.batteryCharging,
@@ -200,7 +200,7 @@ class ChargingScreen extends HookConsumerWidget {
           padding: EdgeInsets.all(16.0),
           child: ListSkeletonLoader(itemCount: 8, itemHeight: 120),
         ),
-        error: (err, stack) => ErrorRetryWidget(
+        error: (err, stack) => VoltErrorWidget(
           message: err.toString(),
           onRetry: () => ref.refresh(filteredChargeLogsProvider),
         ),

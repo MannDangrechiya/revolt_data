@@ -11,7 +11,7 @@ import '../data/range_prediction_provider.dart';
 import '../domain/coach_tip.dart';
 import '../../../shared/ui/volt_app_bar.dart';
 import '../../../core/widgets/skeleton_loader.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/error_widget.dart';
 import '../../../core/widgets/fade_slide_in.dart';
 
 class CoachesScreen extends HookConsumerWidget {
@@ -110,7 +110,7 @@ class CoachesScreen extends HookConsumerWidget {
   ) {
     return asyncState.when(
       loading: () => const ListSkeletonLoader(itemCount: 1, itemHeight: 140),
-      error: (err, stack) => ErrorRetryWidget(
+      error: (err, stack) => VoltErrorWidget(
         message: err.toString(),
         onRetry: () => ref.refresh(rangePredictionProvider),
       ),
@@ -226,7 +226,7 @@ class CoachesScreen extends HookConsumerWidget {
   ) {
     return asyncState.when(
       loading: () => const ListSkeletonLoader(itemCount: 1, itemHeight: 120),
-      error: (err, stack) => ErrorRetryWidget(
+      error: (err, stack) => VoltErrorWidget(
         message: err.toString(),
         onRetry: () => ref.refresh(batteryCoachProvider),
       ),
@@ -255,7 +255,7 @@ class CoachesScreen extends HookConsumerWidget {
   ) {
     return asyncState.when(
       loading: () => const ListSkeletonLoader(itemCount: 1, itemHeight: 120),
-      error: (err, stack) => ErrorRetryWidget(
+      error: (err, stack) => VoltErrorWidget(
         message: err.toString(),
         onRetry: () => ref.refresh(rideCoachProvider),
       ),
@@ -281,7 +281,7 @@ class CoachesScreen extends HookConsumerWidget {
   ) {
     return asyncState.when(
       loading: () => const ListSkeletonLoader(itemCount: 1, itemHeight: 120),
-      error: (err, stack) => ErrorRetryWidget(
+      error: (err, stack) => VoltErrorWidget(
         message: err.toString(),
         onRetry: () => ref.refresh(chargingCoachProvider),
       ),
@@ -307,7 +307,7 @@ class CoachesScreen extends HookConsumerWidget {
   ) {
     return asyncState.when(
       loading: () => const ListSkeletonLoader(itemCount: 1, itemHeight: 120),
-      error: (err, stack) => ErrorRetryWidget(
+      error: (err, stack) => VoltErrorWidget(
         message: err.toString(),
         onRetry: () => ref.refresh(maintenanceCoachProvider),
       ),

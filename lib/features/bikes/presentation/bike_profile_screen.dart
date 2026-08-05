@@ -7,7 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../data/bike_provider.dart';
 
 import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class BikeProfileScreen extends HookConsumerWidget {
   const BikeProfileScreen({super.key});
@@ -35,7 +35,7 @@ class BikeProfileScreen extends HookConsumerWidget {
       ),
       body: currentBikeAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => ErrorRetryWidget(
+        error: (err, stack) => VoltErrorWidget(
           message: err.toString(),
           onRetry: () => ref.refresh(currentBikeProvider),
         ),

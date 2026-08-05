@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
 import '../application/efficiency_service.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class EfficiencyScreen extends HookConsumerWidget {
   const EfficiencyScreen({super.key});
@@ -131,7 +131,7 @@ class EfficiencyScreen extends HookConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => ErrorRetryWidget(
+        error: (e, st) => VoltErrorWidget(
           message: e.toString(),
           onRetry: () => ref.refresh(efficiencyStatsProvider),
         ),

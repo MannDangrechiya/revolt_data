@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 import '../data/documents_provider.dart';
 import '../domain/document.dart';
 import '../../../core/widgets/skeleton_loader.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/empty_state.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class DocumentsScreen extends ConsumerStatefulWidget {
   const DocumentsScreen({super.key});
@@ -38,27 +38,23 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
       appBar: AppBar(
         title: const Text('Documents'),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
+          preferredSize: const Size.fromHeight(50),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
-              children: _categories.map((category) {
-                final isSelected = _selectedCategory == category;
+              children: _categories.map((cat) {
+                final isSelected = _selectedCategory == cat;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    label: Text(category),
+                    label: Text(cat),
                     selected: isSelected,
                     onSelected: (selected) {
-                      if (selected) {
-                        setState(() {
-                          _selectedCategory = category;
-                        });
-                      }
+                      setState(() {
+                        _selectedCategory = cat;
+                      });
                     },
-                    selectedColor: Theme.of(context).colorScheme.primaryContainer,
-                    checkmarkColor: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 );
               }).toList(),
@@ -73,7 +69,7 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
               : documents.where((d) => d.category == _selectedCategory).toList();
 
           if (filteredDocs.isEmpty) {
-            return const EmptyStateWidget(
+            return const EmptyState(
               title: 'No documents found',
               message: 'Add important documents like RC, Insurance, or Invoices.',
               icon: LucideIcons.fileText,
@@ -93,7 +89,7 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
           padding: EdgeInsets.all(16.0),
           child: ListSkeletonLoader(itemCount: 6, itemHeight: 90),
         ),
-        error: (err, stack) => ErrorRetryWidget(
+        error: (err, stack) => VoltErrorWidget(
           message: err.toString(),
           onRetry: () => ref.refresh(documentsProvider),
         ),

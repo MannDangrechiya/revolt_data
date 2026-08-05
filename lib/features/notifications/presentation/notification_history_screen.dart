@@ -6,8 +6,8 @@ import 'package:intl/intl.dart';
 import '../data/notification_history_provider.dart';
 import '../domain/notification_history.dart';
 import '../../../core/widgets/skeleton_loader.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/empty_state.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class NotificationHistoryScreen extends ConsumerWidget {
   const NotificationHistoryScreen({super.key});
@@ -52,7 +52,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
       body: historyAsync.when(
         data: (history) {
           if (history.isEmpty) {
-            return const EmptyStateWidget(
+            return const EmptyState(
               title: 'No Notification History',
               message: 'Notifications sent to your device will appear here.',
               icon: LucideIcons.bell,
@@ -72,7 +72,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
           padding: EdgeInsets.all(16.0),
           child: ListSkeletonLoader(itemCount: 6, itemHeight: 80),
         ),
-        error: (err, stack) => ErrorRetryWidget(
+        error: (err, stack) => VoltErrorWidget(
           message: err.toString(),
           onRetry: () => ref.refresh(notificationHistoryProvider),
         ),

@@ -11,8 +11,8 @@ import '../domain/ride.dart';
 import '../domain/ride_filter.dart';
 import 'widgets/ride_card.dart';
 import '../../../core/widgets/skeleton_loader.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/empty_state.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class RidesScreen extends HookConsumerWidget {
   const RidesScreen({super.key});
@@ -124,7 +124,7 @@ class RidesScreen extends HookConsumerWidget {
       ),
       body: ridesAsync.when(
         data: (ridesList) => ridesList.isEmpty
-            ? const EmptyStateWidget(
+            ? const EmptyState(
                 title: 'No rides found',
                 message: 'Start logging your trips to see them here.',
                 icon: LucideIcons.bike,
@@ -134,7 +134,7 @@ class RidesScreen extends HookConsumerWidget {
           padding: EdgeInsets.all(16.0),
           child: ListSkeletonLoader(itemCount: 8, itemHeight: 120),
         ),
-        error: (err, stack) => ErrorRetryWidget(
+        error: (err, stack) => VoltErrorWidget(
           message: err.toString(),
           onRetry: () => ref.refresh(filteredRidesProvider),
         ),

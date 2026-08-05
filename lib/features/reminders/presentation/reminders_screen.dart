@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 import '../data/reminders_provider.dart';
 import '../domain/reminder.dart';
 import '../../../core/widgets/skeleton_loader.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../../core/widgets/error_retry_widget.dart';
+import '../../../shared/ui/empty_state.dart';
+import '../../../shared/ui/error_widget.dart';
 
 class RemindersScreen extends ConsumerStatefulWidget {
   const RemindersScreen({super.key});
@@ -29,7 +29,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
       body: remindersAsync.when(
         data: (reminders) {
           if (reminders.isEmpty) {
-            return const EmptyStateWidget(
+            return const EmptyState(
               title: 'No reminders set',
               message: 'Set reminders for service, insurance renewal, or part replacements.',
               icon: LucideIcons.bellRing,
@@ -76,7 +76,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           padding: EdgeInsets.all(16.0),
           child: ListSkeletonLoader(itemCount: 6, itemHeight: 90),
         ),
-        error: (err, stack) => ErrorRetryWidget(
+        error: (err, stack) => VoltErrorWidget(
           message: err.toString(),
           onRetry: () => ref.refresh(remindersProvider),
         ),
