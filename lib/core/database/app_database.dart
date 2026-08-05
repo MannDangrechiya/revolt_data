@@ -171,6 +171,7 @@ class DocumentsTable extends Table {
   DateTimeColumn get uploadDate => dateTime()();
   TextColumn get notes => text().nullable()();
   IntColumn get bikeId => integer().nullable()();
+  DateTimeColumn get expiryDate => dateTime().nullable()();
 }
 
 class RemindersTable extends Table {
@@ -218,7 +219,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -293,6 +294,9 @@ class AppDatabase extends _$AppDatabase {
       if (from < 5) {
         await m.addColumn(ridesTable, ridesTable.source);
         await m.addColumn(chargeLogsTable, chargeLogsTable.source);
+      }
+      if (from < 6) {
+        await m.addColumn(documentsTable, documentsTable.expiryDate);
       }
     },
     beforeOpen: (details) async {

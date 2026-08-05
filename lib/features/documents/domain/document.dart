@@ -13,6 +13,7 @@ abstract class Document with _$Document {
     required DateTime uploadDate,
     String? notes,
     int? bikeId,
+    DateTime? expiryDate,
   }) = _Document;
 
   factory Document.fromJson(Map<String, dynamic> json) => _$DocumentFromJson(json);

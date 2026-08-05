@@ -5988,6 +5988,17 @@ class $DocumentsTableTable extends DocumentsTable
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _expiryDateMeta = const VerificationMeta(
+    'expiryDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> expiryDate = GeneratedColumn<DateTime>(
+    'expiry_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5997,6 +6008,7 @@ class $DocumentsTableTable extends DocumentsTable
     uploadDate,
     notes,
     bikeId,
+    expiryDate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6057,6 +6069,12 @@ class $DocumentsTableTable extends DocumentsTable
         bikeId.isAcceptableOrUnknown(data['bike_id']!, _bikeIdMeta),
       );
     }
+    if (data.containsKey('expiry_date')) {
+      context.handle(
+        _expiryDateMeta,
+        expiryDate.isAcceptableOrUnknown(data['expiry_date']!, _expiryDateMeta),
+      );
+    }
     return context;
   }
 
@@ -6094,6 +6112,10 @@ class $DocumentsTableTable extends DocumentsTable
         DriftSqlType.int,
         data['${effectivePrefix}bike_id'],
       ),
+      expiryDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}expiry_date'],
+      ),
     );
   }
 
@@ -6112,6 +6134,7 @@ class DocumentsTableData extends DataClass
   final DateTime uploadDate;
   final String? notes;
   final int? bikeId;
+  final DateTime? expiryDate;
   const DocumentsTableData({
     required this.id,
     required this.name,
@@ -6120,6 +6143,7 @@ class DocumentsTableData extends DataClass
     required this.uploadDate,
     this.notes,
     this.bikeId,
+    this.expiryDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6134,6 +6158,9 @@ class DocumentsTableData extends DataClass
     }
     if (!nullToAbsent || bikeId != null) {
       map['bike_id'] = Variable<int>(bikeId);
+    }
+    if (!nullToAbsent || expiryDate != null) {
+      map['expiry_date'] = Variable<DateTime>(expiryDate);
     }
     return map;
   }
@@ -6151,6 +6178,9 @@ class DocumentsTableData extends DataClass
       bikeId: bikeId == null && nullToAbsent
           ? const Value.absent()
           : Value(bikeId),
+      expiryDate: expiryDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expiryDate),
     );
   }
 
@@ -6167,6 +6197,7 @@ class DocumentsTableData extends DataClass
       uploadDate: serializer.fromJson<DateTime>(json['uploadDate']),
       notes: serializer.fromJson<String?>(json['notes']),
       bikeId: serializer.fromJson<int?>(json['bikeId']),
+      expiryDate: serializer.fromJson<DateTime?>(json['expiryDate']),
     );
   }
   @override
@@ -6180,6 +6211,7 @@ class DocumentsTableData extends DataClass
       'uploadDate': serializer.toJson<DateTime>(uploadDate),
       'notes': serializer.toJson<String?>(notes),
       'bikeId': serializer.toJson<int?>(bikeId),
+      'expiryDate': serializer.toJson<DateTime?>(expiryDate),
     };
   }
 
@@ -6191,6 +6223,7 @@ class DocumentsTableData extends DataClass
     DateTime? uploadDate,
     Value<String?> notes = const Value.absent(),
     Value<int?> bikeId = const Value.absent(),
+    Value<DateTime?> expiryDate = const Value.absent(),
   }) => DocumentsTableData(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -6199,6 +6232,7 @@ class DocumentsTableData extends DataClass
     uploadDate: uploadDate ?? this.uploadDate,
     notes: notes.present ? notes.value : this.notes,
     bikeId: bikeId.present ? bikeId.value : this.bikeId,
+    expiryDate: expiryDate.present ? expiryDate.value : this.expiryDate,
   );
   DocumentsTableData copyWithCompanion(DocumentsTableCompanion data) {
     return DocumentsTableData(
@@ -6211,6 +6245,9 @@ class DocumentsTableData extends DataClass
           : this.uploadDate,
       notes: data.notes.present ? data.notes.value : this.notes,
       bikeId: data.bikeId.present ? data.bikeId.value : this.bikeId,
+      expiryDate: data.expiryDate.present
+          ? data.expiryDate.value
+          : this.expiryDate,
     );
   }
 
@@ -6223,14 +6260,23 @@ class DocumentsTableData extends DataClass
           ..write('filePath: $filePath, ')
           ..write('uploadDate: $uploadDate, ')
           ..write('notes: $notes, ')
-          ..write('bikeId: $bikeId')
+          ..write('bikeId: $bikeId, ')
+          ..write('expiryDate: $expiryDate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, category, filePath, uploadDate, notes, bikeId);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    category,
+    filePath,
+    uploadDate,
+    notes,
+    bikeId,
+    expiryDate,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -6241,7 +6287,8 @@ class DocumentsTableData extends DataClass
           other.filePath == this.filePath &&
           other.uploadDate == this.uploadDate &&
           other.notes == this.notes &&
-          other.bikeId == this.bikeId);
+          other.bikeId == this.bikeId &&
+          other.expiryDate == this.expiryDate);
 }
 
 class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
@@ -6252,6 +6299,7 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
   final Value<DateTime> uploadDate;
   final Value<String?> notes;
   final Value<int?> bikeId;
+  final Value<DateTime?> expiryDate;
   const DocumentsTableCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -6260,6 +6308,7 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
     this.uploadDate = const Value.absent(),
     this.notes = const Value.absent(),
     this.bikeId = const Value.absent(),
+    this.expiryDate = const Value.absent(),
   });
   DocumentsTableCompanion.insert({
     this.id = const Value.absent(),
@@ -6269,6 +6318,7 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
     required DateTime uploadDate,
     this.notes = const Value.absent(),
     this.bikeId = const Value.absent(),
+    this.expiryDate = const Value.absent(),
   }) : name = Value(name),
        category = Value(category),
        filePath = Value(filePath),
@@ -6281,6 +6331,7 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
     Expression<DateTime>? uploadDate,
     Expression<String>? notes,
     Expression<int>? bikeId,
+    Expression<DateTime>? expiryDate,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -6290,6 +6341,7 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
       if (uploadDate != null) 'upload_date': uploadDate,
       if (notes != null) 'notes': notes,
       if (bikeId != null) 'bike_id': bikeId,
+      if (expiryDate != null) 'expiry_date': expiryDate,
     });
   }
 
@@ -6301,6 +6353,7 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
     Value<DateTime>? uploadDate,
     Value<String?>? notes,
     Value<int?>? bikeId,
+    Value<DateTime?>? expiryDate,
   }) {
     return DocumentsTableCompanion(
       id: id ?? this.id,
@@ -6310,6 +6363,7 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
       uploadDate: uploadDate ?? this.uploadDate,
       notes: notes ?? this.notes,
       bikeId: bikeId ?? this.bikeId,
+      expiryDate: expiryDate ?? this.expiryDate,
     );
   }
 
@@ -6337,6 +6391,9 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
     if (bikeId.present) {
       map['bike_id'] = Variable<int>(bikeId.value);
     }
+    if (expiryDate.present) {
+      map['expiry_date'] = Variable<DateTime>(expiryDate.value);
+    }
     return map;
   }
 
@@ -6349,7 +6406,8 @@ class DocumentsTableCompanion extends UpdateCompanion<DocumentsTableData> {
           ..write('filePath: $filePath, ')
           ..write('uploadDate: $uploadDate, ')
           ..write('notes: $notes, ')
-          ..write('bikeId: $bikeId')
+          ..write('bikeId: $bikeId, ')
+          ..write('expiryDate: $expiryDate')
           ..write(')'))
         .toString();
   }
@@ -10073,6 +10131,7 @@ typedef $$DocumentsTableTableCreateCompanionBuilder =
       required DateTime uploadDate,
       Value<String?> notes,
       Value<int?> bikeId,
+      Value<DateTime?> expiryDate,
     });
 typedef $$DocumentsTableTableUpdateCompanionBuilder =
     DocumentsTableCompanion Function({
@@ -10083,6 +10142,7 @@ typedef $$DocumentsTableTableUpdateCompanionBuilder =
       Value<DateTime> uploadDate,
       Value<String?> notes,
       Value<int?> bikeId,
+      Value<DateTime?> expiryDate,
     });
 
 class $$DocumentsTableTableFilterComposer
@@ -10126,6 +10186,11 @@ class $$DocumentsTableTableFilterComposer
 
   ColumnFilters<int> get bikeId => $composableBuilder(
     column: $table.bikeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get expiryDate => $composableBuilder(
+    column: $table.expiryDate,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -10173,6 +10238,11 @@ class $$DocumentsTableTableOrderingComposer
     column: $table.bikeId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get expiryDate => $composableBuilder(
+    column: $table.expiryDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DocumentsTableTableAnnotationComposer
@@ -10206,6 +10276,11 @@ class $$DocumentsTableTableAnnotationComposer
 
   GeneratedColumn<int> get bikeId =>
       $composableBuilder(column: $table.bikeId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get expiryDate => $composableBuilder(
+    column: $table.expiryDate,
+    builder: (column) => column,
+  );
 }
 
 class $$DocumentsTableTableTableManager
@@ -10252,6 +10327,7 @@ class $$DocumentsTableTableTableManager
                 Value<DateTime> uploadDate = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<int?> bikeId = const Value.absent(),
+                Value<DateTime?> expiryDate = const Value.absent(),
               }) => DocumentsTableCompanion(
                 id: id,
                 name: name,
@@ -10260,6 +10336,7 @@ class $$DocumentsTableTableTableManager
                 uploadDate: uploadDate,
                 notes: notes,
                 bikeId: bikeId,
+                expiryDate: expiryDate,
               ),
           createCompanionCallback:
               ({
@@ -10270,6 +10347,7 @@ class $$DocumentsTableTableTableManager
                 required DateTime uploadDate,
                 Value<String?> notes = const Value.absent(),
                 Value<int?> bikeId = const Value.absent(),
+                Value<DateTime?> expiryDate = const Value.absent(),
               }) => DocumentsTableCompanion.insert(
                 id: id,
                 name: name,
@@ -10278,6 +10356,7 @@ class $$DocumentsTableTableTableManager
                 uploadDate: uploadDate,
                 notes: notes,
                 bikeId: bikeId,
+                expiryDate: expiryDate,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

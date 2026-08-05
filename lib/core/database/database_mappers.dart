@@ -332,6 +332,7 @@ extension DocumentDataMapper on DocumentsTableData {
       uploadDate: uploadDate,
       notes: notes,
       bikeId: bikeId,
+      expiryDate: expiryDate,
     );
   }
 }
@@ -346,6 +347,7 @@ extension DocumentMapper on Document {
       uploadDate: Value(uploadDate),
       notes: Value(notes),
       bikeId: Value(bikeId),
+      expiryDate: Value(expiryDate),
     );
   }
 }

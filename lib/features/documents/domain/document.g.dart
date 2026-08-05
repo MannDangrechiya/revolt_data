@@ -14,6 +14,9 @@ _Document _$DocumentFromJson(Map<String, dynamic> json) => _Document(
   uploadDate: DateTime.parse(json['uploadDate'] as String),
   notes: json['notes'] as String?,
   bikeId: (json['bikeId'] as num?)?.toInt(),
+  expiryDate: json['expiryDate'] == null
+      ? null
+      : DateTime.parse(json['expiryDate'] as String),
 );
 
 Map<String, dynamic> _$DocumentToJson(_Document instance) => <String, dynamic>{
@@ -24,4 +27,5 @@ Map<String, dynamic> _$DocumentToJson(_Document instance) => <String, dynamic>{
   'uploadDate': instance.uploadDate.toIso8601String(),
   'notes': instance.notes,
   'bikeId': instance.bikeId,
+  'expiryDate': instance.expiryDate?.toIso8601String(),
 };
