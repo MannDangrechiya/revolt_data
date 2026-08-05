@@ -32,9 +32,3 @@ class CurrentBike extends _$CurrentBike {
     ref.invalidateSelf();
   }
 }
-
-@riverpod
-Future<Bike?> bikeById(Ref ref, int id) async {
-  final repo = ref.watch(bikeRepositoryProvider);
-  return repo.getBikeById(id);
-}
