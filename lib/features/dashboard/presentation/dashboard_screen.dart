@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import '../data/dashboard_provider.dart';
 import '../domain/dashboard_data.dart';
 import '../../bikes/data/bike_provider.dart';
+import '../../reminders/data/reminders_provider.dart';
+import '../../reminders/domain/reminder.dart';
 import '../../ble/domain/connection_state.dart';
 import '../../ble/presentation/widgets/connection_status_badge.dart';
 import '../../../shared/ui/volt_app_bar.dart';
@@ -153,7 +155,8 @@ class DashboardScreen extends HookConsumerWidget {
 
                       if (data.upcomingReminder != null) ...[
                         const SizedBox(height: 20),
-                        _buildUpcomingReminder(context, data.upcomingReminder!),
+                        _buildUpcomingReminder(
+                            context, ref, data.upcomingReminder!),
                       ],
 
                       const SizedBox(height: 28),
@@ -619,49 +622,60 @@ class DashboardScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildUpcomingReminder(BuildContext context, dynamic reminder) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.orange.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
+  Widget _buildUpcomingReminder(
+      BuildContext context, WidgetRef ref, Reminder reminder) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () =>
+          ref.read(remindersProvider.notifier).markCompleted(reminder.id),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.orange.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(LucideIcons.bellRing, color: Colors.orange),
             ),
-            child: const Icon(LucideIcons.bellRing, color: Colors.orange),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  reminder.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    reminder.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  reminder.targetDate != null
-                      ? 'Due: ${DateFormat.yMMMd().format(reminder.targetDate!)}'
-                      : 'Due at: ${reminder.targetOdometer} km',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  const SizedBox(height: 4),
+                  Text(
+                    reminder.targetDate != null
+                        ? 'Due: ${DateFormat.yMMMd().format(reminder.targetDate!)}'
+                        : 'Due at: ${reminder.targetOdometer} km',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            Icon(
+              LucideIcons.checkCircle,
+              color: Colors.orange.withValues(alpha: 0.5),
+              size: 22,
+            ),
+          ],
+        ),
       ),
     );
   }
