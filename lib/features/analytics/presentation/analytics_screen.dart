@@ -33,7 +33,7 @@ class AnalyticsScreen extends HookConsumerWidget {
                 final totalChargeCycles = await ref.read(totalChargeCyclesProvider.future);
                 final maintenanceLogs = await ref.read(maintenanceLogsProvider.future);
 
-                await ReportGeneratorService.generateAndSharePdf(
+                await CsvReportGeneratorService.generateAndSharePdf(
                   totalDistance: totalDistance,
                   totalExpenses: totalExpenses,
                   totalChargeCycles: totalChargeCycles,
@@ -51,7 +51,7 @@ class AnalyticsScreen extends HookConsumerWidget {
             tooltip: 'Export as CSV',
             onPressed: () async {
               try {
-                await ReportGeneratorService.generateAndShareCsv(
+                await CsvReportGeneratorService.generateAndShareCsv(
                   rides: await ref.read(ridesProvider.future),
                   expenses: await ref.read(expensesProvider.future),
                   maintenanceLogs: await ref.read(maintenanceLogsProvider.future),

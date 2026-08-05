@@ -10,7 +10,7 @@ import '../../features/expenses/domain/expense.dart';
 import '../../features/maintenance/domain/maintenance_log.dart';
 import '../../features/rides/domain/ride.dart';
 
-class ReportGeneratorService {
+class CsvReportGeneratorService {
   static Future<void> generateAndShareCsv({
     required List<Ride> rides,
     required List<Expense> expenses,
