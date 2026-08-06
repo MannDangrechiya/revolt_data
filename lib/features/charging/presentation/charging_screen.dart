@@ -146,7 +146,7 @@ class ChargingScreen extends HookConsumerWidget {
                   padding: EdgeInsets.all(32.0),
                   child: EmptyState(
                     title: 'No logs found',
-                    message: 'Start logging your charging sessions to see them here.',
+                    message: 'Charging sessions will be automatically logged when your EV is connected to power over BLE.',
                     icon: LucideIcons.batteryCharging,
                   ),
                 ),

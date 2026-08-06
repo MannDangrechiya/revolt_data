@@ -225,10 +225,6 @@ class MaintenanceScreen extends HookConsumerWidget {
           onRetry: () => ref.refresh(maintenanceLogsProvider),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/maintenance/add'),
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }

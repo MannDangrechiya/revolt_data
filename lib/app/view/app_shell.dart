@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/utils/responsive.dart';
-import '../../shared/ui/volt_fab.dart';
 import '../../shared/ui/offline_banner.dart';
 
 class AppShell extends StatelessWidget {
@@ -33,13 +32,6 @@ class AppShell extends StatelessWidget {
                     selectedIndex: navigationShell.currentIndex,
                     onDestinationSelected: _onTap,
                     labelType: NavigationRailLabelType.all,
-                    leading: Padding(
-                      padding: const EdgeInsets.only(bottom: 24.0, top: 16.0),
-                      child: FloatingActionButton(
-                        onPressed: () => showVoltQuickActionsMenu(context),
-                        child: const Icon(LucideIcons.plus),
-                      ),
-                    ),
                     destinations: const [
                       NavigationRailDestination(
                         icon: Icon(LucideIcons.layoutDashboard),
@@ -90,28 +82,6 @@ class AppShell extends StatelessWidget {
                 ),
               ],
             ),
-      floatingActionButton: isDesktopOrTablet ? null : _buildFab(context),
     );
-  }
-
-  /// The Add button is context-aware: inside a section it jumps straight to that
-  /// section's entry form; on the Dashboard it opens the global quick-actions menu.
-  Widget? _buildFab(BuildContext context) {
-    switch (navigationShell.currentIndex) {
-      case 1: // Rides
-        return VoltFloatingActionButton(
-          onPressed: () => context.push('/rides/add'),
-        );
-      case 2: // Charging
-        return VoltFloatingActionButton(
-          onPressed: () => context.push('/charging/add'),
-        );
-      case 3: // Analytics — no create action
-        return null;
-      default: // Dashboard
-        return VoltFloatingActionButton(
-          onPressed: () => showVoltQuickActionsMenu(context),
-        );
-    }
   }
 }

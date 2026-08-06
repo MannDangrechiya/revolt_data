@@ -187,10 +187,6 @@ class ExpensesScreen extends HookConsumerWidget {
           onRetry: () => ref.refresh(expensesProvider),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/expenses/add'),
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }

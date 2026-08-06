@@ -126,7 +126,7 @@ class RidesScreen extends HookConsumerWidget {
         data: (ridesList) => ridesList.isEmpty
             ? const EmptyState(
                 title: 'No rides found',
-                message: 'Start logging your trips to see them here.',
+                message: 'Your trips will appear here automatically when riding your Revolt EV over BLE.',
                 icon: LucideIcons.bike,
               )
             : _buildGroupedList(context, ref, ridesList),
