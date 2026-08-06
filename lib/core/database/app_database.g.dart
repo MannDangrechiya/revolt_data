@@ -1521,6 +1521,17 @@ class $RidesTableTable extends RidesTable
     requiredDuringInsert: false,
     defaultValue: const Constant('manual'),
   );
+  static const VerificationMeta _routePolylineMeta = const VerificationMeta(
+    'routePolyline',
+  );
+  @override
+  late final GeneratedColumn<String> routePolyline = GeneratedColumn<String>(
+    'route_polyline',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1550,6 +1561,7 @@ class $RidesTableTable extends RidesTable
     isFavorite,
     bikeId,
     source,
+    routePolyline,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1743,6 +1755,15 @@ class $RidesTableTable extends RidesTable
         source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
       );
     }
+    if (data.containsKey('route_polyline')) {
+      context.handle(
+        _routePolylineMeta,
+        routePolyline.isAcceptableOrUnknown(
+          data['route_polyline']!,
+          _routePolylineMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1868,6 +1889,10 @@ class $RidesTableTable extends RidesTable
         DriftSqlType.string,
         data['${effectivePrefix}source'],
       )!,
+      routePolyline: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}route_polyline'],
+      ),
     );
   }
 
@@ -1914,6 +1939,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
   final bool isFavorite;
   final int? bikeId;
   final String source;
+  final String? routePolyline;
   const RidesTableData({
     required this.id,
     required this.date,
@@ -1942,6 +1968,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     required this.isFavorite,
     this.bikeId,
     required this.source,
+    this.routePolyline,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2021,6 +2048,9 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
       map['bike_id'] = Variable<int>(bikeId);
     }
     map['source'] = Variable<String>(source);
+    if (!nullToAbsent || routePolyline != null) {
+      map['route_polyline'] = Variable<String>(routePolyline);
+    }
     return map;
   }
 
@@ -2083,6 +2113,9 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
           ? const Value.absent()
           : Value(bikeId),
       source: Value(source),
+      routePolyline: routePolyline == null && nullToAbsent
+          ? const Value.absent()
+          : Value(routePolyline),
     );
   }
 
@@ -2125,6 +2158,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
       isFavorite: serializer.fromJson<bool>(json['isFavorite']),
       bikeId: serializer.fromJson<int?>(json['bikeId']),
       source: serializer.fromJson<String>(json['source']),
+      routePolyline: serializer.fromJson<String?>(json['routePolyline']),
     );
   }
   @override
@@ -2164,6 +2198,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
       'isFavorite': serializer.toJson<bool>(isFavorite),
       'bikeId': serializer.toJson<int?>(bikeId),
       'source': serializer.toJson<String>(source),
+      'routePolyline': serializer.toJson<String?>(routePolyline),
     };
   }
 
@@ -2195,6 +2230,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     bool? isFavorite,
     Value<int?> bikeId = const Value.absent(),
     String? source,
+    Value<String?> routePolyline = const Value.absent(),
   }) => RidesTableData(
     id: id ?? this.id,
     date: date ?? this.date,
@@ -2231,6 +2267,9 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     isFavorite: isFavorite ?? this.isFavorite,
     bikeId: bikeId.present ? bikeId.value : this.bikeId,
     source: source ?? this.source,
+    routePolyline: routePolyline.present
+        ? routePolyline.value
+        : this.routePolyline,
   );
   RidesTableData copyWithCompanion(RidesTableCompanion data) {
     return RidesTableData(
@@ -2293,6 +2332,9 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
           : this.isFavorite,
       bikeId: data.bikeId.present ? data.bikeId.value : this.bikeId,
       source: data.source.present ? data.source.value : this.source,
+      routePolyline: data.routePolyline.present
+          ? data.routePolyline.value
+          : this.routePolyline,
     );
   }
 
@@ -2325,7 +2367,8 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
           ..write('customTags: $customTags, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('bikeId: $bikeId, ')
-          ..write('source: $source')
+          ..write('source: $source, ')
+          ..write('routePolyline: $routePolyline')
           ..write(')'))
         .toString();
   }
@@ -2359,6 +2402,7 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
     isFavorite,
     bikeId,
     source,
+    routePolyline,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -2390,7 +2434,8 @@ class RidesTableData extends DataClass implements Insertable<RidesTableData> {
           other.customTags == this.customTags &&
           other.isFavorite == this.isFavorite &&
           other.bikeId == this.bikeId &&
-          other.source == this.source);
+          other.source == this.source &&
+          other.routePolyline == this.routePolyline);
 }
 
 class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
@@ -2421,6 +2466,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
   final Value<bool> isFavorite;
   final Value<int?> bikeId;
   final Value<String> source;
+  final Value<String?> routePolyline;
   final Value<int> rowid;
   const RidesTableCompanion({
     this.id = const Value.absent(),
@@ -2450,6 +2496,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     this.isFavorite = const Value.absent(),
     this.bikeId = const Value.absent(),
     this.source = const Value.absent(),
+    this.routePolyline = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RidesTableCompanion.insert({
@@ -2480,6 +2527,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     this.isFavorite = const Value.absent(),
     this.bikeId = const Value.absent(),
     this.source = const Value.absent(),
+    this.routePolyline = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        date = Value(date),
@@ -2517,6 +2565,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     Expression<bool>? isFavorite,
     Expression<int>? bikeId,
     Expression<String>? source,
+    Expression<String>? routePolyline,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2548,6 +2597,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
       if (isFavorite != null) 'is_favorite': isFavorite,
       if (bikeId != null) 'bike_id': bikeId,
       if (source != null) 'source': source,
+      if (routePolyline != null) 'route_polyline': routePolyline,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2580,6 +2630,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     Value<bool>? isFavorite,
     Value<int?>? bikeId,
     Value<String>? source,
+    Value<String?>? routePolyline,
     Value<int>? rowid,
   }) {
     return RidesTableCompanion(
@@ -2611,6 +2662,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
       isFavorite: isFavorite ?? this.isFavorite,
       bikeId: bikeId ?? this.bikeId,
       source: source ?? this.source,
+      routePolyline: routePolyline ?? this.routePolyline,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2709,6 +2761,9 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
     if (source.present) {
       map['source'] = Variable<String>(source.value);
     }
+    if (routePolyline.present) {
+      map['route_polyline'] = Variable<String>(routePolyline.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2745,6 +2800,7 @@ class RidesTableCompanion extends UpdateCompanion<RidesTableData> {
           ..write('isFavorite: $isFavorite, ')
           ..write('bikeId: $bikeId, ')
           ..write('source: $source, ')
+          ..write('routePolyline: $routePolyline, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -7826,6 +7882,464 @@ class NotificationHistoryTableCompanion
   }
 }
 
+class $RideGpsPointsTableTable extends RideGpsPointsTable
+    with TableInfo<$RideGpsPointsTableTable, RideGpsPointsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RideGpsPointsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _rideIdMeta = const VerificationMeta('rideId');
+  @override
+  late final GeneratedColumn<String> rideId = GeneratedColumn<String>(
+    'ride_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES rides_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _speedKmhMeta = const VerificationMeta(
+    'speedKmh',
+  );
+  @override
+  late final GeneratedColumn<double> speedKmh = GeneratedColumn<double>(
+    'speed_kmh',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _accuracyMeta = const VerificationMeta(
+    'accuracy',
+  );
+  @override
+  late final GeneratedColumn<double> accuracy = GeneratedColumn<double>(
+    'accuracy',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    rideId,
+    latitude,
+    longitude,
+    speedKmh,
+    timestamp,
+    accuracy,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ride_gps_points_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RideGpsPointsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('ride_id')) {
+      context.handle(
+        _rideIdMeta,
+        rideId.isAcceptableOrUnknown(data['ride_id']!, _rideIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rideIdMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_latitudeMeta);
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_longitudeMeta);
+    }
+    if (data.containsKey('speed_kmh')) {
+      context.handle(
+        _speedKmhMeta,
+        speedKmh.isAcceptableOrUnknown(data['speed_kmh']!, _speedKmhMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_speedKmhMeta);
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    if (data.containsKey('accuracy')) {
+      context.handle(
+        _accuracyMeta,
+        accuracy.isAcceptableOrUnknown(data['accuracy']!, _accuracyMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RideGpsPointsTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RideGpsPointsTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      rideId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ride_id'],
+      )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      )!,
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      )!,
+      speedKmh: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}speed_kmh'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}timestamp'],
+      )!,
+      accuracy: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}accuracy'],
+      ),
+    );
+  }
+
+  @override
+  $RideGpsPointsTableTable createAlias(String alias) {
+    return $RideGpsPointsTableTable(attachedDatabase, alias);
+  }
+}
+
+class RideGpsPointsTableData extends DataClass
+    implements Insertable<RideGpsPointsTableData> {
+  final int id;
+  final String rideId;
+  final double latitude;
+  final double longitude;
+  final double speedKmh;
+  final DateTime timestamp;
+  final double? accuracy;
+  const RideGpsPointsTableData({
+    required this.id,
+    required this.rideId,
+    required this.latitude,
+    required this.longitude,
+    required this.speedKmh,
+    required this.timestamp,
+    this.accuracy,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['ride_id'] = Variable<String>(rideId);
+    map['latitude'] = Variable<double>(latitude);
+    map['longitude'] = Variable<double>(longitude);
+    map['speed_kmh'] = Variable<double>(speedKmh);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    if (!nullToAbsent || accuracy != null) {
+      map['accuracy'] = Variable<double>(accuracy);
+    }
+    return map;
+  }
+
+  RideGpsPointsTableCompanion toCompanion(bool nullToAbsent) {
+    return RideGpsPointsTableCompanion(
+      id: Value(id),
+      rideId: Value(rideId),
+      latitude: Value(latitude),
+      longitude: Value(longitude),
+      speedKmh: Value(speedKmh),
+      timestamp: Value(timestamp),
+      accuracy: accuracy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(accuracy),
+    );
+  }
+
+  factory RideGpsPointsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RideGpsPointsTableData(
+      id: serializer.fromJson<int>(json['id']),
+      rideId: serializer.fromJson<String>(json['rideId']),
+      latitude: serializer.fromJson<double>(json['latitude']),
+      longitude: serializer.fromJson<double>(json['longitude']),
+      speedKmh: serializer.fromJson<double>(json['speedKmh']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      accuracy: serializer.fromJson<double?>(json['accuracy']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'rideId': serializer.toJson<String>(rideId),
+      'latitude': serializer.toJson<double>(latitude),
+      'longitude': serializer.toJson<double>(longitude),
+      'speedKmh': serializer.toJson<double>(speedKmh),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'accuracy': serializer.toJson<double?>(accuracy),
+    };
+  }
+
+  RideGpsPointsTableData copyWith({
+    int? id,
+    String? rideId,
+    double? latitude,
+    double? longitude,
+    double? speedKmh,
+    DateTime? timestamp,
+    Value<double?> accuracy = const Value.absent(),
+  }) => RideGpsPointsTableData(
+    id: id ?? this.id,
+    rideId: rideId ?? this.rideId,
+    latitude: latitude ?? this.latitude,
+    longitude: longitude ?? this.longitude,
+    speedKmh: speedKmh ?? this.speedKmh,
+    timestamp: timestamp ?? this.timestamp,
+    accuracy: accuracy.present ? accuracy.value : this.accuracy,
+  );
+  RideGpsPointsTableData copyWithCompanion(RideGpsPointsTableCompanion data) {
+    return RideGpsPointsTableData(
+      id: data.id.present ? data.id.value : this.id,
+      rideId: data.rideId.present ? data.rideId.value : this.rideId,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      speedKmh: data.speedKmh.present ? data.speedKmh.value : this.speedKmh,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      accuracy: data.accuracy.present ? data.accuracy.value : this.accuracy,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RideGpsPointsTableData(')
+          ..write('id: $id, ')
+          ..write('rideId: $rideId, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('speedKmh: $speedKmh, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('accuracy: $accuracy')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    rideId,
+    latitude,
+    longitude,
+    speedKmh,
+    timestamp,
+    accuracy,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RideGpsPointsTableData &&
+          other.id == this.id &&
+          other.rideId == this.rideId &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
+          other.speedKmh == this.speedKmh &&
+          other.timestamp == this.timestamp &&
+          other.accuracy == this.accuracy);
+}
+
+class RideGpsPointsTableCompanion
+    extends UpdateCompanion<RideGpsPointsTableData> {
+  final Value<int> id;
+  final Value<String> rideId;
+  final Value<double> latitude;
+  final Value<double> longitude;
+  final Value<double> speedKmh;
+  final Value<DateTime> timestamp;
+  final Value<double?> accuracy;
+  const RideGpsPointsTableCompanion({
+    this.id = const Value.absent(),
+    this.rideId = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.speedKmh = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.accuracy = const Value.absent(),
+  });
+  RideGpsPointsTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String rideId,
+    required double latitude,
+    required double longitude,
+    required double speedKmh,
+    required DateTime timestamp,
+    this.accuracy = const Value.absent(),
+  }) : rideId = Value(rideId),
+       latitude = Value(latitude),
+       longitude = Value(longitude),
+       speedKmh = Value(speedKmh),
+       timestamp = Value(timestamp);
+  static Insertable<RideGpsPointsTableData> custom({
+    Expression<int>? id,
+    Expression<String>? rideId,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<double>? speedKmh,
+    Expression<DateTime>? timestamp,
+    Expression<double>? accuracy,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (rideId != null) 'ride_id': rideId,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (speedKmh != null) 'speed_kmh': speedKmh,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (accuracy != null) 'accuracy': accuracy,
+    });
+  }
+
+  RideGpsPointsTableCompanion copyWith({
+    Value<int>? id,
+    Value<String>? rideId,
+    Value<double>? latitude,
+    Value<double>? longitude,
+    Value<double>? speedKmh,
+    Value<DateTime>? timestamp,
+    Value<double?>? accuracy,
+  }) {
+    return RideGpsPointsTableCompanion(
+      id: id ?? this.id,
+      rideId: rideId ?? this.rideId,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      speedKmh: speedKmh ?? this.speedKmh,
+      timestamp: timestamp ?? this.timestamp,
+      accuracy: accuracy ?? this.accuracy,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (rideId.present) {
+      map['ride_id'] = Variable<String>(rideId.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (speedKmh.present) {
+      map['speed_kmh'] = Variable<double>(speedKmh.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (accuracy.present) {
+      map['accuracy'] = Variable<double>(accuracy.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RideGpsPointsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('rideId: $rideId, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('speedKmh: $speedKmh, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('accuracy: $accuracy')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7843,6 +8357,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $BatteryHealthSnapshotsTableTable(this);
   late final $NotificationHistoryTableTable notificationHistoryTable =
       $NotificationHistoryTableTable(this);
+  late final $RideGpsPointsTableTable rideGpsPointsTable =
+      $RideGpsPointsTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7857,7 +8373,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     remindersTable,
     batteryHealthSnapshotsTable,
     notificationHistoryTable,
+    rideGpsPointsTable,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'rides_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('ride_gps_points_table', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$BikesTableTableCreateCompanionBuilder =
@@ -8424,6 +8951,7 @@ typedef $$RidesTableTableCreateCompanionBuilder =
       Value<bool> isFavorite,
       Value<int?> bikeId,
       Value<String> source,
+      Value<String?> routePolyline,
       Value<int> rowid,
     });
 typedef $$RidesTableTableUpdateCompanionBuilder =
@@ -8455,8 +8983,41 @@ typedef $$RidesTableTableUpdateCompanionBuilder =
       Value<bool> isFavorite,
       Value<int?> bikeId,
       Value<String> source,
+      Value<String?> routePolyline,
       Value<int> rowid,
     });
+
+final class $$RidesTableTableReferences
+    extends BaseReferences<_$AppDatabase, $RidesTableTable, RidesTableData> {
+  $$RidesTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<
+    $RideGpsPointsTableTable,
+    List<RideGpsPointsTableData>
+  >
+  _rideGpsPointsTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.rideGpsPointsTable,
+        aliasName: $_aliasNameGenerator(
+          db.ridesTable.id,
+          db.rideGpsPointsTable.rideId,
+        ),
+      );
+
+  $$RideGpsPointsTableTableProcessedTableManager get rideGpsPointsTableRefs {
+    final manager = $$RideGpsPointsTableTableTableManager(
+      $_db,
+      $_db.rideGpsPointsTable,
+    ).filter((f) => f.rideId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _rideGpsPointsTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$RidesTableTableFilterComposer
     extends Composer<_$AppDatabase, $RidesTableTable> {
@@ -8605,6 +9166,36 @@ class $$RidesTableTableFilterComposer
     column: $table.source,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get routePolyline => $composableBuilder(
+    column: $table.routePolyline,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> rideGpsPointsTableRefs(
+    Expression<bool> Function($$RideGpsPointsTableTableFilterComposer f) f,
+  ) {
+    final $$RideGpsPointsTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rideGpsPointsTable,
+      getReferencedColumn: (t) => t.rideId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RideGpsPointsTableTableFilterComposer(
+            $db: $db,
+            $table: $db.rideGpsPointsTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$RidesTableTableOrderingComposer
@@ -8750,6 +9341,11 @@ class $$RidesTableTableOrderingComposer
     column: $table.source,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get routePolyline => $composableBuilder(
+    column: $table.routePolyline,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$RidesTableTableAnnotationComposer
@@ -8876,6 +9472,37 @@ class $$RidesTableTableAnnotationComposer
 
   GeneratedColumn<String> get source =>
       $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<String> get routePolyline => $composableBuilder(
+    column: $table.routePolyline,
+    builder: (column) => column,
+  );
+
+  Expression<T> rideGpsPointsTableRefs<T extends Object>(
+    Expression<T> Function($$RideGpsPointsTableTableAnnotationComposer a) f,
+  ) {
+    final $$RideGpsPointsTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.rideGpsPointsTable,
+          getReferencedColumn: (t) => t.rideId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RideGpsPointsTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.rideGpsPointsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$RidesTableTableTableManager
@@ -8889,12 +9516,9 @@ class $$RidesTableTableTableManager
           $$RidesTableTableAnnotationComposer,
           $$RidesTableTableCreateCompanionBuilder,
           $$RidesTableTableUpdateCompanionBuilder,
-          (
-            RidesTableData,
-            BaseReferences<_$AppDatabase, $RidesTableTable, RidesTableData>,
-          ),
+          (RidesTableData, $$RidesTableTableReferences),
           RidesTableData,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool rideGpsPointsTableRefs})
         > {
   $$RidesTableTableTableManager(_$AppDatabase db, $RidesTableTable table)
     : super(
@@ -8936,6 +9560,7 @@ class $$RidesTableTableTableManager
                 Value<bool> isFavorite = const Value.absent(),
                 Value<int?> bikeId = const Value.absent(),
                 Value<String> source = const Value.absent(),
+                Value<String?> routePolyline = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RidesTableCompanion(
                 id: id,
@@ -8965,6 +9590,7 @@ class $$RidesTableTableTableManager
                 isFavorite: isFavorite,
                 bikeId: bikeId,
                 source: source,
+                routePolyline: routePolyline,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8996,6 +9622,7 @@ class $$RidesTableTableTableManager
                 Value<bool> isFavorite = const Value.absent(),
                 Value<int?> bikeId = const Value.absent(),
                 Value<String> source = const Value.absent(),
+                Value<String?> routePolyline = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RidesTableCompanion.insert(
                 id: id,
@@ -9025,12 +9652,49 @@ class $$RidesTableTableTableManager
                 isFavorite: isFavorite,
                 bikeId: bikeId,
                 source: source,
+                routePolyline: routePolyline,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RidesTableTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({rideGpsPointsTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (rideGpsPointsTableRefs) db.rideGpsPointsTable,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (rideGpsPointsTableRefs)
+                    await $_getPrefetchedData<
+                      RidesTableData,
+                      $RidesTableTable,
+                      RideGpsPointsTableData
+                    >(
+                      currentTable: table,
+                      referencedTable: $$RidesTableTableReferences
+                          ._rideGpsPointsTableRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$RidesTableTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).rideGpsPointsTableRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.rideId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -9045,12 +9709,9 @@ typedef $$RidesTableTableProcessedTableManager =
       $$RidesTableTableAnnotationComposer,
       $$RidesTableTableCreateCompanionBuilder,
       $$RidesTableTableUpdateCompanionBuilder,
-      (
-        RidesTableData,
-        BaseReferences<_$AppDatabase, $RidesTableTable, RidesTableData>,
-      ),
+      (RidesTableData, $$RidesTableTableReferences),
       RidesTableData,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool rideGpsPointsTableRefs})
     >;
 typedef $$ChargeLogsTableTableCreateCompanionBuilder =
     ChargeLogsTableCompanion Function({
@@ -11520,6 +12181,373 @@ typedef $$NotificationHistoryTableTableProcessedTableManager =
       NotificationHistoryTableData,
       PrefetchHooks Function()
     >;
+typedef $$RideGpsPointsTableTableCreateCompanionBuilder =
+    RideGpsPointsTableCompanion Function({
+      Value<int> id,
+      required String rideId,
+      required double latitude,
+      required double longitude,
+      required double speedKmh,
+      required DateTime timestamp,
+      Value<double?> accuracy,
+    });
+typedef $$RideGpsPointsTableTableUpdateCompanionBuilder =
+    RideGpsPointsTableCompanion Function({
+      Value<int> id,
+      Value<String> rideId,
+      Value<double> latitude,
+      Value<double> longitude,
+      Value<double> speedKmh,
+      Value<DateTime> timestamp,
+      Value<double?> accuracy,
+    });
+
+final class $$RideGpsPointsTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $RideGpsPointsTableTable,
+          RideGpsPointsTableData
+        > {
+  $$RideGpsPointsTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $RidesTableTable _rideIdTable(_$AppDatabase db) =>
+      db.ridesTable.createAlias(
+        $_aliasNameGenerator(db.rideGpsPointsTable.rideId, db.ridesTable.id),
+      );
+
+  $$RidesTableTableProcessedTableManager get rideId {
+    final $_column = $_itemColumn<String>('ride_id')!;
+
+    final manager = $$RidesTableTableTableManager(
+      $_db,
+      $_db.ridesTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_rideIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RideGpsPointsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $RideGpsPointsTableTable> {
+  $$RideGpsPointsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get speedKmh => $composableBuilder(
+    column: $table.speedKmh,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get accuracy => $composableBuilder(
+    column: $table.accuracy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RidesTableTableFilterComposer get rideId {
+    final $$RidesTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rideId,
+      referencedTable: $db.ridesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableTableFilterComposer(
+            $db: $db,
+            $table: $db.ridesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RideGpsPointsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $RideGpsPointsTableTable> {
+  $$RideGpsPointsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get speedKmh => $composableBuilder(
+    column: $table.speedKmh,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get accuracy => $composableBuilder(
+    column: $table.accuracy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RidesTableTableOrderingComposer get rideId {
+    final $$RidesTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rideId,
+      referencedTable: $db.ridesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.ridesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RideGpsPointsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RideGpsPointsTableTable> {
+  $$RideGpsPointsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<double> get speedKmh =>
+      $composableBuilder(column: $table.speedKmh, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<double> get accuracy =>
+      $composableBuilder(column: $table.accuracy, builder: (column) => column);
+
+  $$RidesTableTableAnnotationComposer get rideId {
+    final $$RidesTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.rideId,
+      referencedTable: $db.ridesTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.ridesTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RideGpsPointsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RideGpsPointsTableTable,
+          RideGpsPointsTableData,
+          $$RideGpsPointsTableTableFilterComposer,
+          $$RideGpsPointsTableTableOrderingComposer,
+          $$RideGpsPointsTableTableAnnotationComposer,
+          $$RideGpsPointsTableTableCreateCompanionBuilder,
+          $$RideGpsPointsTableTableUpdateCompanionBuilder,
+          (RideGpsPointsTableData, $$RideGpsPointsTableTableReferences),
+          RideGpsPointsTableData,
+          PrefetchHooks Function({bool rideId})
+        > {
+  $$RideGpsPointsTableTableTableManager(
+    _$AppDatabase db,
+    $RideGpsPointsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RideGpsPointsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RideGpsPointsTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RideGpsPointsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> rideId = const Value.absent(),
+                Value<double> latitude = const Value.absent(),
+                Value<double> longitude = const Value.absent(),
+                Value<double> speedKmh = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<double?> accuracy = const Value.absent(),
+              }) => RideGpsPointsTableCompanion(
+                id: id,
+                rideId: rideId,
+                latitude: latitude,
+                longitude: longitude,
+                speedKmh: speedKmh,
+                timestamp: timestamp,
+                accuracy: accuracy,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String rideId,
+                required double latitude,
+                required double longitude,
+                required double speedKmh,
+                required DateTime timestamp,
+                Value<double?> accuracy = const Value.absent(),
+              }) => RideGpsPointsTableCompanion.insert(
+                id: id,
+                rideId: rideId,
+                latitude: latitude,
+                longitude: longitude,
+                speedKmh: speedKmh,
+                timestamp: timestamp,
+                accuracy: accuracy,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RideGpsPointsTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({rideId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (rideId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.rideId,
+                                referencedTable:
+                                    $$RideGpsPointsTableTableReferences
+                                        ._rideIdTable(db),
+                                referencedColumn:
+                                    $$RideGpsPointsTableTableReferences
+                                        ._rideIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RideGpsPointsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RideGpsPointsTableTable,
+      RideGpsPointsTableData,
+      $$RideGpsPointsTableTableFilterComposer,
+      $$RideGpsPointsTableTableOrderingComposer,
+      $$RideGpsPointsTableTableAnnotationComposer,
+      $$RideGpsPointsTableTableCreateCompanionBuilder,
+      $$RideGpsPointsTableTableUpdateCompanionBuilder,
+      (RideGpsPointsTableData, $$RideGpsPointsTableTableReferences),
+      RideGpsPointsTableData,
+      PrefetchHooks Function({bool rideId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -11549,4 +12577,6 @@ class $AppDatabaseManager {
         _db,
         _db.notificationHistoryTable,
       );
+  $$RideGpsPointsTableTableTableManager get rideGpsPointsTable =>
+      $$RideGpsPointsTableTableTableManager(_db, _db.rideGpsPointsTable);
 }

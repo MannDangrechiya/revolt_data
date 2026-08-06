@@ -27,6 +27,7 @@ _BleTripState _$BleTripStateFromJson(Map<String, dynamic> json) =>
       startBattery: (json['startBattery'] as num?)?.toInt() ?? 0,
       currentBattery: (json['currentBattery'] as num?)?.toInt() ?? 0,
       currentRideMode: json['currentRideMode'] as String? ?? 'Eco',
+      isGpsHandoff: json['isGpsHandoff'] as bool? ?? false,
       lastSavedRide: json['lastSavedRide'] == null
           ? null
           : Ride.fromJson(json['lastSavedRide'] as Map<String, dynamic>),
@@ -47,11 +48,13 @@ Map<String, dynamic> _$BleTripStateToJson(_BleTripState instance) =>
       'startBattery': instance.startBattery,
       'currentBattery': instance.currentBattery,
       'currentRideMode': instance.currentRideMode,
+      'isGpsHandoff': instance.isGpsHandoff,
       'lastSavedRide': instance.lastSavedRide,
     };
 
 const _$BleTripStatusEnumMap = {
   BleTripStatus.idle: 'idle',
   BleTripStatus.riding: 'riding',
+  BleTripStatus.gpsHandoff: 'gpsHandoff',
   BleTripStatus.stopped: 'stopped',
 };

@@ -4,6 +4,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../rides/data/rides_provider.dart';
 import '../../../rides/domain/ride.dart';
+import '../../../tracking/data/background_location_service.dart';
+import '../../../tracking/data/ride_merger.dart';
+import '../../../tracking/domain/gps_point.dart';
 import '../../domain/ble_trip_state.dart';
 import '../../domain/connection_state.dart';
 import '../../domain/vehicle_snapshot.dart';
@@ -48,7 +51,7 @@ class BleTripNotifier extends _$BleTripNotifier {
     final now = DateTime.now();
 
     // 1. Idle/Stopped State -> Start Detection
-    if (state.status != BleTripStatus.riding) {
+    if (state.status != BleTripStatus.riding && state.status != BleTripStatus.gpsHandoff) {
       if (snapshot.speed > 0 && snapshot.odometer > 0) {
         // Debounce state transitions by 5 seconds
         if (_lastTransitionTime != null &&
@@ -117,23 +120,49 @@ class BleTripNotifier extends _$BleTripNotifier {
       startBattery: snapshot.batteryPercent,
       currentBattery: snapshot.batteryPercent,
       currentRideMode: snapshot.rideMode,
+      isGpsHandoff: false,
     );
   }
 
   void _handleConnectionStateChange(BleConnectionState connectionState) {
-    if (state.status != BleTripStatus.riding) return;
+    if (state.status != BleTripStatus.riding && state.status != BleTripStatus.gpsHandoff) return;
 
     if (connectionState == BleConnectionState.disconnected ||
         connectionState == BleConnectionState.error) {
-      // Start 60s grace timer on disconnection
-      _disconnectGraceTimer ??= Timer(const Duration(seconds: 60), () {
-        _finalizeTrip();
-      });
+      if (!state.isGpsHandoff) {
+        state = state.copyWith(
+          status: BleTripStatus.gpsHandoff,
+          isGpsHandoff: true,
+        );
+
+        // Immediately trigger background GPS location service
+        BackgroundLocationService().startTracking(
+          startOdometer: state.startOdometer,
+          startTime: state.startTime ?? DateTime.now(),
+        );
+
+        // Start 60s grace timer on disconnection
+        _disconnectGraceTimer ??= Timer(const Duration(seconds: 60), () {
+          _finalizeTrip();
+        });
+      }
     } else if (connectionState == BleConnectionState.connected ||
         connectionState == BleConnectionState.authenticated) {
-      // Reconnected within 60s grace period -> resume tracking
-      _disconnectGraceTimer?.cancel();
-      _disconnectGraceTimer = null;
+      if (state.isGpsHandoff) {
+        // Reconnected within 60s grace period -> resume tracking
+        _disconnectGraceTimer?.cancel();
+        _disconnectGraceTimer = null;
+
+        BackgroundLocationService().onBleReconnected(state.currentOdometer);
+
+        state = state.copyWith(
+          status: BleTripStatus.riding,
+          isGpsHandoff: false,
+        );
+      } else {
+        _disconnectGraceTimer?.cancel();
+        _disconnectGraceTimer = null;
+      }
     }
   }
 
@@ -143,12 +172,88 @@ class BleTripNotifier extends _$BleTripNotifier {
     _disconnectGraceTimer?.cancel();
     _disconnectGraceTimer = null;
 
-    if (state.status != BleTripStatus.riding) return;
+    if (state.status != BleTripStatus.riding && state.status != BleTripStatus.gpsHandoff) return;
 
     final now = DateTime.now();
     _lastTransitionTime = now;
 
-    final finalDistance = state.distance;
+    final bgService = BackgroundLocationService();
+    final List<GpsPoint> recordedGpsPoints = bgService.getRecordedPoints();
+    final wasGpsHandoff = state.isGpsHandoff;
+    await bgService.stopTracking(reason: 'trip_finalized');
+
+    double finalDistance = state.distance;
+    double finalMaxSpeed = state.maxSpeed;
+    double finalAvgSpeed = state.averageSpeed;
+    String rideSource = wasGpsHandoff ? 'merged' : 'ble';
+    String? polylineJson;
+
+    if (recordedGpsPoints.isNotEmpty) {
+      polylineJson = RideMerger.encodeRoutePolyline(recordedGpsPoints);
+
+      // Calculate GPS distance
+      double gpsDist = 0.0;
+      double gpsMaxSpd = 0.0;
+      for (int i = 0; i < recordedGpsPoints.length; i++) {
+        if (recordedGpsPoints[i].speedKmh > gpsMaxSpd) {
+          gpsMaxSpd = recordedGpsPoints[i].speedKmh;
+        }
+        if (i > 0) {
+          final p1 = recordedGpsPoints[i - 1];
+          final p2 = recordedGpsPoints[i];
+          final d = RideMerger.mergeBleAndGps(
+            bleData: BleTripData(
+              startTime: state.startTime ?? now,
+              endTime: now,
+              startOdometer: state.startOdometer,
+              endOdometer: state.currentOdometer,
+              odometerDelta: state.distance,
+              maxSpeed: state.maxSpeed,
+              averageSpeed: state.averageSpeed,
+              startBattery: state.startBattery,
+              endBattery: state.currentBattery,
+            ),
+            gpsData: GpsTrackingData(
+              startTime: p1.timestamp,
+              endTime: p2.timestamp,
+              gpsDistance: 0.0,
+              maxSpeed: gpsMaxSpd,
+              averageSpeed: gpsMaxSpd,
+              route: recordedGpsPoints,
+            ),
+          );
+          gpsDist = d.totalDistanceKm;
+        }
+      }
+
+      final bleData = BleTripData(
+        startTime: state.startTime ?? now,
+        endTime: now,
+        startOdometer: state.startOdometer,
+        endOdometer: state.currentOdometer,
+        odometerDelta: state.distance,
+        maxSpeed: state.maxSpeed,
+        averageSpeed: state.averageSpeed,
+        startBattery: state.startBattery,
+        endBattery: state.currentBattery,
+      );
+
+      final gpsData = GpsTrackingData(
+        startTime: recordedGpsPoints.first.timestamp,
+        endTime: recordedGpsPoints.last.timestamp,
+        gpsDistance: gpsDist,
+        maxSpeed: gpsMaxSpd,
+        averageSpeed: gpsMaxSpd,
+        route: recordedGpsPoints,
+      );
+
+      final merged = RideMerger.mergeBleAndGps(bleData: bleData, gpsData: gpsData);
+      finalDistance = merged.totalDistanceKm;
+      finalMaxSpeed = merged.maxSpeedKmh;
+      finalAvgSpeed = merged.averageSpeedKmh;
+      rideSource = merged.source;
+    }
+
     final startTime = state.startTime ?? now;
 
     // Edge Case: Ignore trips shorter than 0.1 km
@@ -156,15 +261,15 @@ class BleTripNotifier extends _$BleTripNotifier {
       state = state.copyWith(
         status: BleTripStatus.idle,
         endTime: now,
+        isGpsHandoff: false,
       );
       return;
     }
 
-    // Duplicate Prevention Check:
-    // If a ride with source='ble' exists within +/- 2 minutes of startTime, skip insertion.
+    // Duplicate Prevention Check
     final existingRides = ref.read(ridesProvider).value ?? [];
     final isDuplicate = existingRides.any((r) {
-      if (r.source != 'ble') return false;
+      if (r.source != 'ble' && r.source != 'merged') return false;
       final diffMinutes = r.date.difference(startTime).inMinutes.abs();
       final odoMatch = (r.startOdometer - state.startOdometer).abs() < 0.05 &&
                        (r.endOdometer - state.currentOdometer).abs() < 0.05;
@@ -174,7 +279,6 @@ class BleTripNotifier extends _$BleTripNotifier {
     Ride? savedRide;
 
     if (!isDuplicate) {
-      // Map ride mode string to domain enum
       RideMode mode;
       final modeStr = state.currentRideMode.toLowerCase();
       if (modeStr.contains('eco')) {
@@ -191,7 +295,9 @@ class BleTripNotifier extends _$BleTripNotifier {
         id: now.millisecondsSinceEpoch.toString(),
         date: startTime,
         startOdometer: state.startOdometer,
-        endOdometer: state.currentOdometer,
+        endOdometer: state.currentOdometer > state.startOdometer
+            ? state.currentOdometer
+            : (state.startOdometer + finalDistance),
         batteryBefore: state.startBattery,
         batteryAfter: state.currentBattery,
         rideMode: mode,
@@ -199,22 +305,22 @@ class BleTripNotifier extends _$BleTripNotifier {
         startTime: startTime,
         endTime: now,
         durationMinutes: rideDurationMinutes > 0 ? rideDurationMinutes : 1,
-        averageSpeed: state.averageSpeed,
-        maxSpeed: state.maxSpeed,
-        notes: 'Auto-logged BLE Ride on ${startTime.toIso8601String().substring(0, 10)}',
-        source: 'ble',
+        averageSpeed: finalAvgSpeed,
+        maxSpeed: finalMaxSpeed,
+        notes: 'Auto-logged $rideSource Ride on ${startTime.toIso8601String().substring(0, 10)}',
+        source: rideSource,
+        routePolyline: polylineJson,
       );
 
       try {
-        await ref.read(ridesProvider.notifier).addRide(savedRide, source: 'ble');
-      } catch (_) {
-        // If DB validation or insert fails, gracefully proceed
-      }
+        await ref.read(ridesProvider.notifier).addRide(savedRide, source: rideSource);
+      } catch (_) {}
     }
 
     state = state.copyWith(
       status: BleTripStatus.stopped,
       endTime: now,
+      isGpsHandoff: false,
       lastSavedRide: savedRide,
     );
   }

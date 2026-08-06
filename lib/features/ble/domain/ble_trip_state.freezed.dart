@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BleTripState {
 
- BleTripStatus get status; DateTime? get startTime; DateTime? get endTime; double get startOdometer; double get currentOdometer; double get distance; int get durationSeconds; double get currentSpeed; double get averageSpeed; double get maxSpeed; int get startBattery; int get currentBattery; String get currentRideMode; Ride? get lastSavedRide;
+ BleTripStatus get status; DateTime? get startTime; DateTime? get endTime; double get startOdometer; double get currentOdometer; double get distance; int get durationSeconds; double get currentSpeed; double get averageSpeed; double get maxSpeed; int get startBattery; int get currentBattery; String get currentRideMode; bool get isGpsHandoff; Ride? get lastSavedRide;
 /// Create a copy of BleTripState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $BleTripStateCopyWith<BleTripState> get copyWith => _$BleTripStateCopyWithImpl<B
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BleTripState&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.startOdometer, startOdometer) || other.startOdometer == startOdometer)&&(identical(other.currentOdometer, currentOdometer) || other.currentOdometer == currentOdometer)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.durationSeconds, durationSeconds) || other.durationSeconds == durationSeconds)&&(identical(other.currentSpeed, currentSpeed) || other.currentSpeed == currentSpeed)&&(identical(other.averageSpeed, averageSpeed) || other.averageSpeed == averageSpeed)&&(identical(other.maxSpeed, maxSpeed) || other.maxSpeed == maxSpeed)&&(identical(other.startBattery, startBattery) || other.startBattery == startBattery)&&(identical(other.currentBattery, currentBattery) || other.currentBattery == currentBattery)&&(identical(other.currentRideMode, currentRideMode) || other.currentRideMode == currentRideMode)&&(identical(other.lastSavedRide, lastSavedRide) || other.lastSavedRide == lastSavedRide));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BleTripState&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.startOdometer, startOdometer) || other.startOdometer == startOdometer)&&(identical(other.currentOdometer, currentOdometer) || other.currentOdometer == currentOdometer)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.durationSeconds, durationSeconds) || other.durationSeconds == durationSeconds)&&(identical(other.currentSpeed, currentSpeed) || other.currentSpeed == currentSpeed)&&(identical(other.averageSpeed, averageSpeed) || other.averageSpeed == averageSpeed)&&(identical(other.maxSpeed, maxSpeed) || other.maxSpeed == maxSpeed)&&(identical(other.startBattery, startBattery) || other.startBattery == startBattery)&&(identical(other.currentBattery, currentBattery) || other.currentBattery == currentBattery)&&(identical(other.currentRideMode, currentRideMode) || other.currentRideMode == currentRideMode)&&(identical(other.isGpsHandoff, isGpsHandoff) || other.isGpsHandoff == isGpsHandoff)&&(identical(other.lastSavedRide, lastSavedRide) || other.lastSavedRide == lastSavedRide));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,status,startTime,endTime,startOdometer,currentOdometer,distance,durationSeconds,currentSpeed,averageSpeed,maxSpeed,startBattery,currentBattery,currentRideMode,lastSavedRide);
+int get hashCode => Object.hash(runtimeType,status,startTime,endTime,startOdometer,currentOdometer,distance,durationSeconds,currentSpeed,averageSpeed,maxSpeed,startBattery,currentBattery,currentRideMode,isGpsHandoff,lastSavedRide);
 
 @override
 String toString() {
-  return 'BleTripState(status: $status, startTime: $startTime, endTime: $endTime, startOdometer: $startOdometer, currentOdometer: $currentOdometer, distance: $distance, durationSeconds: $durationSeconds, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, maxSpeed: $maxSpeed, startBattery: $startBattery, currentBattery: $currentBattery, currentRideMode: $currentRideMode, lastSavedRide: $lastSavedRide)';
+  return 'BleTripState(status: $status, startTime: $startTime, endTime: $endTime, startOdometer: $startOdometer, currentOdometer: $currentOdometer, distance: $distance, durationSeconds: $durationSeconds, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, maxSpeed: $maxSpeed, startBattery: $startBattery, currentBattery: $currentBattery, currentRideMode: $currentRideMode, isGpsHandoff: $isGpsHandoff, lastSavedRide: $lastSavedRide)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $BleTripStateCopyWith<$Res>  {
   factory $BleTripStateCopyWith(BleTripState value, $Res Function(BleTripState) _then) = _$BleTripStateCopyWithImpl;
 @useResult
 $Res call({
- BleTripStatus status, DateTime? startTime, DateTime? endTime, double startOdometer, double currentOdometer, double distance, int durationSeconds, double currentSpeed, double averageSpeed, double maxSpeed, int startBattery, int currentBattery, String currentRideMode, Ride? lastSavedRide
+ BleTripStatus status, DateTime? startTime, DateTime? endTime, double startOdometer, double currentOdometer, double distance, int durationSeconds, double currentSpeed, double averageSpeed, double maxSpeed, int startBattery, int currentBattery, String currentRideMode, bool isGpsHandoff, Ride? lastSavedRide
 });
 
 
@@ -65,7 +65,7 @@ class _$BleTripStateCopyWithImpl<$Res>
 
 /// Create a copy of BleTripState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? startOdometer = null,Object? currentOdometer = null,Object? distance = null,Object? durationSeconds = null,Object? currentSpeed = null,Object? averageSpeed = null,Object? maxSpeed = null,Object? startBattery = null,Object? currentBattery = null,Object? currentRideMode = null,Object? lastSavedRide = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? startOdometer = null,Object? currentOdometer = null,Object? distance = null,Object? durationSeconds = null,Object? currentSpeed = null,Object? averageSpeed = null,Object? maxSpeed = null,Object? startBattery = null,Object? currentBattery = null,Object? currentRideMode = null,Object? isGpsHandoff = null,Object? lastSavedRide = freezed,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as BleTripStatus,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
@@ -80,7 +80,8 @@ as double,maxSpeed: null == maxSpeed ? _self.maxSpeed : maxSpeed // ignore: cast
 as double,startBattery: null == startBattery ? _self.startBattery : startBattery // ignore: cast_nullable_to_non_nullable
 as int,currentBattery: null == currentBattery ? _self.currentBattery : currentBattery // ignore: cast_nullable_to_non_nullable
 as int,currentRideMode: null == currentRideMode ? _self.currentRideMode : currentRideMode // ignore: cast_nullable_to_non_nullable
-as String,lastSavedRide: freezed == lastSavedRide ? _self.lastSavedRide : lastSavedRide // ignore: cast_nullable_to_non_nullable
+as String,isGpsHandoff: null == isGpsHandoff ? _self.isGpsHandoff : isGpsHandoff // ignore: cast_nullable_to_non_nullable
+as bool,lastSavedRide: freezed == lastSavedRide ? _self.lastSavedRide : lastSavedRide // ignore: cast_nullable_to_non_nullable
 as Ride?,
   ));
 }
@@ -178,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( BleTripStatus status,  DateTime? startTime,  DateTime? endTime,  double startOdometer,  double currentOdometer,  double distance,  int durationSeconds,  double currentSpeed,  double averageSpeed,  double maxSpeed,  int startBattery,  int currentBattery,  String currentRideMode,  Ride? lastSavedRide)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( BleTripStatus status,  DateTime? startTime,  DateTime? endTime,  double startOdometer,  double currentOdometer,  double distance,  int durationSeconds,  double currentSpeed,  double averageSpeed,  double maxSpeed,  int startBattery,  int currentBattery,  String currentRideMode,  bool isGpsHandoff,  Ride? lastSavedRide)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BleTripState() when $default != null:
-return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_that.currentOdometer,_that.distance,_that.durationSeconds,_that.currentSpeed,_that.averageSpeed,_that.maxSpeed,_that.startBattery,_that.currentBattery,_that.currentRideMode,_that.lastSavedRide);case _:
+return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_that.currentOdometer,_that.distance,_that.durationSeconds,_that.currentSpeed,_that.averageSpeed,_that.maxSpeed,_that.startBattery,_that.currentBattery,_that.currentRideMode,_that.isGpsHandoff,_that.lastSavedRide);case _:
   return orElse();
 
 }
@@ -199,10 +200,10 @@ return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( BleTripStatus status,  DateTime? startTime,  DateTime? endTime,  double startOdometer,  double currentOdometer,  double distance,  int durationSeconds,  double currentSpeed,  double averageSpeed,  double maxSpeed,  int startBattery,  int currentBattery,  String currentRideMode,  Ride? lastSavedRide)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( BleTripStatus status,  DateTime? startTime,  DateTime? endTime,  double startOdometer,  double currentOdometer,  double distance,  int durationSeconds,  double currentSpeed,  double averageSpeed,  double maxSpeed,  int startBattery,  int currentBattery,  String currentRideMode,  bool isGpsHandoff,  Ride? lastSavedRide)  $default,) {final _that = this;
 switch (_that) {
 case _BleTripState():
-return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_that.currentOdometer,_that.distance,_that.durationSeconds,_that.currentSpeed,_that.averageSpeed,_that.maxSpeed,_that.startBattery,_that.currentBattery,_that.currentRideMode,_that.lastSavedRide);case _:
+return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_that.currentOdometer,_that.distance,_that.durationSeconds,_that.currentSpeed,_that.averageSpeed,_that.maxSpeed,_that.startBattery,_that.currentBattery,_that.currentRideMode,_that.isGpsHandoff,_that.lastSavedRide);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -219,10 +220,10 @@ return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( BleTripStatus status,  DateTime? startTime,  DateTime? endTime,  double startOdometer,  double currentOdometer,  double distance,  int durationSeconds,  double currentSpeed,  double averageSpeed,  double maxSpeed,  int startBattery,  int currentBattery,  String currentRideMode,  Ride? lastSavedRide)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( BleTripStatus status,  DateTime? startTime,  DateTime? endTime,  double startOdometer,  double currentOdometer,  double distance,  int durationSeconds,  double currentSpeed,  double averageSpeed,  double maxSpeed,  int startBattery,  int currentBattery,  String currentRideMode,  bool isGpsHandoff,  Ride? lastSavedRide)?  $default,) {final _that = this;
 switch (_that) {
 case _BleTripState() when $default != null:
-return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_that.currentOdometer,_that.distance,_that.durationSeconds,_that.currentSpeed,_that.averageSpeed,_that.maxSpeed,_that.startBattery,_that.currentBattery,_that.currentRideMode,_that.lastSavedRide);case _:
+return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_that.currentOdometer,_that.distance,_that.durationSeconds,_that.currentSpeed,_that.averageSpeed,_that.maxSpeed,_that.startBattery,_that.currentBattery,_that.currentRideMode,_that.isGpsHandoff,_that.lastSavedRide);case _:
   return null;
 
 }
@@ -234,7 +235,7 @@ return $default(_that.status,_that.startTime,_that.endTime,_that.startOdometer,_
 @JsonSerializable()
 
 class _BleTripState implements BleTripState {
-  const _BleTripState({this.status = BleTripStatus.idle, this.startTime, this.endTime, this.startOdometer = 0.0, this.currentOdometer = 0.0, this.distance = 0.0, this.durationSeconds = 0, this.currentSpeed = 0.0, this.averageSpeed = 0.0, this.maxSpeed = 0.0, this.startBattery = 0, this.currentBattery = 0, this.currentRideMode = 'Eco', this.lastSavedRide});
+  const _BleTripState({this.status = BleTripStatus.idle, this.startTime, this.endTime, this.startOdometer = 0.0, this.currentOdometer = 0.0, this.distance = 0.0, this.durationSeconds = 0, this.currentSpeed = 0.0, this.averageSpeed = 0.0, this.maxSpeed = 0.0, this.startBattery = 0, this.currentBattery = 0, this.currentRideMode = 'Eco', this.isGpsHandoff = false, this.lastSavedRide});
   factory _BleTripState.fromJson(Map<String, dynamic> json) => _$BleTripStateFromJson(json);
 
 @override@JsonKey() final  BleTripStatus status;
@@ -250,6 +251,7 @@ class _BleTripState implements BleTripState {
 @override@JsonKey() final  int startBattery;
 @override@JsonKey() final  int currentBattery;
 @override@JsonKey() final  String currentRideMode;
+@override@JsonKey() final  bool isGpsHandoff;
 @override final  Ride? lastSavedRide;
 
 /// Create a copy of BleTripState
@@ -265,16 +267,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BleTripState&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.startOdometer, startOdometer) || other.startOdometer == startOdometer)&&(identical(other.currentOdometer, currentOdometer) || other.currentOdometer == currentOdometer)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.durationSeconds, durationSeconds) || other.durationSeconds == durationSeconds)&&(identical(other.currentSpeed, currentSpeed) || other.currentSpeed == currentSpeed)&&(identical(other.averageSpeed, averageSpeed) || other.averageSpeed == averageSpeed)&&(identical(other.maxSpeed, maxSpeed) || other.maxSpeed == maxSpeed)&&(identical(other.startBattery, startBattery) || other.startBattery == startBattery)&&(identical(other.currentBattery, currentBattery) || other.currentBattery == currentBattery)&&(identical(other.currentRideMode, currentRideMode) || other.currentRideMode == currentRideMode)&&(identical(other.lastSavedRide, lastSavedRide) || other.lastSavedRide == lastSavedRide));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BleTripState&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.startOdometer, startOdometer) || other.startOdometer == startOdometer)&&(identical(other.currentOdometer, currentOdometer) || other.currentOdometer == currentOdometer)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.durationSeconds, durationSeconds) || other.durationSeconds == durationSeconds)&&(identical(other.currentSpeed, currentSpeed) || other.currentSpeed == currentSpeed)&&(identical(other.averageSpeed, averageSpeed) || other.averageSpeed == averageSpeed)&&(identical(other.maxSpeed, maxSpeed) || other.maxSpeed == maxSpeed)&&(identical(other.startBattery, startBattery) || other.startBattery == startBattery)&&(identical(other.currentBattery, currentBattery) || other.currentBattery == currentBattery)&&(identical(other.currentRideMode, currentRideMode) || other.currentRideMode == currentRideMode)&&(identical(other.isGpsHandoff, isGpsHandoff) || other.isGpsHandoff == isGpsHandoff)&&(identical(other.lastSavedRide, lastSavedRide) || other.lastSavedRide == lastSavedRide));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,status,startTime,endTime,startOdometer,currentOdometer,distance,durationSeconds,currentSpeed,averageSpeed,maxSpeed,startBattery,currentBattery,currentRideMode,lastSavedRide);
+int get hashCode => Object.hash(runtimeType,status,startTime,endTime,startOdometer,currentOdometer,distance,durationSeconds,currentSpeed,averageSpeed,maxSpeed,startBattery,currentBattery,currentRideMode,isGpsHandoff,lastSavedRide);
 
 @override
 String toString() {
-  return 'BleTripState(status: $status, startTime: $startTime, endTime: $endTime, startOdometer: $startOdometer, currentOdometer: $currentOdometer, distance: $distance, durationSeconds: $durationSeconds, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, maxSpeed: $maxSpeed, startBattery: $startBattery, currentBattery: $currentBattery, currentRideMode: $currentRideMode, lastSavedRide: $lastSavedRide)';
+  return 'BleTripState(status: $status, startTime: $startTime, endTime: $endTime, startOdometer: $startOdometer, currentOdometer: $currentOdometer, distance: $distance, durationSeconds: $durationSeconds, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, maxSpeed: $maxSpeed, startBattery: $startBattery, currentBattery: $currentBattery, currentRideMode: $currentRideMode, isGpsHandoff: $isGpsHandoff, lastSavedRide: $lastSavedRide)';
 }
 
 
@@ -285,7 +287,7 @@ abstract mixin class _$BleTripStateCopyWith<$Res> implements $BleTripStateCopyWi
   factory _$BleTripStateCopyWith(_BleTripState value, $Res Function(_BleTripState) _then) = __$BleTripStateCopyWithImpl;
 @override @useResult
 $Res call({
- BleTripStatus status, DateTime? startTime, DateTime? endTime, double startOdometer, double currentOdometer, double distance, int durationSeconds, double currentSpeed, double averageSpeed, double maxSpeed, int startBattery, int currentBattery, String currentRideMode, Ride? lastSavedRide
+ BleTripStatus status, DateTime? startTime, DateTime? endTime, double startOdometer, double currentOdometer, double distance, int durationSeconds, double currentSpeed, double averageSpeed, double maxSpeed, int startBattery, int currentBattery, String currentRideMode, bool isGpsHandoff, Ride? lastSavedRide
 });
 
 
@@ -302,7 +304,7 @@ class __$BleTripStateCopyWithImpl<$Res>
 
 /// Create a copy of BleTripState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? startOdometer = null,Object? currentOdometer = null,Object? distance = null,Object? durationSeconds = null,Object? currentSpeed = null,Object? averageSpeed = null,Object? maxSpeed = null,Object? startBattery = null,Object? currentBattery = null,Object? currentRideMode = null,Object? lastSavedRide = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? startOdometer = null,Object? currentOdometer = null,Object? distance = null,Object? durationSeconds = null,Object? currentSpeed = null,Object? averageSpeed = null,Object? maxSpeed = null,Object? startBattery = null,Object? currentBattery = null,Object? currentRideMode = null,Object? isGpsHandoff = null,Object? lastSavedRide = freezed,}) {
   return _then(_BleTripState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as BleTripStatus,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
@@ -317,7 +319,8 @@ as double,maxSpeed: null == maxSpeed ? _self.maxSpeed : maxSpeed // ignore: cast
 as double,startBattery: null == startBattery ? _self.startBattery : startBattery // ignore: cast_nullable_to_non_nullable
 as int,currentBattery: null == currentBattery ? _self.currentBattery : currentBattery // ignore: cast_nullable_to_non_nullable
 as int,currentRideMode: null == currentRideMode ? _self.currentRideMode : currentRideMode // ignore: cast_nullable_to_non_nullable
-as String,lastSavedRide: freezed == lastSavedRide ? _self.lastSavedRide : lastSavedRide // ignore: cast_nullable_to_non_nullable
+as String,isGpsHandoff: null == isGpsHandoff ? _self.isGpsHandoff : isGpsHandoff // ignore: cast_nullable_to_non_nullable
+as bool,lastSavedRide: freezed == lastSavedRide ? _self.lastSavedRide : lastSavedRide // ignore: cast_nullable_to_non_nullable
 as Ride?,
   ));
 }

@@ -9,6 +9,8 @@ enum BleTripStatus {
   idle,
   @JsonValue('riding')
   riding,
+  @JsonValue('gpsHandoff')
+  gpsHandoff,
   @JsonValue('stopped')
   stopped,
 }
@@ -29,6 +31,7 @@ abstract class BleTripState with _$BleTripState {
     @Default(0) int startBattery,
     @Default(0) int currentBattery,
     @Default('Eco') String currentRideMode,
+    @Default(false) bool isGpsHandoff,
     Ride? lastSavedRide,
   }) = _BleTripState;
 
