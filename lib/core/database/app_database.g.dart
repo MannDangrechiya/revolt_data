@@ -8340,6 +8340,776 @@ class RideGpsPointsTableCompanion
   }
 }
 
+class $SyncLogsTableTable extends SyncLogsTable
+    with TableInfo<$SyncLogsTableTable, SyncLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncLogsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _syncedAtMeta = const VerificationMeta(
+    'syncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
+    'synced_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _resultMeta = const VerificationMeta('result');
+  @override
+  late final GeneratedColumn<String> result = GeneratedColumn<String>(
+    'result',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ridesAddedMeta = const VerificationMeta(
+    'ridesAdded',
+  );
+  @override
+  late final GeneratedColumn<int> ridesAdded = GeneratedColumn<int>(
+    'rides_added',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _chargesAddedMeta = const VerificationMeta(
+    'chargesAdded',
+  );
+  @override
+  late final GeneratedColumn<int> chargesAdded = GeneratedColumn<int>(
+    'charges_added',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _conflictsResolvedMeta = const VerificationMeta(
+    'conflictsResolved',
+  );
+  @override
+  late final GeneratedColumn<int> conflictsResolved = GeneratedColumn<int>(
+    'conflicts_resolved',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _detailsJsonMeta = const VerificationMeta(
+    'detailsJson',
+  );
+  @override
+  late final GeneratedColumn<String> detailsJson = GeneratedColumn<String>(
+    'details_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    syncedAt,
+    result,
+    ridesAdded,
+    chargesAdded,
+    conflictsResolved,
+    detailsJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_logs_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('synced_at')) {
+      context.handle(
+        _syncedAtMeta,
+        syncedAt.isAcceptableOrUnknown(data['synced_at']!, _syncedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_syncedAtMeta);
+    }
+    if (data.containsKey('result')) {
+      context.handle(
+        _resultMeta,
+        result.isAcceptableOrUnknown(data['result']!, _resultMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_resultMeta);
+    }
+    if (data.containsKey('rides_added')) {
+      context.handle(
+        _ridesAddedMeta,
+        ridesAdded.isAcceptableOrUnknown(data['rides_added']!, _ridesAddedMeta),
+      );
+    }
+    if (data.containsKey('charges_added')) {
+      context.handle(
+        _chargesAddedMeta,
+        chargesAdded.isAcceptableOrUnknown(
+          data['charges_added']!,
+          _chargesAddedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('conflicts_resolved')) {
+      context.handle(
+        _conflictsResolvedMeta,
+        conflictsResolved.isAcceptableOrUnknown(
+          data['conflicts_resolved']!,
+          _conflictsResolvedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('details_json')) {
+      context.handle(
+        _detailsJsonMeta,
+        detailsJson.isAcceptableOrUnknown(
+          data['details_json']!,
+          _detailsJsonMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SyncLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncLog(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      syncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}synced_at'],
+      )!,
+      result: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}result'],
+      )!,
+      ridesAdded: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rides_added'],
+      )!,
+      chargesAdded: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}charges_added'],
+      )!,
+      conflictsResolved: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}conflicts_resolved'],
+      )!,
+      detailsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}details_json'],
+      ),
+    );
+  }
+
+  @override
+  $SyncLogsTableTable createAlias(String alias) {
+    return $SyncLogsTableTable(attachedDatabase, alias);
+  }
+}
+
+class SyncLog extends DataClass implements Insertable<SyncLog> {
+  final int id;
+  final DateTime syncedAt;
+  final String result;
+  final int ridesAdded;
+  final int chargesAdded;
+  final int conflictsResolved;
+  final String? detailsJson;
+  const SyncLog({
+    required this.id,
+    required this.syncedAt,
+    required this.result,
+    required this.ridesAdded,
+    required this.chargesAdded,
+    required this.conflictsResolved,
+    this.detailsJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['synced_at'] = Variable<DateTime>(syncedAt);
+    map['result'] = Variable<String>(result);
+    map['rides_added'] = Variable<int>(ridesAdded);
+    map['charges_added'] = Variable<int>(chargesAdded);
+    map['conflicts_resolved'] = Variable<int>(conflictsResolved);
+    if (!nullToAbsent || detailsJson != null) {
+      map['details_json'] = Variable<String>(detailsJson);
+    }
+    return map;
+  }
+
+  SyncLogsTableCompanion toCompanion(bool nullToAbsent) {
+    return SyncLogsTableCompanion(
+      id: Value(id),
+      syncedAt: Value(syncedAt),
+      result: Value(result),
+      ridesAdded: Value(ridesAdded),
+      chargesAdded: Value(chargesAdded),
+      conflictsResolved: Value(conflictsResolved),
+      detailsJson: detailsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(detailsJson),
+    );
+  }
+
+  factory SyncLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncLog(
+      id: serializer.fromJson<int>(json['id']),
+      syncedAt: serializer.fromJson<DateTime>(json['syncedAt']),
+      result: serializer.fromJson<String>(json['result']),
+      ridesAdded: serializer.fromJson<int>(json['ridesAdded']),
+      chargesAdded: serializer.fromJson<int>(json['chargesAdded']),
+      conflictsResolved: serializer.fromJson<int>(json['conflictsResolved']),
+      detailsJson: serializer.fromJson<String?>(json['detailsJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'syncedAt': serializer.toJson<DateTime>(syncedAt),
+      'result': serializer.toJson<String>(result),
+      'ridesAdded': serializer.toJson<int>(ridesAdded),
+      'chargesAdded': serializer.toJson<int>(chargesAdded),
+      'conflictsResolved': serializer.toJson<int>(conflictsResolved),
+      'detailsJson': serializer.toJson<String?>(detailsJson),
+    };
+  }
+
+  SyncLog copyWith({
+    int? id,
+    DateTime? syncedAt,
+    String? result,
+    int? ridesAdded,
+    int? chargesAdded,
+    int? conflictsResolved,
+    Value<String?> detailsJson = const Value.absent(),
+  }) => SyncLog(
+    id: id ?? this.id,
+    syncedAt: syncedAt ?? this.syncedAt,
+    result: result ?? this.result,
+    ridesAdded: ridesAdded ?? this.ridesAdded,
+    chargesAdded: chargesAdded ?? this.chargesAdded,
+    conflictsResolved: conflictsResolved ?? this.conflictsResolved,
+    detailsJson: detailsJson.present ? detailsJson.value : this.detailsJson,
+  );
+  SyncLog copyWithCompanion(SyncLogsTableCompanion data) {
+    return SyncLog(
+      id: data.id.present ? data.id.value : this.id,
+      syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
+      result: data.result.present ? data.result.value : this.result,
+      ridesAdded: data.ridesAdded.present
+          ? data.ridesAdded.value
+          : this.ridesAdded,
+      chargesAdded: data.chargesAdded.present
+          ? data.chargesAdded.value
+          : this.chargesAdded,
+      conflictsResolved: data.conflictsResolved.present
+          ? data.conflictsResolved.value
+          : this.conflictsResolved,
+      detailsJson: data.detailsJson.present
+          ? data.detailsJson.value
+          : this.detailsJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncLog(')
+          ..write('id: $id, ')
+          ..write('syncedAt: $syncedAt, ')
+          ..write('result: $result, ')
+          ..write('ridesAdded: $ridesAdded, ')
+          ..write('chargesAdded: $chargesAdded, ')
+          ..write('conflictsResolved: $conflictsResolved, ')
+          ..write('detailsJson: $detailsJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    syncedAt,
+    result,
+    ridesAdded,
+    chargesAdded,
+    conflictsResolved,
+    detailsJson,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncLog &&
+          other.id == this.id &&
+          other.syncedAt == this.syncedAt &&
+          other.result == this.result &&
+          other.ridesAdded == this.ridesAdded &&
+          other.chargesAdded == this.chargesAdded &&
+          other.conflictsResolved == this.conflictsResolved &&
+          other.detailsJson == this.detailsJson);
+}
+
+class SyncLogsTableCompanion extends UpdateCompanion<SyncLog> {
+  final Value<int> id;
+  final Value<DateTime> syncedAt;
+  final Value<String> result;
+  final Value<int> ridesAdded;
+  final Value<int> chargesAdded;
+  final Value<int> conflictsResolved;
+  final Value<String?> detailsJson;
+  const SyncLogsTableCompanion({
+    this.id = const Value.absent(),
+    this.syncedAt = const Value.absent(),
+    this.result = const Value.absent(),
+    this.ridesAdded = const Value.absent(),
+    this.chargesAdded = const Value.absent(),
+    this.conflictsResolved = const Value.absent(),
+    this.detailsJson = const Value.absent(),
+  });
+  SyncLogsTableCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime syncedAt,
+    required String result,
+    this.ridesAdded = const Value.absent(),
+    this.chargesAdded = const Value.absent(),
+    this.conflictsResolved = const Value.absent(),
+    this.detailsJson = const Value.absent(),
+  }) : syncedAt = Value(syncedAt),
+       result = Value(result);
+  static Insertable<SyncLog> custom({
+    Expression<int>? id,
+    Expression<DateTime>? syncedAt,
+    Expression<String>? result,
+    Expression<int>? ridesAdded,
+    Expression<int>? chargesAdded,
+    Expression<int>? conflictsResolved,
+    Expression<String>? detailsJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (syncedAt != null) 'synced_at': syncedAt,
+      if (result != null) 'result': result,
+      if (ridesAdded != null) 'rides_added': ridesAdded,
+      if (chargesAdded != null) 'charges_added': chargesAdded,
+      if (conflictsResolved != null) 'conflicts_resolved': conflictsResolved,
+      if (detailsJson != null) 'details_json': detailsJson,
+    });
+  }
+
+  SyncLogsTableCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? syncedAt,
+    Value<String>? result,
+    Value<int>? ridesAdded,
+    Value<int>? chargesAdded,
+    Value<int>? conflictsResolved,
+    Value<String?>? detailsJson,
+  }) {
+    return SyncLogsTableCompanion(
+      id: id ?? this.id,
+      syncedAt: syncedAt ?? this.syncedAt,
+      result: result ?? this.result,
+      ridesAdded: ridesAdded ?? this.ridesAdded,
+      chargesAdded: chargesAdded ?? this.chargesAdded,
+      conflictsResolved: conflictsResolved ?? this.conflictsResolved,
+      detailsJson: detailsJson ?? this.detailsJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (syncedAt.present) {
+      map['synced_at'] = Variable<DateTime>(syncedAt.value);
+    }
+    if (result.present) {
+      map['result'] = Variable<String>(result.value);
+    }
+    if (ridesAdded.present) {
+      map['rides_added'] = Variable<int>(ridesAdded.value);
+    }
+    if (chargesAdded.present) {
+      map['charges_added'] = Variable<int>(chargesAdded.value);
+    }
+    if (conflictsResolved.present) {
+      map['conflicts_resolved'] = Variable<int>(conflictsResolved.value);
+    }
+    if (detailsJson.present) {
+      map['details_json'] = Variable<String>(detailsJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncLogsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('syncedAt: $syncedAt, ')
+          ..write('result: $result, ')
+          ..write('ridesAdded: $ridesAdded, ')
+          ..write('chargesAdded: $chargesAdded, ')
+          ..write('conflictsResolved: $conflictsResolved, ')
+          ..write('detailsJson: $detailsJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PendingRidesTableTable extends PendingRidesTable
+    with TableInfo<$PendingRidesTableTable, PendingRide> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PendingRidesTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _rideJsonMeta = const VerificationMeta(
+    'rideJson',
+  );
+  @override
+  late final GeneratedColumn<String> rideJson = GeneratedColumn<String>(
+    'ride_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _syncPendingMeta = const VerificationMeta(
+    'syncPending',
+  );
+  @override
+  late final GeneratedColumn<bool> syncPending = GeneratedColumn<bool>(
+    'sync_pending',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("sync_pending" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, rideJson, syncPending, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pending_rides_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PendingRide> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('ride_json')) {
+      context.handle(
+        _rideJsonMeta,
+        rideJson.isAcceptableOrUnknown(data['ride_json']!, _rideJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rideJsonMeta);
+    }
+    if (data.containsKey('sync_pending')) {
+      context.handle(
+        _syncPendingMeta,
+        syncPending.isAcceptableOrUnknown(
+          data['sync_pending']!,
+          _syncPendingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PendingRide map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PendingRide(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      rideJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ride_json'],
+      )!,
+      syncPending: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}sync_pending'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PendingRidesTableTable createAlias(String alias) {
+    return $PendingRidesTableTable(attachedDatabase, alias);
+  }
+}
+
+class PendingRide extends DataClass implements Insertable<PendingRide> {
+  final int id;
+  final String rideJson;
+  final bool syncPending;
+  final DateTime createdAt;
+  const PendingRide({
+    required this.id,
+    required this.rideJson,
+    required this.syncPending,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['ride_json'] = Variable<String>(rideJson);
+    map['sync_pending'] = Variable<bool>(syncPending);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PendingRidesTableCompanion toCompanion(bool nullToAbsent) {
+    return PendingRidesTableCompanion(
+      id: Value(id),
+      rideJson: Value(rideJson),
+      syncPending: Value(syncPending),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PendingRide.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PendingRide(
+      id: serializer.fromJson<int>(json['id']),
+      rideJson: serializer.fromJson<String>(json['rideJson']),
+      syncPending: serializer.fromJson<bool>(json['syncPending']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'rideJson': serializer.toJson<String>(rideJson),
+      'syncPending': serializer.toJson<bool>(syncPending),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  PendingRide copyWith({
+    int? id,
+    String? rideJson,
+    bool? syncPending,
+    DateTime? createdAt,
+  }) => PendingRide(
+    id: id ?? this.id,
+    rideJson: rideJson ?? this.rideJson,
+    syncPending: syncPending ?? this.syncPending,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  PendingRide copyWithCompanion(PendingRidesTableCompanion data) {
+    return PendingRide(
+      id: data.id.present ? data.id.value : this.id,
+      rideJson: data.rideJson.present ? data.rideJson.value : this.rideJson,
+      syncPending: data.syncPending.present
+          ? data.syncPending.value
+          : this.syncPending,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingRide(')
+          ..write('id: $id, ')
+          ..write('rideJson: $rideJson, ')
+          ..write('syncPending: $syncPending, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, rideJson, syncPending, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PendingRide &&
+          other.id == this.id &&
+          other.rideJson == this.rideJson &&
+          other.syncPending == this.syncPending &&
+          other.createdAt == this.createdAt);
+}
+
+class PendingRidesTableCompanion extends UpdateCompanion<PendingRide> {
+  final Value<int> id;
+  final Value<String> rideJson;
+  final Value<bool> syncPending;
+  final Value<DateTime> createdAt;
+  const PendingRidesTableCompanion({
+    this.id = const Value.absent(),
+    this.rideJson = const Value.absent(),
+    this.syncPending = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  PendingRidesTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String rideJson,
+    this.syncPending = const Value.absent(),
+    required DateTime createdAt,
+  }) : rideJson = Value(rideJson),
+       createdAt = Value(createdAt);
+  static Insertable<PendingRide> custom({
+    Expression<int>? id,
+    Expression<String>? rideJson,
+    Expression<bool>? syncPending,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (rideJson != null) 'ride_json': rideJson,
+      if (syncPending != null) 'sync_pending': syncPending,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  PendingRidesTableCompanion copyWith({
+    Value<int>? id,
+    Value<String>? rideJson,
+    Value<bool>? syncPending,
+    Value<DateTime>? createdAt,
+  }) {
+    return PendingRidesTableCompanion(
+      id: id ?? this.id,
+      rideJson: rideJson ?? this.rideJson,
+      syncPending: syncPending ?? this.syncPending,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (rideJson.present) {
+      map['ride_json'] = Variable<String>(rideJson.value);
+    }
+    if (syncPending.present) {
+      map['sync_pending'] = Variable<bool>(syncPending.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingRidesTableCompanion(')
+          ..write('id: $id, ')
+          ..write('rideJson: $rideJson, ')
+          ..write('syncPending: $syncPending, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -8359,6 +9129,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $NotificationHistoryTableTable(this);
   late final $RideGpsPointsTableTable rideGpsPointsTable =
       $RideGpsPointsTableTable(this);
+  late final $SyncLogsTableTable syncLogsTable = $SyncLogsTableTable(this);
+  late final $PendingRidesTableTable pendingRidesTable =
+      $PendingRidesTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8374,6 +9147,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     batteryHealthSnapshotsTable,
     notificationHistoryTable,
     rideGpsPointsTable,
+    syncLogsTable,
+    pendingRidesTable,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -12548,6 +13323,425 @@ typedef $$RideGpsPointsTableTableProcessedTableManager =
       RideGpsPointsTableData,
       PrefetchHooks Function({bool rideId})
     >;
+typedef $$SyncLogsTableTableCreateCompanionBuilder =
+    SyncLogsTableCompanion Function({
+      Value<int> id,
+      required DateTime syncedAt,
+      required String result,
+      Value<int> ridesAdded,
+      Value<int> chargesAdded,
+      Value<int> conflictsResolved,
+      Value<String?> detailsJson,
+    });
+typedef $$SyncLogsTableTableUpdateCompanionBuilder =
+    SyncLogsTableCompanion Function({
+      Value<int> id,
+      Value<DateTime> syncedAt,
+      Value<String> result,
+      Value<int> ridesAdded,
+      Value<int> chargesAdded,
+      Value<int> conflictsResolved,
+      Value<String?> detailsJson,
+    });
+
+class $$SyncLogsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncLogsTableTable> {
+  $$SyncLogsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get result => $composableBuilder(
+    column: $table.result,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get ridesAdded => $composableBuilder(
+    column: $table.ridesAdded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get chargesAdded => $composableBuilder(
+    column: $table.chargesAdded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get conflictsResolved => $composableBuilder(
+    column: $table.conflictsResolved,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get detailsJson => $composableBuilder(
+    column: $table.detailsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncLogsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncLogsTableTable> {
+  $$SyncLogsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get result => $composableBuilder(
+    column: $table.result,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get ridesAdded => $composableBuilder(
+    column: $table.ridesAdded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get chargesAdded => $composableBuilder(
+    column: $table.chargesAdded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get conflictsResolved => $composableBuilder(
+    column: $table.conflictsResolved,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get detailsJson => $composableBuilder(
+    column: $table.detailsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncLogsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncLogsTableTable> {
+  $$SyncLogsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get syncedAt =>
+      $composableBuilder(column: $table.syncedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get result =>
+      $composableBuilder(column: $table.result, builder: (column) => column);
+
+  GeneratedColumn<int> get ridesAdded => $composableBuilder(
+    column: $table.ridesAdded,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get chargesAdded => $composableBuilder(
+    column: $table.chargesAdded,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get conflictsResolved => $composableBuilder(
+    column: $table.conflictsResolved,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get detailsJson => $composableBuilder(
+    column: $table.detailsJson,
+    builder: (column) => column,
+  );
+}
+
+class $$SyncLogsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncLogsTableTable,
+          SyncLog,
+          $$SyncLogsTableTableFilterComposer,
+          $$SyncLogsTableTableOrderingComposer,
+          $$SyncLogsTableTableAnnotationComposer,
+          $$SyncLogsTableTableCreateCompanionBuilder,
+          $$SyncLogsTableTableUpdateCompanionBuilder,
+          (
+            SyncLog,
+            BaseReferences<_$AppDatabase, $SyncLogsTableTable, SyncLog>,
+          ),
+          SyncLog,
+          PrefetchHooks Function()
+        > {
+  $$SyncLogsTableTableTableManager(_$AppDatabase db, $SyncLogsTableTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncLogsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncLogsTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncLogsTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> syncedAt = const Value.absent(),
+                Value<String> result = const Value.absent(),
+                Value<int> ridesAdded = const Value.absent(),
+                Value<int> chargesAdded = const Value.absent(),
+                Value<int> conflictsResolved = const Value.absent(),
+                Value<String?> detailsJson = const Value.absent(),
+              }) => SyncLogsTableCompanion(
+                id: id,
+                syncedAt: syncedAt,
+                result: result,
+                ridesAdded: ridesAdded,
+                chargesAdded: chargesAdded,
+                conflictsResolved: conflictsResolved,
+                detailsJson: detailsJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime syncedAt,
+                required String result,
+                Value<int> ridesAdded = const Value.absent(),
+                Value<int> chargesAdded = const Value.absent(),
+                Value<int> conflictsResolved = const Value.absent(),
+                Value<String?> detailsJson = const Value.absent(),
+              }) => SyncLogsTableCompanion.insert(
+                id: id,
+                syncedAt: syncedAt,
+                result: result,
+                ridesAdded: ridesAdded,
+                chargesAdded: chargesAdded,
+                conflictsResolved: conflictsResolved,
+                detailsJson: detailsJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncLogsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncLogsTableTable,
+      SyncLog,
+      $$SyncLogsTableTableFilterComposer,
+      $$SyncLogsTableTableOrderingComposer,
+      $$SyncLogsTableTableAnnotationComposer,
+      $$SyncLogsTableTableCreateCompanionBuilder,
+      $$SyncLogsTableTableUpdateCompanionBuilder,
+      (SyncLog, BaseReferences<_$AppDatabase, $SyncLogsTableTable, SyncLog>),
+      SyncLog,
+      PrefetchHooks Function()
+    >;
+typedef $$PendingRidesTableTableCreateCompanionBuilder =
+    PendingRidesTableCompanion Function({
+      Value<int> id,
+      required String rideJson,
+      Value<bool> syncPending,
+      required DateTime createdAt,
+    });
+typedef $$PendingRidesTableTableUpdateCompanionBuilder =
+    PendingRidesTableCompanion Function({
+      Value<int> id,
+      Value<String> rideJson,
+      Value<bool> syncPending,
+      Value<DateTime> createdAt,
+    });
+
+class $$PendingRidesTableTableFilterComposer
+    extends Composer<_$AppDatabase, $PendingRidesTableTable> {
+  $$PendingRidesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rideJson => $composableBuilder(
+    column: $table.rideJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get syncPending => $composableBuilder(
+    column: $table.syncPending,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PendingRidesTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $PendingRidesTableTable> {
+  $$PendingRidesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rideJson => $composableBuilder(
+    column: $table.rideJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get syncPending => $composableBuilder(
+    column: $table.syncPending,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PendingRidesTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PendingRidesTableTable> {
+  $$PendingRidesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get rideJson =>
+      $composableBuilder(column: $table.rideJson, builder: (column) => column);
+
+  GeneratedColumn<bool> get syncPending => $composableBuilder(
+    column: $table.syncPending,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$PendingRidesTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PendingRidesTableTable,
+          PendingRide,
+          $$PendingRidesTableTableFilterComposer,
+          $$PendingRidesTableTableOrderingComposer,
+          $$PendingRidesTableTableAnnotationComposer,
+          $$PendingRidesTableTableCreateCompanionBuilder,
+          $$PendingRidesTableTableUpdateCompanionBuilder,
+          (
+            PendingRide,
+            BaseReferences<_$AppDatabase, $PendingRidesTableTable, PendingRide>,
+          ),
+          PendingRide,
+          PrefetchHooks Function()
+        > {
+  $$PendingRidesTableTableTableManager(
+    _$AppDatabase db,
+    $PendingRidesTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PendingRidesTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PendingRidesTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PendingRidesTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> rideJson = const Value.absent(),
+                Value<bool> syncPending = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => PendingRidesTableCompanion(
+                id: id,
+                rideJson: rideJson,
+                syncPending: syncPending,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String rideJson,
+                Value<bool> syncPending = const Value.absent(),
+                required DateTime createdAt,
+              }) => PendingRidesTableCompanion.insert(
+                id: id,
+                rideJson: rideJson,
+                syncPending: syncPending,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PendingRidesTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PendingRidesTableTable,
+      PendingRide,
+      $$PendingRidesTableTableFilterComposer,
+      $$PendingRidesTableTableOrderingComposer,
+      $$PendingRidesTableTableAnnotationComposer,
+      $$PendingRidesTableTableCreateCompanionBuilder,
+      $$PendingRidesTableTableUpdateCompanionBuilder,
+      (
+        PendingRide,
+        BaseReferences<_$AppDatabase, $PendingRidesTableTable, PendingRide>,
+      ),
+      PendingRide,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12579,4 +13773,8 @@ class $AppDatabaseManager {
       );
   $$RideGpsPointsTableTableTableManager get rideGpsPointsTable =>
       $$RideGpsPointsTableTableTableManager(_db, _db.rideGpsPointsTable);
+  $$SyncLogsTableTableTableManager get syncLogsTable =>
+      $$SyncLogsTableTableTableManager(_db, _db.syncLogsTable);
+  $$PendingRidesTableTableTableManager get pendingRidesTable =>
+      $$PendingRidesTableTableTableManager(_db, _db.pendingRidesTable);
 }
