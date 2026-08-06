@@ -51,6 +51,7 @@ abstract class Ride with _$Ride {
     @Default(false) bool isFavorite,
     int? bikeId,
     @Default('manual') String source,
+    String? routePolyline,
   }) = _Ride;
 
   factory Ride.fromJson(Map<String, dynamic> json) => _$RideFromJson(json);

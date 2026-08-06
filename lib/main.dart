@@ -10,6 +10,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'app.dart';
 import 'core/router.dart' as router;
 import 'core/theme/theme_provider.dart';
+import 'features/tracking/data/background_location_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,7 @@ void main() async {
   try {
     tz.initializeTimeZones();
     await preloadThemeMode();
+    await BackgroundLocationService().initialize();
 
     // Request Notification permission
     await Permission.notification.request();

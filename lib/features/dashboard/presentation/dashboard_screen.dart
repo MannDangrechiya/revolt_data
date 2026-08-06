@@ -25,6 +25,9 @@ import 'widgets/dashboard_quick_stats_row.dart';
 import 'widgets/dashboard_upcoming_reminder_card.dart';
 import 'widgets/quick_actions_grid.dart';
 
+import '../../tracking/domain/gps_tracking_state.dart';
+import '../../tracking/presentation/providers/gps_ride_provider.dart';
+
 class DashboardScreen extends HookConsumerWidget {
   const DashboardScreen({super.key});
 
@@ -36,6 +39,7 @@ class DashboardScreen extends HookConsumerWidget {
     final smartAlertsAsync = ref.watch(smartAlertsProvider);
     final serviceIntelligenceAsync = ref.watch(serviceIntelligenceProvider);
     final rangePredictionAsync = ref.watch(rangePredictionProvider);
+    final gpsState = ref.watch(gpsRideProvider);
 
     return Scaffold(
       appBar: VoltAppBar(
@@ -86,6 +90,56 @@ class DashboardScreen extends HookConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (gpsState is GpsTrackingStateActive) ...[
+                        Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade800,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.gps_fixed, color: Colors.white, size: 28),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Tracking via GPS (BLE disconnected)',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Distance: ${gpsState.distanceKm.toStringAsFixed(2)} km | Speed: ${gpsState.currentSpeedKmh.toStringAsFixed(1)} km/h',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.orange.shade900,
+                                ),
+                                onPressed: () {
+                                  ref.read(gpsRideProvider.notifier).finalizeGpsRide();
+                                },
+                                child: const Text('Stop Ride'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       DashboardHeader(
                         bikeName: bikeName,
                         connectionStatus: data.connectionStatus,
