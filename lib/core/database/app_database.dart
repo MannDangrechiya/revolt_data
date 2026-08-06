@@ -225,6 +225,25 @@ class RideGpsPointsTable extends Table {
   RealColumn get accuracy => real().nullable()();
 }
 
+@DataClassName('SyncLog')
+class SyncLogsTable extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get syncedAt => dateTime()();
+  TextColumn get result => text()(); // 'success' | 'conflict' | 'missed_rides' | 'nothing'
+  IntColumn get ridesAdded => integer().withDefault(const Constant(0))();
+  IntColumn get chargesAdded => integer().withDefault(const Constant(0))();
+  IntColumn get conflictsResolved => integer().withDefault(const Constant(0))();
+  TextColumn get detailsJson => text().nullable()(); // JSON of what happened
+}
+
+@DataClassName('PendingRide')
+class PendingRidesTable extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get rideJson => text()(); // serialized ride data
+  BoolColumn get syncPending => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+}
+
 @DriftDatabase(tables: [
   BikesTable,
   RidesTable,
@@ -236,6 +255,8 @@ class RideGpsPointsTable extends Table {
   BatteryHealthSnapshotsTable,
   NotificationHistoryTable,
   RideGpsPointsTable,
+  SyncLogsTable,
+  PendingRidesTable,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -243,7 +264,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -328,6 +349,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 8) {
         await m.createTable(rideGpsPointsTable);
         await m.addColumn(ridesTable, ridesTable.routePolyline);
+      }
+      if (from < 9) {
+        await m.createTable(syncLogsTable);
+        await m.createTable(pendingRidesTable);
       }
     },
     beforeOpen: (details) async {
