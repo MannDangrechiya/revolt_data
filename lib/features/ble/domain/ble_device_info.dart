@@ -10,6 +10,7 @@ abstract class BleDeviceInfo with _$BleDeviceInfo {
     required String id,
     required String name,
     required int rssi,
+    @Default(true) bool isRevoltBike,
   }) = _BleDeviceInfo;
 
   factory BleDeviceInfo.fromJson(Map<String, dynamic> json) =>

@@ -49,11 +49,15 @@ class DaySummaryCard extends ConsumerWidget {
               children: [
                 const Icon(Icons.today, color: Colors.blueAccent),
                 const SizedBox(width: 8),
-                Text(
-                  'First Connect of Day — Daily Summary',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                Expanded(
+                  child: Text(
+                    'First Connect of Day — Daily Summary',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
                 ),
               ],
             ),

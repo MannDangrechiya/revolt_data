@@ -17,7 +17,10 @@ class ScannedDevices extends _$ScannedDevices {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final repo = ref.read(bleRepositoryProvider);
-      return repo.scan(timeout: timeout);
+      final devices = await repo.scan(timeout: timeout);
+      // Sort by RSSI descending so strongest signal devices appear at top
+      devices.sort((a, b) => b.rssi.compareTo(a.rssi));
+      return devices;
     });
   }
 

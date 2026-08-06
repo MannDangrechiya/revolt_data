@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -44,6 +45,7 @@ class DeviceScanScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scannedDevicesAsync = ref.watch(scannedDevicesProvider);
     final repo = ref.read(bleRepositoryProvider);
+    final bikesOnly = useState(true);
 
     return Scaffold(
       appBar: VoltAppBar(
@@ -76,7 +78,26 @@ class DeviceScanScreen extends HookConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+            // Filter Toggle Row
+            Row(
+              children: [
+                FilterChip(
+                  avatar: const Icon(LucideIcons.bike, size: 16),
+                  label: const Text('RV400 Bikes Only'),
+                  selected: bikesOnly.value,
+                  onSelected: (val) => bikesOnly.value = true,
+                ),
+                const SizedBox(width: 8),
+                FilterChip(
+                  avatar: const Icon(LucideIcons.bluetooth, size: 16),
+                  label: const Text('All BLE Devices'),
+                  selected: !bikesOnly.value,
+                  onSelected: (val) => bikesOnly.value = false,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             Expanded(
               child: scannedDevicesAsync.when(
                 loading: () => const Center(
@@ -105,7 +126,11 @@ class DeviceScanScreen extends HookConsumerWidget {
                     ],
                   ),
                 ),
-                data: (devices) {
+                data: (allDevices) {
+                  final devices = bikesOnly.value
+                      ? allDevices.where((d) => d.isRevoltBike).toList()
+                      : allDevices;
+
                   if (devices.isEmpty) {
                     return Center(
                       child: Column(
@@ -114,7 +139,11 @@ class DeviceScanScreen extends HookConsumerWidget {
                           const Icon(LucideIcons.bluetoothSearching,
                               size: 48, color: Colors.grey),
                           const SizedBox(height: 12),
-                          const Text('No RV400 bikes found nearby'),
+                          Text(
+                            bikesOnly.value
+                                ? 'No RV400 bikes found nearby'
+                                : 'No Bluetooth devices found nearby',
+                          ),
                           const SizedBox(height: 16),
                           ElevatedButton.icon(
                             onPressed: () => _checkPermissionsAndScan(ref, context),
