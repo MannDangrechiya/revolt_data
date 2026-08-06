@@ -8,46 +8,73 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
 import 'app.dart';
+import 'core/config/env_config.dart';
 import 'core/router.dart' as router;
+import 'core/services/monitoring/crash_reporting_service.dart';
 import 'core/theme/theme_provider.dart';
+import 'features/tracking/data/background_location_service.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() {
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  try {
-    tz.initializeTimeZones();
-    await preloadThemeMode();
+    try {
+      // Load environment configuration
+      await EnvConfig.init();
 
-    // Request Notification permission
-    await Permission.notification.request();
+      // Initialize crash reporting and error monitoring
+      await CrashReportingService.instance.initialize();
+      CrashReportingService.instance.recordBreadcrumb(
+        'App Bootstrapped',
+        category: 'Lifecycle',
+      );
 
-    // Initialize system orientation locker
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+      tz.initializeTimeZones();
+      await preloadThemeMode();
+      await BackgroundLocationService().initialize();
 
-    // Set modern transparent system UI overlay
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-      ),
+      // Request Notification permission
+      await Permission.notification.request();
+
+      // Initialize system orientation locker
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+
+      // Set modern transparent system UI overlay
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+      );
+
+      // Initialize Local Notifications
+      await _initializeNotifications();
+
+      // Run the app
+      runApp(const ProviderScope(child: AppWidget()));
+    } catch (e, stackTrace) {
+      // Log failure gracefully to monitoring
+      CrashReportingService.instance.recordError(
+        e,
+        stackTrace,
+        reason: 'VoltLog initialization failed',
+        fatal: true,
+      );
+
+      // Run app anyway with error state
+      runApp(const ProviderScope(child: AppWidget()));
+    }
+  }, (error, stackTrace) {
+    CrashReportingService.instance.recordError(
+      error,
+      stackTrace,
+      reason: 'Uncaught Async Error in Zone',
+      fatal: true,
     );
-
-    // Initialize Local Notifications
-    await _initializeNotifications();
-
-    // Run the app
-    runApp(const ProviderScope(child: AppWidget()));
-  } catch (e, stackTrace) {
-    // Log failure gracefully
-    debugPrint('VoltLog initialization failed: $e');
-    debugPrintStack(stackTrace: stackTrace);
-
-    // Run app anyway with error state
-    runApp(const ProviderScope(child: AppWidget()));
-  }
+  });
 }
 
 Future<void> _initializeNotifications() async {

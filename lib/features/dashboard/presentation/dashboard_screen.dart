@@ -23,7 +23,18 @@ import 'widgets/dashboard_smart_alerts_card.dart';
 import 'widgets/dashboard_service_intelligence_card.dart';
 import 'widgets/dashboard_quick_stats_row.dart';
 import 'widgets/dashboard_upcoming_reminder_card.dart';
+import '../../sync/domain/missed_ride_candidate.dart';
+import '../../sync/domain/sync_conflict.dart';
 import 'widgets/quick_actions_grid.dart';
+
+import '../../tracking/domain/gps_tracking_state.dart';
+import '../../tracking/presentation/providers/gps_ride_provider.dart';
+
+import '../../sync/presentation/providers/sync_engine_notifier.dart';
+import '../../sync/presentation/widgets/sync_status_indicator.dart';
+import '../../sync/presentation/widgets/day_summary_card.dart';
+import '../../sync/presentation/widgets/missed_ride_review_sheet.dart';
+import '../../sync/presentation/widgets/conflict_resolver_sheet.dart';
 
 class DashboardScreen extends HookConsumerWidget {
   const DashboardScreen({super.key});
@@ -36,11 +47,17 @@ class DashboardScreen extends HookConsumerWidget {
     final smartAlertsAsync = ref.watch(smartAlertsProvider);
     final serviceIntelligenceAsync = ref.watch(serviceIntelligenceProvider);
     final rangePredictionAsync = ref.watch(rangePredictionProvider);
+    final gpsState = ref.watch(gpsRideProvider);
+    final syncEngineState = ref.watch(syncEngineNotifierProvider);
 
     return Scaffold(
       appBar: VoltAppBar(
         title: 'EV Companion',
         actions: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: SyncStatusIndicator(),
+          ),
           IconButton(
             icon: const Icon(LucideIcons.sparkles),
             onPressed: () => context.push('/coaches'),
@@ -62,30 +79,141 @@ class DashboardScreen extends HookConsumerWidget {
           ),
         ],
       ),
-      body: dashboardAsync.when(
-        loading: () => const Padding(
-          padding: EdgeInsets.all(20.0),
-          child: ListSkeletonLoader(itemCount: 4, itemHeight: 150),
-        ),
-        error: (err, stack) => VoltErrorWidget(
-          message: err.toString(),
-          onRetry: () => ref.refresh(dashboardDataProvider),
-        ),
-        data: (data) {
-          final bikeName = bikeAsync.value?.name ?? 'My RV400';
-          final isConnected =
-              data.connectionStatus == BleConnectionState.connected ||
-                  data.connectionStatus == BleConnectionState.authenticated;
+      body: Column(
+        children: [
+          if (syncEngineState.maybeWhen(syncing: () => true, orElse: () => false))
+            const LinearProgressIndicator(),
+          Expanded(
+            child: dashboardAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: ListSkeletonLoader(itemCount: 4, itemHeight: 150),
+              ),
+              error: (err, stack) => VoltErrorWidget(
+                message: err.toString(),
+                onRetry: () => ref.refresh(dashboardDataProvider),
+              ),
+              data: (data) {
+                final bikeName = bikeAsync.value?.name ?? 'My RV400';
+                final isConnected =
+                    data.connectionStatus == BleConnectionState.connected ||
+                        data.connectionStatus == BleConnectionState.authenticated;
 
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                final reviewCandidates = syncEngineState.maybeWhen<List<MissedRideCandidate>?>(
+                  needsReview: (candidates) => candidates,
+                  orElse: () => null,
+                );
+
+                final conflictsList = syncEngineState.maybeWhen<List<SyncConflict>?>(
+                  needsConflictResolution: (conflicts) => conflicts,
+                  orElse: () => null,
+                );
+
+                return CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const DaySummaryCard(),
+                            const SizedBox(height: 12),
+                            if (reviewCandidates != null && reviewCandidates.isNotEmpty) ...[
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.rate_review),
+                                label: Text(
+                                  'Review ${reviewCandidates.length} Missed Ride(s)',
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.amber.shade800,
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (_) => MissedRideReviewSheet(
+                                      candidates: reviewCandidates,
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                            if (conflictsList != null && conflictsList.isNotEmpty) ...[
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.warning),
+                                label: Text(
+                                  'Resolve ${conflictsList.length} Ride Conflict(s)',
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent,
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (_) => ConflictResolverSheet(
+                                      conflicts: conflictsList,
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                      if (gpsState is GpsTrackingStateActive) ...[
+                        Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade800,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.gps_fixed, color: Colors.white, size: 28),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Tracking via GPS (BLE disconnected)',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Distance: ${gpsState.distanceKm.toStringAsFixed(2)} km | Speed: ${gpsState.currentSpeedKmh.toStringAsFixed(1)} km/h',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.orange.shade900,
+                                ),
+                                onPressed: () {
+                                  ref.read(gpsRideProvider.notifier).finalizeGpsRide();
+                                },
+                                child: const Text('Stop Ride'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       DashboardHeader(
                         bikeName: bikeName,
                         connectionStatus: data.connectionStatus,
@@ -188,6 +316,9 @@ class DashboardScreen extends HookConsumerWidget {
           );
         },
       ),
+    ),
+  ],
+),
     );
   }
 }

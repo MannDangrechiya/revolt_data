@@ -8,11 +8,17 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Revolt Data uses Bluetooth to communicate with your Revolt RV400 electric bike.</string>
 
-	<!-- Enable background central mode to maintain BLE connection in background -->
+	<!-- Enable background central mode and location to maintain BLE connection and track location in background -->
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-central</string>
+		<string>location</string>
+		<string>fetch</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to track ride distance and route.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need background location to continue tracking your ride if Bluetooth disconnects.</string>
 
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>

@@ -47,6 +47,7 @@ _Ride _$RideFromJson(Map<String, dynamic> json) => _Ride(
   isFavorite: json['isFavorite'] as bool? ?? false,
   bikeId: (json['bikeId'] as num?)?.toInt(),
   source: json['source'] as String? ?? 'manual',
+  routePolyline: json['routePolyline'] as String?,
 );
 
 Map<String, dynamic> _$RideToJson(_Ride instance) => <String, dynamic>{
@@ -77,6 +78,7 @@ Map<String, dynamic> _$RideToJson(_Ride instance) => <String, dynamic>{
   'isFavorite': instance.isFavorite,
   'bikeId': instance.bikeId,
   'source': instance.source,
+  'routePolyline': instance.routePolyline,
 };
 
 const _$RideModeEnumMap = {
