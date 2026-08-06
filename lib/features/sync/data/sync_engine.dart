@@ -7,6 +7,7 @@ import '../../tracking/data/background_location_service.dart';
 import '../../tracking/domain/gps_tracking_state.dart';
 import '../domain/missed_ride_candidate.dart';
 import '../domain/sync_result.dart';
+import 'cloud_sync_service.dart';
 import 'confidence_scorer.dart';
 import 'duplicate_detector.dart';
 import 'offline_queue.dart';
@@ -18,6 +19,9 @@ class SyncEngine {
   final AppDatabase _db;
   final OfflineQueue _offlineQueue;
   final SyncHistoryLogService _syncHistoryLog;
+  final CloudSyncService _cloudSyncService;
+
+  CloudSyncService get cloudSyncService => _cloudSyncService;
 
   SyncEngine({
     required SyncStateService syncState,
@@ -25,10 +29,12 @@ class SyncEngine {
     required AppDatabase db,
     required OfflineQueue offlineQueue,
     required SyncHistoryLogService syncHistoryLog,
+    CloudSyncService? cloudSyncService,
   })  : _syncState = syncState,
         _db = db,
         _offlineQueue = offlineQueue,
-        _syncHistoryLog = syncHistoryLog;
+        _syncHistoryLog = syncHistoryLog,
+        _cloudSyncService = cloudSyncService ?? CloudSyncService();
 
   /// Main entry point — called on every successful BLE connection
   Future<SyncResult> performSync({

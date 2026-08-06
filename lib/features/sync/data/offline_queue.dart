@@ -7,6 +7,25 @@ import '../../rides/domain/ride.dart';
 
 part 'offline_queue.g.dart';
 
+/// Represents a record in the offline sync queue
+class QueueItem {
+  final String id;
+  final String action;
+  final String entityType;
+  final String entityId;
+  final String payloadJson;
+  final DateTime createdAt;
+
+  QueueItem({
+    required this.id,
+    required this.action,
+    required this.entityType,
+    required this.entityId,
+    required this.payloadJson,
+    required this.createdAt,
+  });
+}
+
 class OfflineQueue {
   final AppDatabase _db;
 
