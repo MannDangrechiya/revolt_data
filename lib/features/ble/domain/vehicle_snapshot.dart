@@ -8,18 +8,20 @@ part 'vehicle_snapshot.g.dart';
 /// Immutable model representing real-time telemetry snapshot from the Revolt RV400.
 @freezed
 abstract class VehicleSnapshot with _$VehicleSnapshot {
+  const VehicleSnapshot._();
+
   const factory VehicleSnapshot({
-    required int batteryPercent,
-    required double batteryVoltage,
-    required double batteryCurrent,
-    required int batteryTemp,
-    required int motorTemp,
-    required double speed,
-    required double tripDistance,
-    required double odometer,
-    required String rideMode,
-    required double range,
-    required double power,
+    int? batteryPercent,
+    double? batteryVoltage,
+    double? batteryCurrent,
+    int? batteryTemp,
+    int? motorTemp,
+    double? speed,
+    double? tripDistance,
+    double? odometer,
+    String? rideMode,
+    double? range,
+    double? power,
     @Default([]) List<String> faultCodes,
     int? batteryHealth,
     String? gpsCoords,
@@ -29,15 +31,44 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
   factory VehicleSnapshot.fromJson(Map<String, dynamic> json) =>
       _$VehicleSnapshotFromJson(json);
 
+  // Safe display helper getters for UI rendering
+  String get formattedBatteryPercent =>
+      batteryPercent != null ? '$batteryPercent%' : '--%';
+
+  String get formattedVoltage =>
+      batteryVoltage != null ? '${batteryVoltage!.toStringAsFixed(1)} V' : '-- V';
+
+  String get formattedCurrent =>
+      batteryCurrent != null ? '${batteryCurrent!.toStringAsFixed(1)} A' : '-- A';
+
+  String get formattedBatteryTemp =>
+      batteryTemp != null ? '$batteryTemp °C' : '-- °C';
+
+  String get formattedMotorTemp =>
+      motorTemp != null ? '$motorTemp °C' : '-- °C';
+
+  String get formattedSpeed =>
+      speed != null ? '${speed!.toStringAsFixed(0)} km/h' : '-- km/h';
+
+  String get formattedTripDistance =>
+      tripDistance != null ? '${tripDistance!.toStringAsFixed(1)} km' : '-- km';
+
+  String get formattedOdometer =>
+      odometer != null ? '${odometer!.toStringAsFixed(1)} km' : '-- km';
+
+  String get formattedRideMode =>
+      rideMode != null && rideMode!.isNotEmpty ? rideMode! : '--';
+
+  String get formattedRange =>
+      range != null ? '${range!.toStringAsFixed(0)} km' : '-- km';
+
+  String get formattedPower =>
+      power != null ? '${power!.toStringAsFixed(2)} kW' : '-- kW';
+
+  String get formattedBatteryHealth =>
+      batteryHealth != null ? '$batteryHealth%' : '--%';
+
   /// Decodes a raw BLE notification packet into a typed [VehicleSnapshot].
-  ///
-  /// Supports the real RV400 "LD,..." comma-separated ASCII format, and a
-  /// structured binary fallback. The field layout below was reverse-engineered
-  /// from an HCI snoop capture of a real bike (see parseLdString for the
-  /// confidence level of each field) — it is NOT the previously-assumed
-  /// "LD,batteryPercent,batteryVoltage,..." layout, which was never verified
-  /// against real hardware and produced nonsensical values (e.g. 302V,
-  /// battery% in the trillions) once tested against a real capture.
   static VehicleSnapshot? parseRawBytes(Uint8List bytes) {
     if (bytes.isEmpty) return null;
 
@@ -55,41 +86,19 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
 
   /// Parses a comma-separated "LD,..." formatted string into [VehicleSnapshot].
   ///
-  /// Real field layout, reverse-engineered from HCI snoop captures of an
-  /// actual RV400 and cross-checked against a real "My Bike" diagnostics
-  /// screenshot (80.0V / 82% SOC / 88% SOH / 37°C) taken minutes before one
-  /// capture — this caught [14]/[15]/[16] being mis-mapped in an earlier pass
-  /// (battery% and battery health were swapped for what looked at the time
-  /// like current and range):
+  /// Confirmed field layout from snoop captures:
+  ///   [4]  message timestamp "yyyy-MM-dd HH:mm:ss"
+  ///   [14] batteryVoltage          — CONFIRMED
+  ///   [15] batteryPercent (SOC)    — CONFIRMED
+  ///   [16] batteryHealth (SOH)     — CONFIRMED
+  ///   [17] batteryTemp (°C)        — CONFIRMED
+  ///   [18] rideMode as 1/2/3       — LOW confidence mapping
+  ///   [20] speed (km/h)            — parsed if present
+  ///   [21] tripDistance (km)       — parsed if present
+  ///   [22] faultCodes, ';'-terminated — parsed if present
   ///
-  ///   [0]  "LD" literal
-  ///   [1]  device IMEI (15 digits) — not vehicle telemetry
-  ///   [2]  firmware/model code — not vehicle telemetry
-  ///   [3]  batch/serial code — not vehicle telemetry
-  ///   [4]  message timestamp "yyyy-MM-dd HH:mm:ss" (bike's own clock)
-  ///   [5]  single-letter flag, meaning unconfirmed
-  ///   [6][7] unused/empty in every captured frame
-  ///   [8]  unconfirmed — a slowly-incrementing counter, NOT battery% (that
-  ///        theory is now disproven: it changed while [15]/SOC held steady)
-  ///   [9]-[13] unconfirmed — always 0/0/1/0/0 in every captured frame
-  ///   [14] batteryVoltage          — CONFIRMED against real diagnostics screen
-  ///   [15] batteryPercent (SOC)    — CONFIRMED against real diagnostics screen
-  ///   [16] batteryHealth (SOH)     — CONFIRMED against real diagnostics screen
-  ///   [17] batteryTemp (°C)        — CONFIRMED (36 vs screenshot's 37, ~30min apart)
-  ///   [18] rideMode as 1/2/3       — LOW confidence again: showed "3" while the
-  ///        official app displayed "ECO" (~30min apart, mode may have changed,
-  ///        or this numeric scheme just isn't Eco/Normal/Sport in that order)
-  ///   [19] unconfirmed
-  ///   [20] speed (km/h)            — untested: every capture so far was a
-  ///        parked/idle bike, this field never left 0
-  ///   [21] tripDistance (km)       — untested, same reason
-  ///   [22] faultCodes, ';'-terminated — MEDIUM-HIGH confidence ("0" = none)
-  ///
-  /// NOT YET LOCATED: odometer, motorTemp, power, batteryCurrent, range,
-  /// gpsCoords — no capture so far shows the bike actually moving, so nothing
-  /// distinguishes these from the unconfirmed slots above. Default to 0/null
-  /// rather than a guessed field — a wrong odometer would silently corrupt
-  /// permanent ride records. Needs a capture taken while riding.
+  /// UNCONFIRMED INDEX POSITIONS: odometer, motorTemp, power, batteryCurrent, range, gpsCoords
+  /// Unconfirmed fields safely evaluate to null.
   static VehicleSnapshot? parseLdString(String rawString) {
     if (!rawString.startsWith('LD,')) return null;
 
@@ -97,23 +106,23 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
     if (parts.length < 20) return null;
 
     try {
-      final batteryVoltage = double.tryParse(parts[14]) ?? 0.0;
-      final batteryPercent = int.tryParse(parts[15]) ?? 0;
+      final batteryVoltage = double.tryParse(parts[14]);
+      final batteryPercent = int.tryParse(parts[15]);
       final batteryHealth = int.tryParse(parts[16]);
-      final batteryTemp = int.tryParse(parts[17]) ?? 0;
+      final batteryTemp = int.tryParse(parts[17]);
       final rideModeCode = int.tryParse(parts[18]);
       final rideMode = switch (rideModeCode) {
         1 => 'Eco',
         2 => 'Normal',
         3 => 'Sport',
-        _ => 'Eco',
+        _ => null,
       };
 
-      double speed = 0.0;
-      double tripDistance = 0.0;
+      double? speed;
+      double? tripDistance;
       List<String> faultCodes = [];
-      if (parts.length > 20) speed = double.tryParse(parts[20]) ?? 0.0;
-      if (parts.length > 21) tripDistance = double.tryParse(parts[21]) ?? 0.0;
+      if (parts.length > 20) speed = double.tryParse(parts[20]);
+      if (parts.length > 21) tripDistance = double.tryParse(parts[21]);
       if (parts.length > 22) {
         final faultField = parts[22].replaceAll(';', '');
         if (faultField.isNotEmpty &&
@@ -130,20 +139,15 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
       return VehicleSnapshot(
         batteryPercent: batteryPercent,
         batteryVoltage: batteryVoltage,
-        // batteryCurrent field position not yet confirmed — see doc comment.
-        batteryCurrent: 0.0,
+        batteryCurrent: null, // Unconfirmed ASCII field -> null
         batteryTemp: batteryTemp,
-        // motorTemp field position not yet confirmed — see doc comment.
-        motorTemp: 0,
+        motorTemp: null, // Unconfirmed ASCII field -> null
         speed: speed,
         tripDistance: tripDistance,
-        // odometer field position not yet confirmed — see doc comment.
-        odometer: 0.0,
+        odometer: null, // Unconfirmed ASCII field -> null
         rideMode: rideMode,
-        // range field position not yet confirmed — see doc comment.
-        range: 0.0,
-        // power field position not yet confirmed — see doc comment.
-        power: 0.0,
+        range: null, // Unconfirmed ASCII field -> null
+        power: null, // Unconfirmed ASCII field -> null
         faultCodes: faultCodes,
         batteryHealth: batteryHealth,
         timestamp: timestamp ?? DateTime.now(),
@@ -157,17 +161,17 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
   static VehicleSnapshot? _parseBinaryBytes(Uint8List data) {
     if (data.isEmpty) return null;
 
-    int batteryPercent = 100;
-    double batteryVoltage = 72.0;
-    double batteryCurrent = 0.0;
-    int batteryTemp = 30;
-    int motorTemp = 32;
-    double speed = 0.0;
-    double tripDistance = 0.0;
-    double odometer = 1200.0;
-    String rideMode = 'Eco';
-    double range = 150.0;
-    double power = 0.0;
+    int? batteryPercent;
+    double? batteryVoltage;
+    double? batteryCurrent;
+    int? batteryTemp;
+    int? motorTemp;
+    double? speed;
+    double? tripDistance;
+    double? odometer;
+    String? rideMode;
+    double? range;
+    double? power;
     List<String> faultCodes = [];
     int? batteryHealth;
     String? gpsCoords;
@@ -210,22 +214,26 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
           rideMode = 'Sport';
           break;
         default:
-          rideMode = 'Eco';
+          rideMode = null;
       }
     }
     if (data.length >= 17) {
       batteryHealth = data[16].clamp(0, 100);
     }
 
-    range = batteryPercent.toDouble();
-    power = (batteryVoltage * batteryCurrent) / 1000.0;
+    if (batteryPercent != null) {
+      range = batteryPercent.toDouble();
+    }
+    if (batteryVoltage != null && batteryCurrent != null) {
+      power = (batteryVoltage * batteryCurrent) / 1000.0;
+    }
 
     return VehicleSnapshot(
       batteryPercent: batteryPercent,
-      batteryVoltage: batteryVoltage > 0 ? batteryVoltage : 72.0,
+      batteryVoltage: batteryVoltage,
       batteryCurrent: batteryCurrent,
-      batteryTemp: batteryTemp > 0 ? batteryTemp : 28,
-      motorTemp: motorTemp > 0 ? motorTemp : 30,
+      batteryTemp: batteryTemp,
+      motorTemp: motorTemp,
       speed: speed,
       tripDistance: tripDistance,
       odometer: odometer,
@@ -239,3 +247,4 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
     );
   }
 }
+

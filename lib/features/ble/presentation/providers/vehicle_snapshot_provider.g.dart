@@ -68,7 +68,7 @@ final class VehicleSnapshotProvider
   }
 }
 
-String _$vehicleSnapshotHash() => r'0d1b248914560d4f4a9afb11622c8d88444ae450';
+String _$vehicleSnapshotHash() => r'249388a0d72d023eebe80478b41cfc9c5f19e749';
 
 /// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
 

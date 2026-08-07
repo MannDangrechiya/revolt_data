@@ -125,9 +125,11 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
         connectionState == BleConnectionState.authenticated;
 
     if (isConnected && liveSnapshot != null) {
-      latestBattery = liveSnapshot.batteryPercent;
-      if (liveSnapshot.odometer > maxOdometer) {
-        maxOdometer = liveSnapshot.odometer;
+      if (liveSnapshot.batteryPercent != null) {
+        latestBattery = liveSnapshot.batteryPercent!;
+      }
+      if (liveSnapshot.odometer != null && liveSnapshot.odometer! > maxOdometer) {
+        maxOdometer = liveSnapshot.odometer!;
       }
     }
 

@@ -89,7 +89,9 @@ class SyncEngine {
     }
 
     // Step 5: Detect odometer gap
-    final odoDelta = currentSnapshot.odometer - lastState.lastSyncedOdometer;
+    final currentOdo = currentSnapshot.odometer ?? lastState.lastSyncedOdometer;
+    final currentBattery = currentSnapshot.batteryPercent ?? lastState.lastKnownBatteryPercent;
+    final odoDelta = currentOdo - lastState.lastSyncedOdometer;
 
     if (odoDelta <= 0.1 && (gpsRoute == null || gpsRoute.isEmpty)) {
       await _syncState.saveSyncState(
@@ -161,9 +163,9 @@ class SyncEngine {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         date: lastState.lastSyncedAt,
         startOdometer: lastState.lastSyncedOdometer,
-        endOdometer: currentSnapshot.odometer,
+        endOdometer: currentOdo,
         batteryBefore: lastState.lastKnownBatteryPercent,
-        batteryAfter: currentSnapshot.batteryPercent,
+        batteryAfter: currentBattery,
         rideMode: RideMode.normal,
         roadCondition: RoadCondition.smooth,
         startTime: lastState.lastSyncedAt,
@@ -176,8 +178,8 @@ class SyncEngine {
 
       await _db.into(_db.ridesTable).insert(autoRide.toCompanion());
       await _syncState.saveSyncState(
-        odometer: currentSnapshot.odometer,
-        batteryPercent: currentSnapshot.batteryPercent,
+        odometer: currentOdo,
+        batteryPercent: currentBattery,
       );
       await _syncHistoryLog.logSync(
         result: 'success',
@@ -191,8 +193,8 @@ class SyncEngine {
 
     // Medium or Low confidence candidates -> return for user review
     await _syncState.saveSyncState(
-      odometer: currentSnapshot.odometer,
-      batteryPercent: currentSnapshot.batteryPercent,
+      odometer: currentOdo,
+      batteryPercent: currentBattery,
     );
     await _syncHistoryLog.logSync(
       result: 'missed_rides',

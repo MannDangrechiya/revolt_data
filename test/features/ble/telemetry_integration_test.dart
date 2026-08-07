@@ -28,18 +28,17 @@ void main() {
       expect(snapshot.timestamp, DateTime.parse('2026-08-06T23:24:28'));
     });
 
-    test('parseLdString defaults not-yet-confirmed fields instead of guessing', () {
+    test('parseLdString defaults not-yet-confirmed fields to null instead of guessing', () {
       final snapshot = VehicleSnapshot.parseLdString(realCapturedFrame);
 
       expect(snapshot, isNotNull);
-      // Real field positions for these are unconfirmed (see doc comment) —
-      // they default rather than silently feed a guessed number into things
-      // like trip auto-detection (which reads odometer).
-      expect(snapshot!.odometer, 0.0);
-      expect(snapshot.motorTemp, 0);
-      expect(snapshot.power, 0.0);
-      expect(snapshot.batteryCurrent, 0.0);
-      expect(snapshot.range, 0.0);
+      // Real field positions for these are unconfirmed —
+      // they default to null rather than silently feeding a guessed number.
+      expect(snapshot!.odometer, isNull);
+      expect(snapshot.motorTemp, isNull);
+      expect(snapshot.power, isNull);
+      expect(snapshot.batteryCurrent, isNull);
+      expect(snapshot.range, isNull);
       expect(snapshot.gpsCoords, isNull);
     });
 

@@ -34,7 +34,7 @@ final class DashboardDataNotifierProvider
 }
 
 String _$dashboardDataNotifierHash() =>
-    r'c187811d81214d34677c10415ab03c0b2de225f9';
+    r'936ab818804b7edd57875f931e0414dcd1213ba1';
 
 abstract class _$DashboardDataNotifier extends $StreamNotifier<DashboardData> {
   Stream<DashboardData> build();

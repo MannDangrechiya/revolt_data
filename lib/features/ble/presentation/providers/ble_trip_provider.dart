@@ -49,10 +49,12 @@ class BleTripNotifier extends _$BleTripNotifier {
 
   void _handleSnapshot(VehicleSnapshot snapshot) {
     final now = DateTime.now();
+    final speed = snapshot.speed ?? 0.0;
+    final odo = snapshot.odometer;
 
     // 1. Idle/Stopped State -> Start Detection
     if (state.status != BleTripStatus.riding && state.status != BleTripStatus.gpsHandoff) {
-      if (snapshot.speed > 0 && snapshot.odometer > 0) {
+      if (speed > 0 && odo != null && odo > 0) {
         // Debounce state transitions by 5 seconds
         if (_lastTransitionTime != null &&
             now.difference(_lastTransitionTime!) < const Duration(seconds: 5)) {
@@ -65,26 +67,27 @@ class BleTripNotifier extends _$BleTripNotifier {
     }
 
     // 2. Riding State -> Active Telemetry Tracking
-    _speedSamples.add(snapshot.speed);
-    final updatedMaxSpeed = snapshot.speed > state.maxSpeed ? snapshot.speed : state.maxSpeed;
+    _speedSamples.add(speed);
+    final updatedMaxSpeed = speed > state.maxSpeed ? speed : state.maxSpeed;
     final totalSpeedSum = _speedSamples.fold<double>(0.0, (sum, s) => sum + s);
     final updatedAvgSpeed = _speedSamples.isNotEmpty ? totalSpeedSum / _speedSamples.length : 0.0;
-    final calculatedDistance = (snapshot.odometer - state.startOdometer).clamp(0.0, 99999.0);
+    final currentOdo = odo ?? state.currentOdometer;
+    final calculatedDistance = (currentOdo - state.startOdometer).clamp(0.0, 99999.0);
     final currentDuration = state.startTime != null ? now.difference(state.startTime!).inSeconds : 0;
 
     state = state.copyWith(
-      currentOdometer: snapshot.odometer,
+      currentOdometer: currentOdo,
       distance: calculatedDistance,
       durationSeconds: currentDuration,
-      currentSpeed: snapshot.speed,
+      currentSpeed: speed,
       averageSpeed: updatedAvgSpeed,
       maxSpeed: updatedMaxSpeed,
-      currentBattery: snapshot.batteryPercent,
-      currentRideMode: snapshot.rideMode,
+      currentBattery: snapshot.batteryPercent ?? state.currentBattery,
+      currentRideMode: snapshot.rideMode ?? state.currentRideMode,
     );
 
     // 3. Stop Detection: Speed == 0 for >= 30 seconds
-    if (snapshot.speed == 0) {
+    if (speed == 0) {
       if (_zeroSpeedTimer == null || !_zeroSpeedTimer!.isActive) {
         _zeroSpeedTimer = Timer(const Duration(seconds: 30), () {
           _finalizeTrip();
@@ -105,21 +108,25 @@ class BleTripNotifier extends _$BleTripNotifier {
 
     _lastTransitionTime = now;
     _speedSamples.clear();
-    _speedSamples.add(snapshot.speed);
+    final speed = snapshot.speed ?? 0.0;
+    final odo = snapshot.odometer ?? 0.0;
+    final battery = snapshot.batteryPercent ?? 100;
+    final rideMode = snapshot.rideMode ?? 'Eco';
+    _speedSamples.add(speed);
 
     state = BleTripState(
       status: BleTripStatus.riding,
       startTime: now,
-      startOdometer: snapshot.odometer,
-      currentOdometer: snapshot.odometer,
+      startOdometer: odo,
+      currentOdometer: odo,
       distance: 0.0,
       durationSeconds: 0,
-      currentSpeed: snapshot.speed,
-      averageSpeed: snapshot.speed,
-      maxSpeed: snapshot.speed,
-      startBattery: snapshot.batteryPercent,
-      currentBattery: snapshot.batteryPercent,
-      currentRideMode: snapshot.rideMode,
+      currentSpeed: speed,
+      averageSpeed: speed,
+      maxSpeed: speed,
+      startBattery: battery,
+      currentBattery: battery,
+      currentRideMode: rideMode,
       isGpsHandoff: false,
     );
   }

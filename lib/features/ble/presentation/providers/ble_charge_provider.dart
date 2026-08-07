@@ -49,33 +49,38 @@ class BleChargeNotifier extends _$BleChargeNotifier {
 
   void _handleSnapshot(VehicleSnapshot snapshot) {
     final now = DateTime.now();
+    final batteryPercent = snapshot.batteryPercent;
+    if (batteryPercent == null) return;
+    final speed = snapshot.speed ?? 0.0;
 
     // 1. Idle/Completed State -> Start Detection
     if (state.status != BleChargeStatus.charging) {
-      if (snapshot.speed == 0 && snapshot.batteryPercent > _lastBatteryPercent && _lastBatteryPercent > 0) {
+      if (speed == 0 && batteryPercent > _lastBatteryPercent && _lastBatteryPercent > 0) {
         // Debounce state transitions by 10 seconds
         if (_lastTransitionTime != null &&
             now.difference(_lastTransitionTime!) < const Duration(seconds: 10)) {
-          _lastBatteryPercent = snapshot.batteryPercent;
+          _lastBatteryPercent = batteryPercent;
           return;
         }
 
         _startChargeSession(snapshot, now);
       } else {
-        _lastBatteryPercent = snapshot.batteryPercent;
+        _lastBatteryPercent = batteryPercent;
       }
       return;
     }
 
     // 2. Active Charging Session Tracking
-    final batteryGained = (snapshot.batteryPercent - state.startBattery).clamp(0, 100);
+    final batteryGained = (batteryPercent - state.startBattery).clamp(0, 100);
     final kwhAdded = AppConstants.defaultBatteryCapacityKwh * (batteryGained / 100.0);
-    final peakTemp = snapshot.batteryTemp > state.peakBatteryTemp ? snapshot.batteryTemp : state.peakBatteryTemp;
-    final peakPower = snapshot.power > state.peakPowerKw ? snapshot.power : state.peakPowerKw;
+    final batteryTemp = snapshot.batteryTemp ?? 0;
+    final power = snapshot.power ?? 0.0;
+    final peakTemp = batteryTemp > state.peakBatteryTemp ? batteryTemp : state.peakBatteryTemp;
+    final peakPower = power > state.peakPowerKw ? power : state.peakPowerKw;
     final durationSeconds = state.startTime != null ? now.difference(state.startTime!).inSeconds : 0;
 
     state = state.copyWith(
-      currentBattery: snapshot.batteryPercent,
+      currentBattery: batteryPercent,
       batteryGained: batteryGained,
       kwhAdded: kwhAdded,
       durationSeconds: durationSeconds,
@@ -84,9 +89,9 @@ class BleChargeNotifier extends _$BleChargeNotifier {
     );
 
     // 3. Stop Detection Checks
-    if (snapshot.batteryPercent > _lastBatteryPercent) {
+    if (batteryPercent > _lastBatteryPercent) {
       // Battery percentage increased -> reset no-increase timer
-      _lastBatteryPercent = snapshot.batteryPercent;
+      _lastBatteryPercent = batteryPercent;
       _noIncreaseTimer?.cancel();
       _noIncreaseTimer = null;
     } else {
@@ -97,7 +102,7 @@ class BleChargeNotifier extends _$BleChargeNotifier {
     }
 
     // Trickle-charge plateau check: if battery == 100%, start 5-minute plateau timer
-    if (snapshot.batteryPercent >= 100) {
+    if (batteryPercent >= 100) {
       _tricklePlateauTimer ??= Timer(const Duration(minutes: 5), () {
         _finalizeChargeSession();
       });
@@ -116,18 +121,19 @@ class BleChargeNotifier extends _$BleChargeNotifier {
     _disconnectGraceTimer = null;
 
     _lastTransitionTime = now;
-    _lastBatteryPercent = snapshot.batteryPercent;
+    final batteryPercent = snapshot.batteryPercent ?? 0;
+    _lastBatteryPercent = batteryPercent;
 
     state = BleChargeState(
       status: BleChargeStatus.charging,
       startTime: now,
-      startBattery: snapshot.batteryPercent,
-      currentBattery: snapshot.batteryPercent,
+      startBattery: batteryPercent,
+      currentBattery: batteryPercent,
       batteryGained: 0,
       kwhAdded: 0.0,
       durationSeconds: 0,
-      peakBatteryTemp: snapshot.batteryTemp,
-      peakPowerKw: snapshot.power,
+      peakBatteryTemp: snapshot.batteryTemp ?? 0,
+      peakPowerKw: snapshot.power ?? 0.0,
     );
   }
 

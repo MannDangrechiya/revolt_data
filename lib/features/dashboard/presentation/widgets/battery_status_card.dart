@@ -18,17 +18,17 @@ class BatteryStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final liveSnapshot = data.liveSnapshot;
 
-    final batteryPercent = isConnected && liveSnapshot != null
-        ? liveSnapshot.batteryPercent
+    final batteryPercent = (isConnected && liveSnapshot != null && liveSnapshot.batteryPercent != null)
+        ? liveSnapshot.batteryPercent!
         : data.latestBatteryPercentage;
 
     // Direct telemetry range when connected; manual log calculation without multiplier when disconnected.
-    final rangeValue = isConnected && liveSnapshot != null
-        ? liveSnapshot.range
+    final rangeValue = (isConnected && liveSnapshot != null && liveSnapshot.range != null)
+        ? liveSnapshot.range!
         : batteryPercent.toDouble();
 
-    final speedValue = isConnected && liveSnapshot != null
-        ? liveSnapshot.speed
+    final speedValue = (isConnected && liveSnapshot != null && liveSnapshot.speed != null)
+        ? liveSnapshot.speed!
         : 0.0;
 
     Color batteryColor;
@@ -141,7 +141,7 @@ class BatteryStatusCard extends StatelessWidget {
               ),
               if (isConnected && liveSnapshot != null)
                 Text(
-                  'Mode: ${liveSnapshot.rideMode}',
+                  'Mode: ${liveSnapshot.formattedRideMode}',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
