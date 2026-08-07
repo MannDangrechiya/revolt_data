@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../../rides/data/rides_provider.dart';
 import '../../charging/data/charging_provider.dart';
 
@@ -29,6 +30,8 @@ class BatteryAnalytics {
 Future<BatteryAnalytics> batteryAnalytics(Ref ref) async {
   final rides = await ref.watch(ridesProvider.future);
   final charges = await ref.watch(chargingLogsProvider.future);
+  final liveSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
+  final persistedSnapshot = await ref.watch(persistedVehicleSnapshotProvider.future);
 
   int totalChargeCycles = charges.length;
   int fullCharges = charges.where((c) => c.endBattery == 100).length;
@@ -43,7 +46,7 @@ Future<BatteryAnalytics> batteryAnalytics(Ref ref) async {
   double worstRange = double.infinity;
 
   // Calculate range per charge cycle equivalent
-  // Simplified range estimate: (distance / battery_used) * 100
+  // Range estimate: (distance / battery_used) * 100
   for (var ride in rides) {
     int batteryUsed = (ride.batteryBefore - ride.batteryAfter).abs();
     if (batteryUsed > 5) { // Meaningful trips only
@@ -57,9 +60,9 @@ Future<BatteryAnalytics> batteryAnalytics(Ref ref) async {
 
   if (worstRange == double.infinity) worstRange = 0;
 
-  // Simplified health logic for now: starts at 100, drops by 0.1% per 10 full cycles
-  double health = 100.0 - ((totalChargeCycles / 10) * 0.1);
-  if (health < 0) health = 0;
+  // Dynamic battery health from SOH telemetry in vehicle snapshot (or 100% default if unrecorded)
+  final soh = liveSnapshot?.batteryHealth ?? persistedSnapshot?.batteryHealth;
+  double health = soh != null ? soh.toDouble() : 100.0;
 
   return BatteryAnalytics(
     totalChargeCycles: totalChargeCycles,

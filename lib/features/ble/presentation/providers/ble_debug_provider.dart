@@ -91,26 +91,8 @@ class RawPacketLog extends _$RawPacketLog {
       _sub?.cancel();
     });
 
-    // Provide an initial sample packet for terminal view
-    return [
-      LoggedPacket.simulated(
-        label: 'INIT',
-        snapshot: VehicleSnapshot(
-          batteryPercent: 88,
-          batteryVoltage: 72.8,
-          batteryCurrent: 0.0,
-          batteryTemp: 29,
-          motorTemp: 31,
-          speed: 0.0,
-          tripDistance: 0.0,
-          odometer: 1248.5,
-          rideMode: 'Eco',
-          range: 88.0,
-          power: 0.0,
-          timestamp: DateTime.now(),
-        ),
-      ),
-    ];
+    // Initialize empty packet log until live BLE packets arrive
+    return [];
   }
 
   /// Adds a new packet to the circular buffer (max 100 entries).
