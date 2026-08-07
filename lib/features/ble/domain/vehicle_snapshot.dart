@@ -5,6 +5,19 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'vehicle_snapshot.freezed.dart';
 part 'vehicle_snapshot.g.dart';
 
+/// Indicates the origin of the telemetry snapshot data.
+enum TelemetrySource {
+  ble,
+  cloud,
+  cached;
+
+  String get label => switch (this) {
+        TelemetrySource.ble => 'Live BLE',
+        TelemetrySource.cloud => 'Cloud Sync',
+        TelemetrySource.cached => 'Offline / Cached',
+      };
+}
+
 /// Immutable model representing real-time telemetry snapshot from the Revolt RV400.
 @freezed
 abstract class VehicleSnapshot with _$VehicleSnapshot {
@@ -26,6 +39,7 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
     int? batteryHealth,
     String? gpsCoords,
     DateTime? timestamp,
+    @Default(TelemetrySource.ble) TelemetrySource source,
   }) = _VehicleSnapshot;
 
   factory VehicleSnapshot.fromJson(Map<String, dynamic> json) =>

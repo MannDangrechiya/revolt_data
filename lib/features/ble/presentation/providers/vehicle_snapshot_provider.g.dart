@@ -8,24 +8,65 @@ part of 'vehicle_snapshot_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// StreamProvider exposing live [VehicleSnapshot] telemetry from the connected RV400.
-///
-/// Every snapshot is persisted to disk (fire-and-forget) so the last-known
-/// state survives an app restart, not just an in-memory reconnect — the bike
-/// has no channel to push data to us without an active BLE connection, so
-/// "last synced at X" from disk is the honest equivalent of the official
-/// app's cloud-backed sync.
+/// Provider for the single instance of [TelemetryRepository].
+
+@ProviderFor(telemetryRepository)
+final telemetryRepositoryProvider = TelemetryRepositoryProvider._();
+
+/// Provider for the single instance of [TelemetryRepository].
+
+final class TelemetryRepositoryProvider
+    extends
+        $FunctionalProvider<
+          TelemetryRepository,
+          TelemetryRepository,
+          TelemetryRepository
+        >
+    with $Provider<TelemetryRepository> {
+  /// Provider for the single instance of [TelemetryRepository].
+  TelemetryRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'telemetryRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$telemetryRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<TelemetryRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  TelemetryRepository create(Ref ref) {
+    return telemetryRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TelemetryRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TelemetryRepository>(value),
+    );
+  }
+}
+
+String _$telemetryRepositoryHash() =>
+    r'b368a841e0f14d374362e325ac37c2436989ae7d';
+
+/// StreamProvider exposing live [VehicleSnapshot] telemetry from the hybrid dual-engine stream.
 
 @ProviderFor(vehicleSnapshot)
 final vehicleSnapshotProvider = VehicleSnapshotProvider._();
 
-/// StreamProvider exposing live [VehicleSnapshot] telemetry from the connected RV400.
-///
-/// Every snapshot is persisted to disk (fire-and-forget) so the last-known
-/// state survives an app restart, not just an in-memory reconnect — the bike
-/// has no channel to push data to us without an active BLE connection, so
-/// "last synced at X" from disk is the honest equivalent of the official
-/// app's cloud-backed sync.
+/// StreamProvider exposing live [VehicleSnapshot] telemetry from the hybrid dual-engine stream.
 
 final class VehicleSnapshotProvider
     extends
@@ -35,13 +76,7 @@ final class VehicleSnapshotProvider
           Stream<VehicleSnapshot>
         >
     with $FutureModifier<VehicleSnapshot>, $StreamProvider<VehicleSnapshot> {
-  /// StreamProvider exposing live [VehicleSnapshot] telemetry from the connected RV400.
-  ///
-  /// Every snapshot is persisted to disk (fire-and-forget) so the last-known
-  /// state survives an app restart, not just an in-memory reconnect — the bike
-  /// has no channel to push data to us without an active BLE connection, so
-  /// "last synced at X" from disk is the honest equivalent of the official
-  /// app's cloud-backed sync.
+  /// StreamProvider exposing live [VehicleSnapshot] telemetry from the hybrid dual-engine stream.
   VehicleSnapshotProvider._()
     : super(
         from: null,
@@ -68,24 +103,17 @@ final class VehicleSnapshotProvider
   }
 }
 
-String _$vehicleSnapshotHash() => r'249388a0d72d023eebe80478b41cfc9c5f19e749';
+String _$vehicleSnapshotHash() => r'fa8fedb6b7551aac4e32e56ca8d2f90cfe1511cf';
 
-/// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
+/// Notifier exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
 
-@ProviderFor(lastKnownVehicleSnapshot)
+@ProviderFor(LastKnownVehicleSnapshot)
 final lastKnownVehicleSnapshotProvider = LastKnownVehicleSnapshotProvider._();
 
-/// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
-
+/// Notifier exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
 final class LastKnownVehicleSnapshotProvider
-    extends
-        $FunctionalProvider<
-          VehicleSnapshot?,
-          VehicleSnapshot?,
-          VehicleSnapshot?
-        >
-    with $Provider<VehicleSnapshot?> {
-  /// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
+    extends $NotifierProvider<LastKnownVehicleSnapshot, VehicleSnapshot?> {
+  /// Notifier exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
   LastKnownVehicleSnapshotProvider._()
     : super(
         from: null,
@@ -102,13 +130,7 @@ final class LastKnownVehicleSnapshotProvider
 
   @$internal
   @override
-  $ProviderElement<VehicleSnapshot?> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  VehicleSnapshot? create(Ref ref) {
-    return lastKnownVehicleSnapshot(ref);
-  }
+  LastKnownVehicleSnapshot create() => LastKnownVehicleSnapshot();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(VehicleSnapshot? value) {
@@ -120,30 +142,40 @@ final class LastKnownVehicleSnapshotProvider
 }
 
 String _$lastKnownVehicleSnapshotHash() =>
-    r'0b2e7acf001189cf8e0c37b2edbfee5a06dc53d3';
+    r'eed00b3dc17777f128b3eeaa18206ea73f8bfd4c';
 
-/// The persisted-on-disk snapshot, for screens that want to show "last
-/// synced at X" even before any BLE connection this app session (survives
-/// app restart — [lastKnownVehicleSnapshotProvider] above does not).
+/// Notifier exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
 
-@ProviderFor(persistedVehicleSnapshot)
+abstract class _$LastKnownVehicleSnapshot extends $Notifier<VehicleSnapshot?> {
+  VehicleSnapshot? build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<VehicleSnapshot?, VehicleSnapshot?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<VehicleSnapshot?, VehicleSnapshot?>,
+              VehicleSnapshot?,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Notifier for the persisted-on-disk snapshot for screens showing last known data,
+/// tagged explicitly as [TelemetrySource.cached].
+
+@ProviderFor(PersistedVehicleSnapshot)
 final persistedVehicleSnapshotProvider = PersistedVehicleSnapshotProvider._();
 
-/// The persisted-on-disk snapshot, for screens that want to show "last
-/// synced at X" even before any BLE connection this app session (survives
-/// app restart — [lastKnownVehicleSnapshotProvider] above does not).
-
+/// Notifier for the persisted-on-disk snapshot for screens showing last known data,
+/// tagged explicitly as [TelemetrySource.cached].
 final class PersistedVehicleSnapshotProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<VehicleSnapshot?>,
-          VehicleSnapshot?,
-          FutureOr<VehicleSnapshot?>
-        >
-    with $FutureModifier<VehicleSnapshot?>, $FutureProvider<VehicleSnapshot?> {
-  /// The persisted-on-disk snapshot, for screens that want to show "last
-  /// synced at X" even before any BLE connection this app session (survives
-  /// app restart — [lastKnownVehicleSnapshotProvider] above does not).
+    extends $AsyncNotifierProvider<PersistedVehicleSnapshot, VehicleSnapshot?> {
+  /// Notifier for the persisted-on-disk snapshot for screens showing last known data,
+  /// tagged explicitly as [TelemetrySource.cached].
   PersistedVehicleSnapshotProvider._()
     : super(
         from: null,
@@ -160,15 +192,31 @@ final class PersistedVehicleSnapshotProvider
 
   @$internal
   @override
-  $FutureProviderElement<VehicleSnapshot?> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<VehicleSnapshot?> create(Ref ref) {
-    return persistedVehicleSnapshot(ref);
-  }
+  PersistedVehicleSnapshot create() => PersistedVehicleSnapshot();
 }
 
 String _$persistedVehicleSnapshotHash() =>
-    r'19dcc698da1b30fd621a88dd4a13748b4ca643f5';
+    r'9522c6a1c348e5aec1b15cc6a6ba636dfab1ce46';
+
+/// Notifier for the persisted-on-disk snapshot for screens showing last known data,
+/// tagged explicitly as [TelemetrySource.cached].
+
+abstract class _$PersistedVehicleSnapshot
+    extends $AsyncNotifier<VehicleSnapshot?> {
+  FutureOr<VehicleSnapshot?> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<VehicleSnapshot?>, VehicleSnapshot?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<VehicleSnapshot?>, VehicleSnapshot?>,
+              AsyncValue<VehicleSnapshot?>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

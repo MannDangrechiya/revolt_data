@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VehicleSnapshot {
 
- int? get batteryPercent; double? get batteryVoltage; double? get batteryCurrent; int? get batteryTemp; int? get motorTemp; double? get speed; double? get tripDistance; double? get odometer; String? get rideMode; double? get range; double? get power; List<String> get faultCodes; int? get batteryHealth; String? get gpsCoords; DateTime? get timestamp;
+ int? get batteryPercent; double? get batteryVoltage; double? get batteryCurrent; int? get batteryTemp; int? get motorTemp; double? get speed; double? get tripDistance; double? get odometer; String? get rideMode; double? get range; double? get power; List<String> get faultCodes; int? get batteryHealth; String? get gpsCoords; DateTime? get timestamp; TelemetrySource get source;
 /// Create a copy of VehicleSnapshot
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $VehicleSnapshotCopyWith<VehicleSnapshot> get copyWith => _$VehicleSnapshotCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VehicleSnapshot&&(identical(other.batteryPercent, batteryPercent) || other.batteryPercent == batteryPercent)&&(identical(other.batteryVoltage, batteryVoltage) || other.batteryVoltage == batteryVoltage)&&(identical(other.batteryCurrent, batteryCurrent) || other.batteryCurrent == batteryCurrent)&&(identical(other.batteryTemp, batteryTemp) || other.batteryTemp == batteryTemp)&&(identical(other.motorTemp, motorTemp) || other.motorTemp == motorTemp)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.tripDistance, tripDistance) || other.tripDistance == tripDistance)&&(identical(other.odometer, odometer) || other.odometer == odometer)&&(identical(other.rideMode, rideMode) || other.rideMode == rideMode)&&(identical(other.range, range) || other.range == range)&&(identical(other.power, power) || other.power == power)&&const DeepCollectionEquality().equals(other.faultCodes, faultCodes)&&(identical(other.batteryHealth, batteryHealth) || other.batteryHealth == batteryHealth)&&(identical(other.gpsCoords, gpsCoords) || other.gpsCoords == gpsCoords)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VehicleSnapshot&&(identical(other.batteryPercent, batteryPercent) || other.batteryPercent == batteryPercent)&&(identical(other.batteryVoltage, batteryVoltage) || other.batteryVoltage == batteryVoltage)&&(identical(other.batteryCurrent, batteryCurrent) || other.batteryCurrent == batteryCurrent)&&(identical(other.batteryTemp, batteryTemp) || other.batteryTemp == batteryTemp)&&(identical(other.motorTemp, motorTemp) || other.motorTemp == motorTemp)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.tripDistance, tripDistance) || other.tripDistance == tripDistance)&&(identical(other.odometer, odometer) || other.odometer == odometer)&&(identical(other.rideMode, rideMode) || other.rideMode == rideMode)&&(identical(other.range, range) || other.range == range)&&(identical(other.power, power) || other.power == power)&&const DeepCollectionEquality().equals(other.faultCodes, faultCodes)&&(identical(other.batteryHealth, batteryHealth) || other.batteryHealth == batteryHealth)&&(identical(other.gpsCoords, gpsCoords) || other.gpsCoords == gpsCoords)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.source, source) || other.source == source));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,batteryPercent,batteryVoltage,batteryCurrent,batteryTemp,motorTemp,speed,tripDistance,odometer,rideMode,range,power,const DeepCollectionEquality().hash(faultCodes),batteryHealth,gpsCoords,timestamp);
+int get hashCode => Object.hash(runtimeType,batteryPercent,batteryVoltage,batteryCurrent,batteryTemp,motorTemp,speed,tripDistance,odometer,rideMode,range,power,const DeepCollectionEquality().hash(faultCodes),batteryHealth,gpsCoords,timestamp,source);
 
 @override
 String toString() {
-  return 'VehicleSnapshot(batteryPercent: $batteryPercent, batteryVoltage: $batteryVoltage, batteryCurrent: $batteryCurrent, batteryTemp: $batteryTemp, motorTemp: $motorTemp, speed: $speed, tripDistance: $tripDistance, odometer: $odometer, rideMode: $rideMode, range: $range, power: $power, faultCodes: $faultCodes, batteryHealth: $batteryHealth, gpsCoords: $gpsCoords, timestamp: $timestamp)';
+  return 'VehicleSnapshot(batteryPercent: $batteryPercent, batteryVoltage: $batteryVoltage, batteryCurrent: $batteryCurrent, batteryTemp: $batteryTemp, motorTemp: $motorTemp, speed: $speed, tripDistance: $tripDistance, odometer: $odometer, rideMode: $rideMode, range: $range, power: $power, faultCodes: $faultCodes, batteryHealth: $batteryHealth, gpsCoords: $gpsCoords, timestamp: $timestamp, source: $source)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $VehicleSnapshotCopyWith<$Res>  {
   factory $VehicleSnapshotCopyWith(VehicleSnapshot value, $Res Function(VehicleSnapshot) _then) = _$VehicleSnapshotCopyWithImpl;
 @useResult
 $Res call({
- int? batteryPercent, double? batteryVoltage, double? batteryCurrent, int? batteryTemp, int? motorTemp, double? speed, double? tripDistance, double? odometer, String? rideMode, double? range, double? power, List<String> faultCodes, int? batteryHealth, String? gpsCoords, DateTime? timestamp
+ int? batteryPercent, double? batteryVoltage, double? batteryCurrent, int? batteryTemp, int? motorTemp, double? speed, double? tripDistance, double? odometer, String? rideMode, double? range, double? power, List<String> faultCodes, int? batteryHealth, String? gpsCoords, DateTime? timestamp, TelemetrySource source
 });
 
 
@@ -65,7 +65,7 @@ class _$VehicleSnapshotCopyWithImpl<$Res>
 
 /// Create a copy of VehicleSnapshot
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? batteryPercent = freezed,Object? batteryVoltage = freezed,Object? batteryCurrent = freezed,Object? batteryTemp = freezed,Object? motorTemp = freezed,Object? speed = freezed,Object? tripDistance = freezed,Object? odometer = freezed,Object? rideMode = freezed,Object? range = freezed,Object? power = freezed,Object? faultCodes = null,Object? batteryHealth = freezed,Object? gpsCoords = freezed,Object? timestamp = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? batteryPercent = freezed,Object? batteryVoltage = freezed,Object? batteryCurrent = freezed,Object? batteryTemp = freezed,Object? motorTemp = freezed,Object? speed = freezed,Object? tripDistance = freezed,Object? odometer = freezed,Object? rideMode = freezed,Object? range = freezed,Object? power = freezed,Object? faultCodes = null,Object? batteryHealth = freezed,Object? gpsCoords = freezed,Object? timestamp = freezed,Object? source = null,}) {
   return _then(_self.copyWith(
 batteryPercent: freezed == batteryPercent ? _self.batteryPercent : batteryPercent // ignore: cast_nullable_to_non_nullable
 as int?,batteryVoltage: freezed == batteryVoltage ? _self.batteryVoltage : batteryVoltage // ignore: cast_nullable_to_non_nullable
@@ -82,7 +82,8 @@ as double?,faultCodes: null == faultCodes ? _self.faultCodes : faultCodes // ign
 as List<String>,batteryHealth: freezed == batteryHealth ? _self.batteryHealth : batteryHealth // ignore: cast_nullable_to_non_nullable
 as int?,gpsCoords: freezed == gpsCoords ? _self.gpsCoords : gpsCoords // ignore: cast_nullable_to_non_nullable
 as String?,timestamp: freezed == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
+as TelemetrySource,
   ));
 }
 
@@ -167,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? batteryPercent,  double? batteryVoltage,  double? batteryCurrent,  int? batteryTemp,  int? motorTemp,  double? speed,  double? tripDistance,  double? odometer,  String? rideMode,  double? range,  double? power,  List<String> faultCodes,  int? batteryHealth,  String? gpsCoords,  DateTime? timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? batteryPercent,  double? batteryVoltage,  double? batteryCurrent,  int? batteryTemp,  int? motorTemp,  double? speed,  double? tripDistance,  double? odometer,  String? rideMode,  double? range,  double? power,  List<String> faultCodes,  int? batteryHealth,  String? gpsCoords,  DateTime? timestamp,  TelemetrySource source)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VehicleSnapshot() when $default != null:
-return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_that.batteryTemp,_that.motorTemp,_that.speed,_that.tripDistance,_that.odometer,_that.rideMode,_that.range,_that.power,_that.faultCodes,_that.batteryHealth,_that.gpsCoords,_that.timestamp);case _:
+return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_that.batteryTemp,_that.motorTemp,_that.speed,_that.tripDistance,_that.odometer,_that.rideMode,_that.range,_that.power,_that.faultCodes,_that.batteryHealth,_that.gpsCoords,_that.timestamp,_that.source);case _:
   return orElse();
 
 }
@@ -188,10 +189,10 @@ return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? batteryPercent,  double? batteryVoltage,  double? batteryCurrent,  int? batteryTemp,  int? motorTemp,  double? speed,  double? tripDistance,  double? odometer,  String? rideMode,  double? range,  double? power,  List<String> faultCodes,  int? batteryHealth,  String? gpsCoords,  DateTime? timestamp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? batteryPercent,  double? batteryVoltage,  double? batteryCurrent,  int? batteryTemp,  int? motorTemp,  double? speed,  double? tripDistance,  double? odometer,  String? rideMode,  double? range,  double? power,  List<String> faultCodes,  int? batteryHealth,  String? gpsCoords,  DateTime? timestamp,  TelemetrySource source)  $default,) {final _that = this;
 switch (_that) {
 case _VehicleSnapshot():
-return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_that.batteryTemp,_that.motorTemp,_that.speed,_that.tripDistance,_that.odometer,_that.rideMode,_that.range,_that.power,_that.faultCodes,_that.batteryHealth,_that.gpsCoords,_that.timestamp);case _:
+return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_that.batteryTemp,_that.motorTemp,_that.speed,_that.tripDistance,_that.odometer,_that.rideMode,_that.range,_that.power,_that.faultCodes,_that.batteryHealth,_that.gpsCoords,_that.timestamp,_that.source);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +209,10 @@ return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? batteryPercent,  double? batteryVoltage,  double? batteryCurrent,  int? batteryTemp,  int? motorTemp,  double? speed,  double? tripDistance,  double? odometer,  String? rideMode,  double? range,  double? power,  List<String> faultCodes,  int? batteryHealth,  String? gpsCoords,  DateTime? timestamp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? batteryPercent,  double? batteryVoltage,  double? batteryCurrent,  int? batteryTemp,  int? motorTemp,  double? speed,  double? tripDistance,  double? odometer,  String? rideMode,  double? range,  double? power,  List<String> faultCodes,  int? batteryHealth,  String? gpsCoords,  DateTime? timestamp,  TelemetrySource source)?  $default,) {final _that = this;
 switch (_that) {
 case _VehicleSnapshot() when $default != null:
-return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_that.batteryTemp,_that.motorTemp,_that.speed,_that.tripDistance,_that.odometer,_that.rideMode,_that.range,_that.power,_that.faultCodes,_that.batteryHealth,_that.gpsCoords,_that.timestamp);case _:
+return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_that.batteryTemp,_that.motorTemp,_that.speed,_that.tripDistance,_that.odometer,_that.rideMode,_that.range,_that.power,_that.faultCodes,_that.batteryHealth,_that.gpsCoords,_that.timestamp,_that.source);case _:
   return null;
 
 }
@@ -223,7 +224,7 @@ return $default(_that.batteryPercent,_that.batteryVoltage,_that.batteryCurrent,_
 @JsonSerializable()
 
 class _VehicleSnapshot extends VehicleSnapshot {
-  const _VehicleSnapshot({this.batteryPercent, this.batteryVoltage, this.batteryCurrent, this.batteryTemp, this.motorTemp, this.speed, this.tripDistance, this.odometer, this.rideMode, this.range, this.power, final  List<String> faultCodes = const [], this.batteryHealth, this.gpsCoords, this.timestamp}): _faultCodes = faultCodes,super._();
+  const _VehicleSnapshot({this.batteryPercent, this.batteryVoltage, this.batteryCurrent, this.batteryTemp, this.motorTemp, this.speed, this.tripDistance, this.odometer, this.rideMode, this.range, this.power, final  List<String> faultCodes = const [], this.batteryHealth, this.gpsCoords, this.timestamp, this.source = TelemetrySource.ble}): _faultCodes = faultCodes,super._();
   factory _VehicleSnapshot.fromJson(Map<String, dynamic> json) => _$VehicleSnapshotFromJson(json);
 
 @override final  int? batteryPercent;
@@ -247,6 +248,7 @@ class _VehicleSnapshot extends VehicleSnapshot {
 @override final  int? batteryHealth;
 @override final  String? gpsCoords;
 @override final  DateTime? timestamp;
+@override@JsonKey() final  TelemetrySource source;
 
 /// Create a copy of VehicleSnapshot
 /// with the given fields replaced by the non-null parameter values.
@@ -261,16 +263,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VehicleSnapshot&&(identical(other.batteryPercent, batteryPercent) || other.batteryPercent == batteryPercent)&&(identical(other.batteryVoltage, batteryVoltage) || other.batteryVoltage == batteryVoltage)&&(identical(other.batteryCurrent, batteryCurrent) || other.batteryCurrent == batteryCurrent)&&(identical(other.batteryTemp, batteryTemp) || other.batteryTemp == batteryTemp)&&(identical(other.motorTemp, motorTemp) || other.motorTemp == motorTemp)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.tripDistance, tripDistance) || other.tripDistance == tripDistance)&&(identical(other.odometer, odometer) || other.odometer == odometer)&&(identical(other.rideMode, rideMode) || other.rideMode == rideMode)&&(identical(other.range, range) || other.range == range)&&(identical(other.power, power) || other.power == power)&&const DeepCollectionEquality().equals(other._faultCodes, _faultCodes)&&(identical(other.batteryHealth, batteryHealth) || other.batteryHealth == batteryHealth)&&(identical(other.gpsCoords, gpsCoords) || other.gpsCoords == gpsCoords)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VehicleSnapshot&&(identical(other.batteryPercent, batteryPercent) || other.batteryPercent == batteryPercent)&&(identical(other.batteryVoltage, batteryVoltage) || other.batteryVoltage == batteryVoltage)&&(identical(other.batteryCurrent, batteryCurrent) || other.batteryCurrent == batteryCurrent)&&(identical(other.batteryTemp, batteryTemp) || other.batteryTemp == batteryTemp)&&(identical(other.motorTemp, motorTemp) || other.motorTemp == motorTemp)&&(identical(other.speed, speed) || other.speed == speed)&&(identical(other.tripDistance, tripDistance) || other.tripDistance == tripDistance)&&(identical(other.odometer, odometer) || other.odometer == odometer)&&(identical(other.rideMode, rideMode) || other.rideMode == rideMode)&&(identical(other.range, range) || other.range == range)&&(identical(other.power, power) || other.power == power)&&const DeepCollectionEquality().equals(other._faultCodes, _faultCodes)&&(identical(other.batteryHealth, batteryHealth) || other.batteryHealth == batteryHealth)&&(identical(other.gpsCoords, gpsCoords) || other.gpsCoords == gpsCoords)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.source, source) || other.source == source));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,batteryPercent,batteryVoltage,batteryCurrent,batteryTemp,motorTemp,speed,tripDistance,odometer,rideMode,range,power,const DeepCollectionEquality().hash(_faultCodes),batteryHealth,gpsCoords,timestamp);
+int get hashCode => Object.hash(runtimeType,batteryPercent,batteryVoltage,batteryCurrent,batteryTemp,motorTemp,speed,tripDistance,odometer,rideMode,range,power,const DeepCollectionEquality().hash(_faultCodes),batteryHealth,gpsCoords,timestamp,source);
 
 @override
 String toString() {
-  return 'VehicleSnapshot(batteryPercent: $batteryPercent, batteryVoltage: $batteryVoltage, batteryCurrent: $batteryCurrent, batteryTemp: $batteryTemp, motorTemp: $motorTemp, speed: $speed, tripDistance: $tripDistance, odometer: $odometer, rideMode: $rideMode, range: $range, power: $power, faultCodes: $faultCodes, batteryHealth: $batteryHealth, gpsCoords: $gpsCoords, timestamp: $timestamp)';
+  return 'VehicleSnapshot(batteryPercent: $batteryPercent, batteryVoltage: $batteryVoltage, batteryCurrent: $batteryCurrent, batteryTemp: $batteryTemp, motorTemp: $motorTemp, speed: $speed, tripDistance: $tripDistance, odometer: $odometer, rideMode: $rideMode, range: $range, power: $power, faultCodes: $faultCodes, batteryHealth: $batteryHealth, gpsCoords: $gpsCoords, timestamp: $timestamp, source: $source)';
 }
 
 
@@ -281,7 +283,7 @@ abstract mixin class _$VehicleSnapshotCopyWith<$Res> implements $VehicleSnapshot
   factory _$VehicleSnapshotCopyWith(_VehicleSnapshot value, $Res Function(_VehicleSnapshot) _then) = __$VehicleSnapshotCopyWithImpl;
 @override @useResult
 $Res call({
- int? batteryPercent, double? batteryVoltage, double? batteryCurrent, int? batteryTemp, int? motorTemp, double? speed, double? tripDistance, double? odometer, String? rideMode, double? range, double? power, List<String> faultCodes, int? batteryHealth, String? gpsCoords, DateTime? timestamp
+ int? batteryPercent, double? batteryVoltage, double? batteryCurrent, int? batteryTemp, int? motorTemp, double? speed, double? tripDistance, double? odometer, String? rideMode, double? range, double? power, List<String> faultCodes, int? batteryHealth, String? gpsCoords, DateTime? timestamp, TelemetrySource source
 });
 
 
@@ -298,7 +300,7 @@ class __$VehicleSnapshotCopyWithImpl<$Res>
 
 /// Create a copy of VehicleSnapshot
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? batteryPercent = freezed,Object? batteryVoltage = freezed,Object? batteryCurrent = freezed,Object? batteryTemp = freezed,Object? motorTemp = freezed,Object? speed = freezed,Object? tripDistance = freezed,Object? odometer = freezed,Object? rideMode = freezed,Object? range = freezed,Object? power = freezed,Object? faultCodes = null,Object? batteryHealth = freezed,Object? gpsCoords = freezed,Object? timestamp = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? batteryPercent = freezed,Object? batteryVoltage = freezed,Object? batteryCurrent = freezed,Object? batteryTemp = freezed,Object? motorTemp = freezed,Object? speed = freezed,Object? tripDistance = freezed,Object? odometer = freezed,Object? rideMode = freezed,Object? range = freezed,Object? power = freezed,Object? faultCodes = null,Object? batteryHealth = freezed,Object? gpsCoords = freezed,Object? timestamp = freezed,Object? source = null,}) {
   return _then(_VehicleSnapshot(
 batteryPercent: freezed == batteryPercent ? _self.batteryPercent : batteryPercent // ignore: cast_nullable_to_non_nullable
 as int?,batteryVoltage: freezed == batteryVoltage ? _self.batteryVoltage : batteryVoltage // ignore: cast_nullable_to_non_nullable
@@ -315,7 +317,8 @@ as double?,faultCodes: null == faultCodes ? _self._faultCodes : faultCodes // ig
 as List<String>,batteryHealth: freezed == batteryHealth ? _self.batteryHealth : batteryHealth // ignore: cast_nullable_to_non_nullable
 as int?,gpsCoords: freezed == gpsCoords ? _self.gpsCoords : gpsCoords // ignore: cast_nullable_to_non_nullable
 as String?,timestamp: freezed == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
+as TelemetrySource,
   ));
 }
 

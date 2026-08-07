@@ -46,4 +46,4 @@ final class BatteryAnalyticsProvider
   }
 }
 
-String _$batteryAnalyticsHash() => r'c5ee032735f91c74715f005ea0b2eaabeddd0c4c';
+String _$batteryAnalyticsHash() => r'e402232eac7d7f4bff95a13c249160a12a63e3c2';

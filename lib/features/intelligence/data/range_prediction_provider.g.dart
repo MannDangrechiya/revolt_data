@@ -46,4 +46,4 @@ final class RangePredictionProvider
   }
 }
 
-String _$rangePredictionHash() => r'ed4f585f56a0132dae57b37d0b598d401ae88f71';
+String _$rangePredictionHash() => r'ec83579bd46a7df436d2611dec168d3f655ed771';
