@@ -18,12 +18,14 @@ class RevoltBleRepository implements BleVehicleRepository {
   BleConnectionState _currentState = BleConnectionState.disconnected;
   StreamSubscription<RawPacket>? _packetSubscription;
   VehicleSnapshot? _lastSnapshot;
+  Timer? _telemetryPollTimer;
 
   RevoltBleRepository({RevoltBleClient? client})
       : _client = client ??
             RevoltBleClient(
               license: License.nonprofit,
               nameFilter: 'RV400',
+              onLog: (msg) => debugPrint('[RevoltBLE] $msg'),
             ) {
     _updateState(BleConnectionState.disconnected);
   }
@@ -66,15 +68,38 @@ class RevoltBleRepository implements BleVehicleRepository {
             : BleConnectionState.disconnected,
       );
       return results.map((r) {
-        final name = r.advertisementData.advName.isNotEmpty
-            ? r.advertisementData.advName
-            : (r.device.platformName.isNotEmpty
-                ? r.device.platformName
-                : 'Revolt RV400');
+        final advName = r.advertisementData.advName;
+        final platformName = r.device.platformName;
+        final rawName = advName.isNotEmpty ? advName : platformName;
+
+        // Check if advertised service UUIDs match Revolt RV400 GATT Service (49535343-fe7d-4ae5-8fa9-9fafd205e455)
+        final hasRevoltUuid = r.advertisementData.serviceUuids.any((u) {
+          final str = u.str.toLowerCase();
+          return str.contains('49535343') || str.contains('fe7d') || str.contains('issc');
+        });
+
+        final upperName = rawName.toUpperCase();
+        final isRevoltBike = hasRevoltUuid ||
+            upperName.contains('REVOLT') ||
+            upperName.contains('RV400') ||
+            upperName.contains('RV-400') ||
+            upperName.contains('RV_400') ||
+            upperName.startsWith('RV') ||
+            upperName.contains('VOLT') ||
+            upperName.contains('RM_') ||
+            upperName.contains('BK') ||
+            upperName.contains('JL') ||
+            upperName.contains('ISSC');
+
+        final displayName = rawName.isNotEmpty
+            ? rawName
+            : (isRevoltBike ? 'Revolt RV400' : 'Unknown BLE Device');
+
         return BleDeviceInfo(
           id: r.device.remoteId.str,
-          name: name,
+          name: displayName,
           rssi: r.rssi,
+          isRevoltBike: isRevoltBike,
         );
       }).toList();
     } catch (e) {
@@ -109,6 +134,7 @@ class RevoltBleRepository implements BleVehicleRepository {
       final success = await _client.authenticate(token);
       if (success) {
         _updateState(BleConnectionState.authenticated);
+        _startTelemetryPolling();
       } else {
         _updateState(BleConnectionState.connected);
       }
@@ -119,8 +145,23 @@ class RevoltBleRepository implements BleVehicleRepository {
     }
   }
 
+  /// The RV400 replies with a telemetry burst only when asked (verified via
+  /// HCI snoop capture — see RevoltBleClient.requestTelemetry). Poll on a
+  /// timer so the UI keeps getting fresh data rather than staying stuck on
+  /// whatever arrived once at pairing time.
+  void _startTelemetryPolling() {
+    _telemetryPollTimer?.cancel();
+    _telemetryPollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _client.requestTelemetry().catchError((Object err) {
+        debugPrint('Telemetry poll failed: $err');
+      });
+    });
+  }
+
   @override
   Future<void> disconnect() async {
+    _telemetryPollTimer?.cancel();
+    _telemetryPollTimer = null;
     await _packetSubscription?.cancel();
     _packetSubscription = null;
     await _client.disconnect();
@@ -152,6 +193,7 @@ class RevoltBleRepository implements BleVehicleRepository {
       _snapshotController.stream;
 
   void dispose() {
+    _telemetryPollTimer?.cancel();
     _packetSubscription?.cancel();
     _connectionStateController.close();
     _snapshotController.close();

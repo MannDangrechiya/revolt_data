@@ -11,6 +11,7 @@ _BleDeviceInfo _$BleDeviceInfoFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       rssi: (json['rssi'] as num).toInt(),
+      isRevoltBike: json['isRevoltBike'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$BleDeviceInfoToJson(_BleDeviceInfo instance) =>
@@ -18,4 +19,5 @@ Map<String, dynamic> _$BleDeviceInfoToJson(_BleDeviceInfo instance) =>
       'id': instance.id,
       'name': instance.name,
       'rssi': instance.rssi,
+      'isRevoltBike': instance.isRevoltBike,
     };

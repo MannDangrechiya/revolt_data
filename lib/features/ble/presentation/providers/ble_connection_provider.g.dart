@@ -9,11 +9,13 @@ part of 'ble_connection_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Provider exposing the single instance of [BleVehicleRepository].
+/// keepAlive: the BLE connection must survive navigation between screens.
 
 @ProviderFor(bleRepository)
 final bleRepositoryProvider = BleRepositoryProvider._();
 
 /// Provider exposing the single instance of [BleVehicleRepository].
+/// keepAlive: the BLE connection must survive navigation between screens.
 
 final class BleRepositoryProvider
     extends
@@ -24,13 +26,14 @@ final class BleRepositoryProvider
         >
     with $Provider<BleVehicleRepository> {
   /// Provider exposing the single instance of [BleVehicleRepository].
+  /// keepAlive: the BLE connection must survive navigation between screens.
   BleRepositoryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'bleRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -58,7 +61,7 @@ final class BleRepositoryProvider
   }
 }
 
-String _$bleRepositoryHash() => r'0e4522b73a6c689025bcee82d5ed74b1e1d12315';
+String _$bleRepositoryHash() => r'20e90266599fc166b52a59654b31fdb78ee64abe';
 
 /// StreamProvider exposing real-time connection state updates.
 

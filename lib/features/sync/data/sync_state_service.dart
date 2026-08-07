@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../ble/domain/vehicle_snapshot.dart';
 import '../domain/sync_state.dart';
 
 part 'sync_state_service.g.dart';
@@ -8,6 +11,7 @@ class SyncStateService {
   static const String _kLastSyncedOdometerKey = 'sync_last_synced_odometer';
   static const String _kLastSyncedAtKey = 'sync_last_synced_at';
   static const String _kLastKnownBatteryPercentKey = 'sync_last_known_battery_percent';
+  static const String _kLastSnapshotKey = 'sync_last_snapshot_json';
 
   final SharedPreferences _prefs;
 
@@ -60,6 +64,24 @@ class SyncStateService {
     await _prefs.remove(_kLastSyncedOdometerKey);
     await _prefs.remove(_kLastSyncedAtKey);
     await _prefs.remove(_kLastKnownBatteryPercentKey);
+    await _prefs.remove(_kLastSnapshotKey);
+  }
+
+  /// Persists the full last-known telemetry snapshot so it survives app
+  /// restarts — the app can then show "last synced at X" from disk instead
+  /// of going blank until the next BLE connection.
+  Future<void> saveLastSnapshot(VehicleSnapshot snapshot) async {
+    await _prefs.setString(_kLastSnapshotKey, jsonEncode(snapshot.toJson()));
+  }
+
+  VehicleSnapshot? getLastSnapshot() {
+    final raw = _prefs.getString(_kLastSnapshotKey);
+    if (raw == null) return null;
+    try {
+      return VehicleSnapshot.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
   }
 }
 

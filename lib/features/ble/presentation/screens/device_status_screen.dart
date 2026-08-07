@@ -26,6 +26,7 @@ class DeviceStatusScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final connectionStateAsync = ref.watch(bleConnectionStateProvider);
     final snapshotAsync = ref.watch(vehicleSnapshotProvider);
+    final persistedSnapshotAsync = ref.watch(persistedVehicleSnapshotProvider);
     final repo = ref.read(bleRepositoryProvider);
     final currentState = repo.currentConnectionState;
 
@@ -69,6 +70,11 @@ class DeviceStatusScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: VoltAppBar(
         title: 'Device Status',
+        leading: IconButton(
+          icon: const Icon(LucideIcons.arrowLeft),
+          onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+          tooltip: 'Back',
+        ),
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.bug),
@@ -137,24 +143,47 @@ class DeviceStatusScreen extends HookConsumerWidget {
             ],
             const SizedBox(height: 24),
             snapshotAsync.when(
-              loading: () => VoltCard(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: Column(
+              loading: () {
+                // No live packet yet this session — fall back to whatever
+                // was last synced to disk (survives app restart) instead of
+                // just spinning. The bike has no channel to push data to us
+                // without an active BLE connection, so this is "last known
+                // state as of X", same as the official app's own sync label.
+                final persisted = persistedSnapshotAsync.value;
+                if (persisted != null) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 16),
-                      Text(
-                        effectiveState == BleConnectionState.authenticated ||
-                                effectiveState == BleConnectionState.connected
-                            ? 'Waiting for telemetry packets...'
-                            : 'Connect to RV400 to view live telemetry.',
-                        style: const TextStyle(color: Colors.grey),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8, left: 4),
+                        child: Text(
+                          'Last synced: ${persisted.timestamp?.toLocal() ?? "unknown"}',
+                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
                       ),
+                      LiveTelemetryCard(snapshot: persisted),
                     ],
+                  );
+                }
+                return VoltCard(
+                  padding: const EdgeInsets.all(24),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        Text(
+                          effectiveState == BleConnectionState.authenticated ||
+                                  effectiveState == BleConnectionState.connected
+                              ? 'Waiting for telemetry packets...'
+                              : 'Connect to RV400 to view live telemetry.',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
               error: (err, stack) => VoltCard(
                 padding: const EdgeInsets.all(20),
                 child: Center(

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BleDeviceInfo {
 
- String get id; String get name; int get rssi;
+ String get id; String get name; int get rssi; bool get isRevoltBike;
 /// Create a copy of BleDeviceInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $BleDeviceInfoCopyWith<BleDeviceInfo> get copyWith => _$BleDeviceInfoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BleDeviceInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.rssi, rssi) || other.rssi == rssi));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BleDeviceInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.rssi, rssi) || other.rssi == rssi)&&(identical(other.isRevoltBike, isRevoltBike) || other.isRevoltBike == isRevoltBike));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,rssi);
+int get hashCode => Object.hash(runtimeType,id,name,rssi,isRevoltBike);
 
 @override
 String toString() {
-  return 'BleDeviceInfo(id: $id, name: $name, rssi: $rssi)';
+  return 'BleDeviceInfo(id: $id, name: $name, rssi: $rssi, isRevoltBike: $isRevoltBike)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $BleDeviceInfoCopyWith<$Res>  {
   factory $BleDeviceInfoCopyWith(BleDeviceInfo value, $Res Function(BleDeviceInfo) _then) = _$BleDeviceInfoCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, int rssi
+ String id, String name, int rssi, bool isRevoltBike
 });
 
 
@@ -65,12 +65,13 @@ class _$BleDeviceInfoCopyWithImpl<$Res>
 
 /// Create a copy of BleDeviceInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? rssi = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? rssi = null,Object? isRevoltBike = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,rssi: null == rssi ? _self.rssi : rssi // ignore: cast_nullable_to_non_nullable
-as int,
+as int,isRevoltBike: null == isRevoltBike ? _self.isRevoltBike : isRevoltBike // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  int rssi)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  int rssi,  bool isRevoltBike)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BleDeviceInfo() when $default != null:
-return $default(_that.id,_that.name,_that.rssi);case _:
+return $default(_that.id,_that.name,_that.rssi,_that.isRevoltBike);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.id,_that.name,_that.rssi);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  int rssi)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  int rssi,  bool isRevoltBike)  $default,) {final _that = this;
 switch (_that) {
 case _BleDeviceInfo():
-return $default(_that.id,_that.name,_that.rssi);case _:
+return $default(_that.id,_that.name,_that.rssi,_that.isRevoltBike);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.id,_that.name,_that.rssi);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  int rssi)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  int rssi,  bool isRevoltBike)?  $default,) {final _that = this;
 switch (_that) {
 case _BleDeviceInfo() when $default != null:
-return $default(_that.id,_that.name,_that.rssi);case _:
+return $default(_that.id,_that.name,_that.rssi,_that.isRevoltBike);case _:
   return null;
 
 }
@@ -211,12 +212,13 @@ return $default(_that.id,_that.name,_that.rssi);case _:
 @JsonSerializable()
 
 class _BleDeviceInfo implements BleDeviceInfo {
-  const _BleDeviceInfo({required this.id, required this.name, required this.rssi});
+  const _BleDeviceInfo({required this.id, required this.name, required this.rssi, this.isRevoltBike = true});
   factory _BleDeviceInfo.fromJson(Map<String, dynamic> json) => _$BleDeviceInfoFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override final  int rssi;
+@override@JsonKey() final  bool isRevoltBike;
 
 /// Create a copy of BleDeviceInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BleDeviceInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.rssi, rssi) || other.rssi == rssi));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BleDeviceInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.rssi, rssi) || other.rssi == rssi)&&(identical(other.isRevoltBike, isRevoltBike) || other.isRevoltBike == isRevoltBike));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,rssi);
+int get hashCode => Object.hash(runtimeType,id,name,rssi,isRevoltBike);
 
 @override
 String toString() {
-  return 'BleDeviceInfo(id: $id, name: $name, rssi: $rssi)';
+  return 'BleDeviceInfo(id: $id, name: $name, rssi: $rssi, isRevoltBike: $isRevoltBike)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$BleDeviceInfoCopyWith<$Res> implements $BleDeviceInfoCopy
   factory _$BleDeviceInfoCopyWith(_BleDeviceInfo value, $Res Function(_BleDeviceInfo) _then) = __$BleDeviceInfoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, int rssi
+ String id, String name, int rssi, bool isRevoltBike
 });
 
 
@@ -268,12 +270,13 @@ class __$BleDeviceInfoCopyWithImpl<$Res>
 
 /// Create a copy of BleDeviceInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? rssi = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? rssi = null,Object? isRevoltBike = null,}) {
   return _then(_BleDeviceInfo(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,rssi: null == rssi ? _self.rssi : rssi // ignore: cast_nullable_to_non_nullable
-as int,
+as int,isRevoltBike: null == isRevoltBike ? _self.isRevoltBike : isRevoltBike // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

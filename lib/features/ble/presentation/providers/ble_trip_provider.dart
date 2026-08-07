@@ -291,7 +291,7 @@ class BleTripNotifier extends _$BleTripNotifier {
 
       final rideDurationMinutes = (state.durationSeconds / 60).ceil();
 
-      savedRide = Ride(
+      final rideToSave = Ride(
         id: now.millisecondsSinceEpoch.toString(),
         date: startTime,
         startOdometer: state.startOdometer,
@@ -313,8 +313,11 @@ class BleTripNotifier extends _$BleTripNotifier {
       );
 
       try {
-        await ref.read(ridesProvider.notifier).addRide(savedRide, source: rideSource);
-      } catch (_) {}
+        await ref.read(ridesProvider.notifier).addRide(rideToSave, source: rideSource);
+        savedRide = rideToSave;
+      } catch (e) {
+        debugPrint('Failed to auto-save BLE ride: $e');
+      }
     }
 
     state = state.copyWith(

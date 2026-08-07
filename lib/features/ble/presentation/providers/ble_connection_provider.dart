@@ -7,7 +7,8 @@ import '../../domain/connection_state.dart';
 part 'ble_connection_provider.g.dart';
 
 /// Provider exposing the single instance of [BleVehicleRepository].
-@riverpod
+/// keepAlive: the BLE connection must survive navigation between screens.
+@Riverpod(keepAlive: true)
 BleVehicleRepository bleRepository(Ref ref) {
   final repository = RevoltBleRepository();
   ref.onDispose(() {

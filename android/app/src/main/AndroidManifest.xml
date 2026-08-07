@@ -1,7 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Bluetooth permissions for Android 12+ (API level 31+) -->
-    <!-- BLUETOOTH_SCAN with neverForLocation asserts app doesn't derive physical location from BLE scan results -->
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+    <!-- BLUETOOTH_SCAN: neverForLocation removed — app already holds location permission for GPS ride tracking,
+         and neverForLocation silently returns empty scan results on many Android 12+ OEMs (Samsung, Xiaomi). -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <!-- BLUETOOTH_CONNECT needed to connect and communicate with paired/scanned RV400 BLE devices -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
@@ -29,7 +31,8 @@
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:foregroundServiceType="location"
-            android:exported="false" />
+            android:exported="false"
+            tools:replace="android:exported" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -190,7 +190,7 @@ class BleChargeNotifier extends _$BleChargeNotifier {
       final minRequiredMins = (state.kwhAdded / AppConstants.assumedTypicalChargingRateKw) * 60.0;
       final durationMins = (calculatedMins < minRequiredMins ? minRequiredMins : calculatedMins).clamp(1.0, 1440.0);
 
-      savedLog = ChargeLog(
+      final logToSave = ChargeLog(
         id: now.millisecondsSinceEpoch.toString(),
         date: startTime,
         durationMinutes: durationMins,
@@ -207,9 +207,10 @@ class BleChargeNotifier extends _$BleChargeNotifier {
       );
 
       try {
-        await ref.read(chargingLogsProvider.notifier).addChargeLog(savedLog, source: 'ble');
-      } catch (_) {
-        // If DB validation or insert fails, gracefully proceed
+        await ref.read(chargingLogsProvider.notifier).addChargeLog(logToSave, source: 'ble');
+        savedLog = logToSave;
+      } catch (e) {
+        debugPrint('Failed to auto-save BLE charge log: $e');
       }
     }
 

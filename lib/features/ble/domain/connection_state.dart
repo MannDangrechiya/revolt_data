@@ -1,5 +1,5 @@
 /// States of the Revolt RV400 BLE connection life cycle.
-enum ConnectionState {
+enum BleConnectionState {
   disconnected,
   scanning,
   connecting,
@@ -8,6 +8,3 @@ enum ConnectionState {
   authenticated,
   error,
 }
-
-/// Convenience alias to avoid naming collisions with Flutter's built-in [ConnectionState].
-typedef BleConnectionState = ConnectionState;
