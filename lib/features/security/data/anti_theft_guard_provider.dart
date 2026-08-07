@@ -1,0 +1,203 @@
+import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../core/services/notifications/notification_service.dart';
+import '../../ble/domain/connection_state.dart';
+import '../../ble/domain/vehicle_snapshot.dart';
+import '../../ble/presentation/providers/ble_connection_provider.dart';
+import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
+
+part 'anti_theft_guard_provider.g.dart';
+
+enum AntiTheftStatus {
+  unarmed,
+  armed,
+  alertTriggered,
+}
+
+class AntiTheftState {
+  final AntiTheftStatus status;
+  final double? parkedLatitude;
+  final double? parkedLongitude;
+  final DateTime? parkedTime;
+  final double? distanceMovedMeters;
+  final String? alertMessage;
+
+  const AntiTheftState({
+    this.status = AntiTheftStatus.unarmed,
+    this.parkedLatitude,
+    this.parkedLongitude,
+    this.parkedTime,
+    this.distanceMovedMeters,
+    this.alertMessage,
+  });
+
+  AntiTheftState copyWith({
+    AntiTheftStatus? status,
+    double? parkedLatitude,
+    double? parkedLongitude,
+    DateTime? parkedTime,
+    double? distanceMovedMeters,
+    String? alertMessage,
+  }) {
+    return AntiTheftState(
+      status: status ?? this.status,
+      parkedLatitude: parkedLatitude ?? this.parkedLatitude,
+      parkedLongitude: parkedLongitude ?? this.parkedLongitude,
+      parkedTime: parkedTime ?? this.parkedTime,
+      distanceMovedMeters: distanceMovedMeters ?? this.distanceMovedMeters,
+      alertMessage: alertMessage ?? this.alertMessage,
+    );
+  }
+}
+
+@Riverpod(keepAlive: true)
+class AntiTheftGuard extends _$AntiTheftGuard {
+  @override
+  AntiTheftState build() {
+    // Listen to BLE connection state transitions
+    ref.listen<AsyncValue<BleConnectionState>>(bleConnectionStateProvider, (prev, next) {
+      if (next.hasValue && next.value != null) {
+        _handleConnectionChange(next.value!);
+      }
+    });
+
+    // Listen to telemetry stream snapshots
+    ref.listen<AsyncValue<VehicleSnapshot>>(vehicleSnapshotProvider, (prev, next) {
+      if (next.hasValue && next.value != null) {
+        _handleTelemetrySnapshot(next.value!);
+      }
+    });
+
+    return const AntiTheftState();
+  }
+
+  void _handleConnectionChange(BleConnectionState connectionState) {
+    if (connectionState == BleConnectionState.disconnected ||
+        connectionState == BleConnectionState.error) {
+      // Auto-arm guard when vehicle is disconnected
+      final lastSnapshot = ref.read(lastKnownVehicleSnapshotProvider);
+      if (lastSnapshot != null && lastSnapshot.gpsCoords != null) {
+        _armWithCoords(lastSnapshot.gpsCoords!);
+      } else {
+        armGuard();
+      }
+    } else if (connectionState == BleConnectionState.authenticated ||
+        connectionState == BleConnectionState.connected) {
+      // Auto-disarm when authenticated owner reconnects via BLE
+      disarmGuard();
+    }
+  }
+
+  void _handleTelemetrySnapshot(VehicleSnapshot snapshot) {
+    if (state.status != AntiTheftStatus.armed) return;
+    if (snapshot.gpsCoords == null) return;
+
+    final coords = _parseCoords(snapshot.gpsCoords!);
+    if (coords == null) return;
+
+    if (state.parkedLatitude == null || state.parkedLongitude == null) {
+      _armWithCoords(snapshot.gpsCoords!);
+      return;
+    }
+
+    final distanceMeters = Geolocator.distanceBetween(
+      state.parkedLatitude!,
+      state.parkedLongitude!,
+      coords.$1,
+      coords.$2,
+    );
+
+    state = state.copyWith(distanceMovedMeters: distanceMeters);
+
+    // Anti-theft trigger threshold: > 50 meters displacement while armed
+    if (distanceMeters > 50.0) {
+      _triggerAntiTheftAlert(distanceMeters, coords.$1, coords.$2);
+    }
+  }
+
+  void _armWithCoords(String gpsCoordsStr) {
+    final parsed = _parseCoords(gpsCoordsStr);
+    if (parsed != null) {
+      state = AntiTheftState(
+        status: AntiTheftStatus.armed,
+        parkedLatitude: parsed.$1,
+        parkedLongitude: parsed.$2,
+        parkedTime: DateTime.now(),
+        distanceMovedMeters: 0.0,
+      );
+    }
+  }
+
+  void armGuard({double? lat, double? lng}) {
+    state = AntiTheftState(
+      status: AntiTheftStatus.armed,
+      parkedLatitude: lat ?? state.parkedLatitude ?? 28.6139,
+      parkedLongitude: lng ?? state.parkedLongitude ?? 77.2090,
+      parkedTime: DateTime.now(),
+      distanceMovedMeters: 0.0,
+    );
+  }
+
+  void disarmGuard() {
+    state = const AntiTheftState(status: AntiTheftStatus.unarmed);
+  }
+
+  void checkPositionAndEvaluate(double currentLat, double currentLng) {
+    if (state.status != AntiTheftStatus.armed) return;
+    if (state.parkedLatitude == null || state.parkedLongitude == null) return;
+
+    final distanceMeters = Geolocator.distanceBetween(
+      state.parkedLatitude!,
+      state.parkedLongitude!,
+      currentLat,
+      currentLng,
+    );
+
+    state = state.copyWith(distanceMovedMeters: distanceMeters);
+
+    if (distanceMeters > 50.0) {
+      _triggerAntiTheftAlert(distanceMeters, currentLat, currentLng);
+    }
+  }
+
+  void _triggerAntiTheftAlert(double distanceMeters, double lat, double lng) {
+    final alertMsg =
+        'CRITICAL ANTI-THEFT ALERT: Bike movement detected! Displaced by ${distanceMeters.toStringAsFixed(0)}m from parked position.';
+
+    state = state.copyWith(
+      status: AntiTheftStatus.alertTriggered,
+      distanceMovedMeters: distanceMeters,
+      alertMessage: alertMsg,
+    );
+
+    try {
+      final notifier = ref.read(notificationServiceProvider);
+      notifier.showImmediateNotification(
+        id: 9999,
+        title: '🚨 CRITICAL ANTI-THEFT ALERT',
+        body: 'Unauthorized movement detected! Vehicle displaced ${distanceMeters.toStringAsFixed(0)}m.',
+        payload: 'anti_theft_alert',
+      ).catchError((Object err) {
+        debugPrint('Failed to send anti-theft notification: $err');
+      });
+    } catch (e) {
+      debugPrint('Failed to send anti-theft notification: $e');
+    }
+  }
+
+  (double, double)? _parseCoords(String coordsStr) {
+    try {
+      final parts = coordsStr.split(',');
+      if (parts.length >= 2) {
+        final lat = double.tryParse(parts[0].trim());
+        final lng = double.tryParse(parts[1].trim());
+        if (lat != null && lng != null) {
+          return (lat, lng);
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+}

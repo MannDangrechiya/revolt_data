@@ -46,4 +46,4 @@ final class BatteryCoachProvider
   }
 }
 
-String _$batteryCoachHash() => r'5e318a5a7784d1902a4bae7b7256487fdd5a1fbb';
+String _$batteryCoachHash() => r'455eabf4739fec4a1cab167f68cca4f337c716a6';

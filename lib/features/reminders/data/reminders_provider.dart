@@ -6,13 +6,22 @@ import '../../../core/database/database_provider.dart';
 import '../../../core/database/database_mappers.dart';
 import '../domain/reminder.dart';
 
+import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
+
 part 'reminders_provider.g.dart';
 
 @riverpod
 class Reminders extends _$Reminders {
   @override
   Stream<List<Reminder>> build() {
-    // Proactive Reminders Engine: Listen to rides to evaluate odometer-based targets
+    // Proactive Reminders Engine: Listen to live vehicle telemetry for dynamic odometer targets
+    ref.listen(vehicleSnapshotProvider, (previous, next) {
+      if (next.hasValue && next.value != null && next.value!.odometer != null) {
+        _evaluateOdometerTargets(next.value!.odometer!);
+      }
+    });
+
+    // Also listen to recorded rides
     ref.listen(ridesProvider, (previous, next) {
       if (next.hasValue && next.value != null && next.value!.isNotEmpty) {
         final latestRide = next.value!.reduce((a, b) => a.date.isAfter(b.date) ? a : b);

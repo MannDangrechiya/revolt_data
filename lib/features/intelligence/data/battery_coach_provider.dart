@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../../charging/data/battery_health_provider.dart';
 import '../../charging/data/charging_provider.dart';
 import '../../charging/domain/charge_log.dart';
@@ -12,10 +13,31 @@ Future<BatteryCoachTip> batteryCoach(Ref ref) async {
   final logs = await ref.watch(chargingLogsProvider.future);
   final degradationRate =
       await ref.watch(batteryHealthDegradationRateProvider.future);
+  final liveSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
 
   final now = DateTime.now();
   final last30Days = now.subtract(const Duration(days: 30));
   final last7Days = now.subtract(const Duration(days: 7));
+
+  // Check live telemetry for SOH and thermal alerts
+  final soh = liveSnapshot?.batteryHealth;
+  final batteryTemp = liveSnapshot?.batteryTemp;
+
+  if (soh != null && soh < 80) {
+    return BatteryCoachTip(
+      tip: 'Battery State of Health (SOH) is at $soh%. Schedule a battery diagnostic check.',
+      severity: CoachSeverity.critical,
+      confidence: 95.0,
+      lastUpdated: now,
+    );
+  } else if (batteryTemp != null && batteryTemp > 48) {
+    return BatteryCoachTip(
+      tip: 'Elevated battery temp ($batteryTemp°C) detected. Allow pack to cool before charging.',
+      severity: CoachSeverity.warning,
+      confidence: 90.0,
+      lastUpdated: now,
+    );
+  }
 
   final recent30Logs = logs.where((l) => l.date.isAfter(last30Days)).toList();
   final recent7Logs = logs.where((l) => l.date.isAfter(last7Days)).toList();
