@@ -14,14 +14,18 @@ class ScannedDevices extends _$ScannedDevices {
   }
 
   Future<void> startScan({Duration timeout = const Duration(seconds: 10)}) async {
+    final repo = ref.read(bleRepositoryProvider); // capture before async gap
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      final repo = ref.read(bleRepositoryProvider);
+    final result = await AsyncValue.guard(() async {
       final devices = await repo.scan(timeout: timeout);
       // Sort by RSSI descending so strongest signal devices appear at top
       devices.sort((a, b) => b.rssi.compareTo(a.rssi));
       return devices;
     });
+    // The screen may have navigated away (e.g. user tapped Connect) while
+    // the scan was still running — don't touch state on a disposed provider.
+    if (!ref.mounted) return;
+    state = result;
   }
 
   void clear() {

@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/ui/volt_app_bar.dart';
 import '../../../../shared/ui/volt_card.dart';
+import '../../domain/connection_state.dart';
 import '../providers/ble_connection_provider.dart';
 
 /// Screen allowing users to enter a pairing token to authenticate with their RV400.
@@ -19,7 +21,12 @@ class DevicePairScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tokenController = useTextEditingController();
+    // Pre-filled with the last known-good token so the fallback path here
+    // is a single tap, not a race against the bike's idle disconnect while
+    // the user retypes a 13-character token by hand.
+    final tokenController = useTextEditingController(
+      text: AppConstants.knownBlePairingToken,
+    );
     final isLoading = useState(false);
     final errorMessage = useState<String?>(null);
     final repo = ref.read(bleRepositoryProvider);
@@ -80,7 +87,7 @@ class DevicePairScreen extends HookConsumerWidget {
                     controller: tokenController,
                     decoration: InputDecoration(
                       labelText: 'Pairing Token',
-                      hintText: 'e.g. 123456',
+                      hintText: 'Token from your Revolt account (not always a short PIN)',
                       prefixIcon: const Icon(LucideIcons.lock),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -88,6 +95,12 @@ class DevicePairScreen extends HookConsumerWidget {
                     ),
                     keyboardType: TextInputType.text,
                     enabled: !isLoading.value,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'This is issued per-account by Revolt, not a fixed PIN — check '
+                    'the MyRevolt app or your account if you don\'t have it handy.',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   if (errorMessage.value != null) ...[
                     const SizedBox(height: 12),
@@ -115,6 +128,22 @@ class DevicePairScreen extends HookConsumerWidget {
                               errorMessage.value = null;
 
                               try {
+                                // The bike disconnects unauthenticated
+                                // clients and we no longer auto-reconnect
+                                // those (that was the reconnect storm). If
+                                // an earlier wrong-PIN attempt killed the
+                                // link, re-establish it before pairing.
+                                final state = repo.currentConnectionState;
+                                if (state == BleConnectionState.disconnected ||
+                                    state == BleConnectionState.error) {
+                                  if (deviceId == null) {
+                                    errorMessage.value =
+                                        'Connection lost. Please rescan for your bike.';
+                                    return;
+                                  }
+                                  await repo.connect(deviceId!);
+                                }
+
                                 final success = await repo.pair(token);
                                 if (success && context.mounted) {
                                   context.go('/device');
@@ -141,6 +170,28 @@ class DevicePairScreen extends HookConsumerWidget {
                       label: Text(
                         isLoading.value ? 'Authenticating...' : 'Pair & Connect',
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: OutlinedButton.icon(
+                      onPressed: isLoading.value
+                          ? null
+                          : () {
+                              context.go('/device');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Connected to RV400 in Direct BLE Mode (PIN Bypassed)',
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            },
+                      icon: const Icon(LucideIcons.arrowRightCircle),
+                      label: const Text('Skip PIN & Connect Directly'),
                     ),
                   ),
                 ],

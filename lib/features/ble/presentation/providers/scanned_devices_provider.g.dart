@@ -36,7 +36,7 @@ final class ScannedDevicesProvider
   ScannedDevices create() => ScannedDevices();
 }
 
-String _$scannedDevicesHash() => r'a6ab0fd8df3f29c38698f822dc288494df318e13';
+String _$scannedDevicesHash() => r'e8453f6ded89a1e1d0f8e1e8ed68bac8b6200037';
 
 /// Notifier managing scanned RV400 BLE devices.
 
