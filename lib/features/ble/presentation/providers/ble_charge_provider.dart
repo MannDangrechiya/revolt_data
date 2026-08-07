@@ -53,9 +53,13 @@ class BleChargeNotifier extends _$BleChargeNotifier {
     if (batteryPercent == null) return;
     final speed = snapshot.speed ?? 0.0;
 
-    // 1. Idle/Completed State -> Start Detection
+    final batteryCurrent = snapshot.batteryCurrent;
+    final isChargingCurrent = batteryCurrent != null && batteryCurrent < 0;
+    final isSocIncreasingStationary = speed == 0 && batteryPercent > _lastBatteryPercent && _lastBatteryPercent > 0;
+
+    // 1. Idle/Completed State -> Auto-Start Detection (negative current or SOC increase while stationary)
     if (state.status != BleChargeStatus.charging) {
-      if (speed == 0 && batteryPercent > _lastBatteryPercent && _lastBatteryPercent > 0) {
+      if (isChargingCurrent || isSocIncreasingStationary) {
         // Debounce state transitions by 10 seconds
         if (_lastTransitionTime != null &&
             now.difference(_lastTransitionTime!) < const Duration(seconds: 10)) {

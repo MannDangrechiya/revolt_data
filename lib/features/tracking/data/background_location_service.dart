@@ -143,13 +143,17 @@ class BackgroundLocationService {
       distanceFilter: 5,
     );
 
-    _positionStreamSubscription = Geolocator.getPositionStream(
-      locationSettings: locationSettings,
-    ).listen((Position position) {
-      onLocationUpdate(position);
-    }, onError: (err) {
-      debugPrint('GPS position stream error: $err');
-    });
+    try {
+      _positionStreamSubscription = Geolocator.getPositionStream(
+        locationSettings: locationSettings,
+      ).listen((Position position) {
+        onLocationUpdate(position);
+      }, onError: (err) {
+        debugPrint('GPS position stream error: $err');
+      });
+    } catch (e) {
+      debugPrint('GPS position stream initialization error: $e');
+    }
 
     _notificationTimer?.cancel();
     _notificationTimer = Timer.periodic(const Duration(seconds: 5), (_) {
