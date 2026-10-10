@@ -11,6 +11,7 @@ import 'package:revolt_data/features/rides/data/rides_provider.dart';
 import 'package:revolt_data/features/rides/domain/ride.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late AppDatabase db;
   late ProviderContainer container;
 

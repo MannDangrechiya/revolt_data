@@ -44,7 +44,7 @@ final class RawPacketLogProvider
   }
 }
 
-String _$rawPacketLogHash() => r'736fba24b8d168931639f6aff97b5c567d6cbf8c';
+String _$rawPacketLogHash() => r'b0bf58b41415f31bcf8b995f59bb0c5d81c42bbe';
 
 /// Circular buffer notifier holding up to 100 raw BLE packets.
 

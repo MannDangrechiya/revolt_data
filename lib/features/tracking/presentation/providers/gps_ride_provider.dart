@@ -1,6 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../../../rides/data/rides_provider.dart';
 import '../../../rides/domain/ride.dart';
 import '../../data/background_location_service.dart';
@@ -57,13 +58,18 @@ class GpsRideNotifier extends _$GpsRideNotifier {
           ? (currentState.totalDistanceKm / durationHours)
           : currentState.maxSpeedKmh;
 
+      final snapshot = ref.read(lastKnownVehicleSnapshotProvider);
+      final persistedSnapshot = ref.read(persistedVehicleSnapshotProvider).value;
+      final batteryPercent = snapshot?.batteryPercent ?? persistedSnapshot?.batteryPercent ?? 100;
+      final startOdo = snapshot?.odometer ?? persistedSnapshot?.odometer ?? 0.0;
+
       final ride = Ride(
         id: now.millisecondsSinceEpoch.toString(),
         date: currentState.startTime,
-        startOdometer: 0.0,
-        endOdometer: currentState.totalDistanceKm,
-        batteryBefore: 100,
-        batteryAfter: 100,
+        startOdometer: startOdo,
+        endOdometer: startOdo + currentState.totalDistanceKm,
+        batteryBefore: batteryPercent,
+        batteryAfter: batteryPercent,
         rideMode: RideMode.normal,
         roadCondition: RoadCondition.smooth,
         startTime: currentState.startTime,

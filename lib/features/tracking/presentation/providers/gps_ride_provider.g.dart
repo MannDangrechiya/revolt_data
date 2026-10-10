@@ -41,7 +41,7 @@ final class GpsRideNotifierProvider
   }
 }
 
-String _$gpsRideNotifierHash() => r'dcc4b3e4769465f0f9b835104d69c4f120bd78d5';
+String _$gpsRideNotifierHash() => r'ea63a5b7e74778853fe88a6dd42ef144c44e94dd';
 
 abstract class _$GpsRideNotifier extends $Notifier<GpsTrackingState> {
   GpsTrackingState build();

@@ -109,7 +109,13 @@ class DeviceStatusScreen extends HookConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      ConnectionStatusBadge(state: effectiveState),
+                      ConnectionStatusBadge(
+                        state: effectiveState,
+                        source: effectiveState == BleConnectionState.disconnected &&
+                                (snapshotAsync.value ?? persistedSnapshotAsync.value) != null
+                            ? (snapshotAsync.value ?? persistedSnapshotAsync.value)?.source
+                            : null,
+                      ),
                     ],
                   ),
                   if (effectiveState != BleConnectionState.disconnected)

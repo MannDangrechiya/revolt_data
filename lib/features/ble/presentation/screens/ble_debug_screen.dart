@@ -292,22 +292,18 @@ class BleDebugScreen extends HookConsumerWidget {
                     )
                   : Column(
                       children: [
-                        _buildSnapshotRow('batteryPercentage', '${snapshot.batteryPercent}%'),
-                        _buildSnapshotRow('batteryVoltage', '${snapshot.batteryVoltage.toStringAsFixed(1)} V'),
-                        _buildSnapshotRow('batteryCurrent', '${snapshot.batteryCurrent.toStringAsFixed(1)} A'),
-                        _buildSnapshotRow('speed', '${snapshot.speed.toStringAsFixed(1)} km/h'),
-                        _buildSnapshotRow('odometer', '${snapshot.odometer.toStringAsFixed(1)} km'),
-                        _buildSnapshotRow('tripDistance', '${snapshot.tripDistance.toStringAsFixed(1)} km'),
-                        _buildSnapshotRow('rideMode', snapshot.rideMode),
-                        _buildSnapshotRow('range', '${snapshot.range.toStringAsFixed(1)} km'),
-                        _buildSnapshotRow('power', '${snapshot.power.toStringAsFixed(2)} kW'),
-                        _buildSnapshotRow('batteryTemp', '${snapshot.batteryTemp} °C'),
-                        _buildSnapshotRow('motorTemp', '${snapshot.motorTemp} °C'),
-                        _buildSnapshotRow(
-                            'batteryHealth',
-                            snapshot.batteryHealth != null
-                                ? '${snapshot.batteryHealth}% SOH'
-                                : 'N/A'),
+                        _buildSnapshotRow('batteryPercentage', snapshot.formattedBatteryPercent),
+                        _buildSnapshotRow('batteryVoltage', snapshot.formattedVoltage),
+                        _buildSnapshotRow('batteryCurrent', snapshot.formattedCurrent),
+                        _buildSnapshotRow('speed', snapshot.formattedSpeed),
+                        _buildSnapshotRow('odometer', snapshot.formattedOdometer),
+                        _buildSnapshotRow('tripDistance', snapshot.formattedTripDistance),
+                        _buildSnapshotRow('rideMode', snapshot.formattedRideMode),
+                        _buildSnapshotRow('range', snapshot.formattedRange),
+                        _buildSnapshotRow('power', snapshot.formattedPower),
+                        _buildSnapshotRow('batteryTemp', snapshot.formattedBatteryTemp),
+                        _buildSnapshotRow('motorTemp', snapshot.formattedMotorTemp),
+                        _buildSnapshotRow('batteryHealth', snapshot.formattedBatteryHealth),
                         _buildSnapshotRow('faultCodes',
                             snapshot.faultCodes.isNotEmpty ? snapshot.faultCodes.join(', ') : 'None'),
                         _buildSnapshotRow('gpsCoords', snapshot.gpsCoords ?? 'N/A'),

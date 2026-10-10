@@ -41,7 +41,7 @@ final class BleTripNotifierProvider
   }
 }
 
-String _$bleTripNotifierHash() => r'76006365f74fd806a776ae96d85e11f6a8db10c6';
+String _$bleTripNotifierHash() => r'a910b6d875729d45f44ece7fbab491d8fa85d961';
 
 abstract class _$BleTripNotifier extends $Notifier<BleTripState> {
   BleTripState build();

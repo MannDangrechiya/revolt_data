@@ -78,8 +78,8 @@ class BikeProfileScreen extends HookConsumerWidget {
                     title: 'Live Telemetry Status',
                     icon: LucideIcons.activity,
                     children: [
-                      _buildInfoRow('Riding Mode', snapshot.rideMode),
-                      _buildInfoRow('Battery Health', snapshot.batteryHealth != null ? '${snapshot.batteryHealth}%' : 'N/A'),
+                      _buildInfoRow('Riding Mode', snapshot.formattedRideMode),
+                      _buildInfoRow('Battery Health', snapshot.formattedBatteryHealth),
                       if (snapshot.gpsCoords != null && snapshot.gpsCoords!.isNotEmpty)
                         _buildInfoRow('GPS Coords', snapshot.gpsCoords!),
                     ],

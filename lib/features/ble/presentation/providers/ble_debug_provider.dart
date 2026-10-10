@@ -30,12 +30,22 @@ class LoggedPacket {
   });
 
   factory LoggedPacket.fromRawPacket(RawPacket packet) {
-    final hex = packet.value
+    var displayBytes = packet.value;
+    
+    // Redact PAIR token
+    if (packet.direction == PacketDirection.write && packet.value.length >= 4) {
+      final asciiStr = utf8.decode(packet.value, allowMalformed: true);
+      if (asciiStr.startsWith('PAIR') && asciiStr.length > 4) {
+         displayBytes = Uint8List.fromList([80, 65, 73, 82, 42, 42, 42, 42, 35]); // PAIR****#
+      }
+    }
+
+    final hex = displayBytes
         .map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase())
         .join(' ');
 
     String parsedJsonStr = 'N/A';
-    final snapshot = VehicleSnapshot.parseRawBytes(packet.value);
+    final snapshot = VehicleSnapshot.parseRawBytes(displayBytes);
     if (snapshot != null) {
       parsedJsonStr = const JsonEncoder.withIndent('  ').convert(snapshot.toJson());
     }
@@ -44,7 +54,7 @@ class LoggedPacket {
       timestamp: packet.timestamp,
       characteristicUuid: packet.characteristicUuid,
       direction: packet.direction,
-      rawBytes: packet.value,
+      rawBytes: displayBytes,
       hexString: hex,
       parsedJson: parsedJsonStr,
     );
@@ -91,26 +101,8 @@ class RawPacketLog extends _$RawPacketLog {
       _sub?.cancel();
     });
 
-    // Provide an initial sample packet for terminal view
-    return [
-      LoggedPacket.simulated(
-        label: 'INIT',
-        snapshot: VehicleSnapshot(
-          batteryPercent: 88,
-          batteryVoltage: 72.8,
-          batteryCurrent: 0.0,
-          batteryTemp: 29,
-          motorTemp: 31,
-          speed: 0.0,
-          tripDistance: 0.0,
-          odometer: 1248.5,
-          rideMode: 'Eco',
-          range: 88.0,
-          power: 0.0,
-          timestamp: DateTime.now(),
-        ),
-      ),
-    ];
+    // Initialize empty packet log until live BLE packets arrive
+    return [];
   }
 
   /// Adds a new packet to the circular buffer (max 100 entries).

@@ -75,6 +75,31 @@ void main() {
       expect(state.currentBattery, 52);
     });
 
+    test('Detects charge start on negative batteryCurrent (charging current)', () async {
+      final notifier = container.read(bleChargeProvider.notifier);
+
+      final chargingSnapshot = VehicleSnapshot(
+        speed: 0.0,
+        odometer: 1000.0,
+        batteryPercent: 60,
+        range: 75.0,
+        batteryTemp: 30,
+        motorTemp: 35,
+        power: 0.5,
+        batteryCurrent: -8.5, // Negative current -> charging pack
+        batteryVoltage: 72.0,
+        rideMode: 'ECO',
+        tripDistance: 10.0,
+        timestamp: DateTime.now(),
+      );
+
+      notifier.processSnapshot(chargingSnapshot);
+
+      final state = container.read(bleChargeProvider);
+      expect(state.status, BleChargeStatus.charging);
+      expect(state.startBattery, 60);
+    });
+
     test('Tracks live metrics during active charging', () async {
       final notifier = container.read(bleChargeProvider.notifier);
 

@@ -19,6 +19,7 @@ class RevoltBleRepository implements BleVehicleRepository {
   StreamSubscription<RawPacket>? _packetSubscription;
   VehicleSnapshot? _lastSnapshot;
   Timer? _telemetryPollTimer;
+  int _consecutive133Failures = 0;
 
   RevoltBleRepository({RevoltBleClient? client})
       : _client = client ??
@@ -113,10 +114,22 @@ class RevoltBleRepository implements BleVehicleRepository {
     _updateState(BleConnectionState.connecting);
     try {
       await _client.connect(deviceId);
+      _consecutive133Failures = 0;
       _updateState(BleConnectionState.connected);
       _startListening();
     } catch (e) {
-      _updateState(BleConnectionState.error);
+      final errStr = e.toString();
+      if (errStr.contains('133') || errStr.contains('GATT_ERROR') || errStr.contains('toggle Bluetooth')) {
+        _consecutive133Failures++;
+      }
+      if (_consecutive133Failures >= 3) {
+        try {
+          await disconnect();
+        } catch (_) {}
+        debugPrint('[RevoltBLE] 3 consecutive GATT 133 connection lockups detected. Soft reset connection state.');
+      } else {
+        _updateState(BleConnectionState.error);
+      }
       rethrow;
     }
   }

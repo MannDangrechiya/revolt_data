@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:revolt_data/core/constants/app_constants.dart';
 import '../../../rides/data/rides_provider.dart';
 import '../../../rides/domain/ride.dart';
 import '../../../tracking/data/background_location_service.dart';
@@ -25,7 +26,7 @@ class BleTripNotifier extends _$BleTripNotifier {
 
   @override
   BleTripState build() {
-    // Listen to live telemetry updates
+    // Listen to live telemetry updates from dual-engine stream provider
     ref.listen<AsyncValue<VehicleSnapshot>>(vehicleSnapshotProvider, (prev, next) {
       if (next.hasValue && next.value != null) {
         _handleSnapshot(next.value!);
@@ -49,10 +50,12 @@ class BleTripNotifier extends _$BleTripNotifier {
 
   void _handleSnapshot(VehicleSnapshot snapshot) {
     final now = DateTime.now();
+    final speed = snapshot.speed ?? 0.0;
+    final odo = snapshot.odometer;
 
-    // 1. Idle/Stopped State -> Start Detection
+    // 1. Idle/Stopped State -> Auto-Start Detection (speed > 0 km/h or active movement)
     if (state.status != BleTripStatus.riding && state.status != BleTripStatus.gpsHandoff) {
-      if (snapshot.speed > 0 && snapshot.odometer > 0) {
+      if (speed > 0 && odo != null && odo > 0) {
         // Debounce state transitions by 5 seconds
         if (_lastTransitionTime != null &&
             now.difference(_lastTransitionTime!) < const Duration(seconds: 5)) {
@@ -65,28 +68,29 @@ class BleTripNotifier extends _$BleTripNotifier {
     }
 
     // 2. Riding State -> Active Telemetry Tracking
-    _speedSamples.add(snapshot.speed);
-    final updatedMaxSpeed = snapshot.speed > state.maxSpeed ? snapshot.speed : state.maxSpeed;
+    _speedSamples.add(speed);
+    final updatedMaxSpeed = speed > state.maxSpeed ? speed : state.maxSpeed;
     final totalSpeedSum = _speedSamples.fold<double>(0.0, (sum, s) => sum + s);
     final updatedAvgSpeed = _speedSamples.isNotEmpty ? totalSpeedSum / _speedSamples.length : 0.0;
-    final calculatedDistance = (snapshot.odometer - state.startOdometer).clamp(0.0, 99999.0);
+    final currentOdo = odo ?? state.currentOdometer;
+    final calculatedDistance = (currentOdo - state.startOdometer).clamp(0.0, 99999.0);
     final currentDuration = state.startTime != null ? now.difference(state.startTime!).inSeconds : 0;
 
     state = state.copyWith(
-      currentOdometer: snapshot.odometer,
+      currentOdometer: currentOdo,
       distance: calculatedDistance,
       durationSeconds: currentDuration,
-      currentSpeed: snapshot.speed,
+      currentSpeed: speed,
       averageSpeed: updatedAvgSpeed,
       maxSpeed: updatedMaxSpeed,
-      currentBattery: snapshot.batteryPercent,
-      currentRideMode: snapshot.rideMode,
+      currentBattery: snapshot.batteryPercent ?? state.currentBattery,
+      currentRideMode: snapshot.rideMode ?? state.currentRideMode,
     );
 
-    // 3. Stop Detection: Speed == 0 for >= 30 seconds
-    if (snapshot.speed == 0) {
+    // 3. Auto-Finalize Condition: Speed == 0 for >= 3 minutes (180 seconds)
+    if (speed == 0) {
       if (_zeroSpeedTimer == null || !_zeroSpeedTimer!.isActive) {
-        _zeroSpeedTimer = Timer(const Duration(seconds: 30), () {
+        _zeroSpeedTimer = Timer(const Duration(minutes: 3), () {
           _finalizeTrip();
         });
       }
@@ -105,23 +109,37 @@ class BleTripNotifier extends _$BleTripNotifier {
 
     _lastTransitionTime = now;
     _speedSamples.clear();
-    _speedSamples.add(snapshot.speed);
+    final speed = snapshot.speed ?? 0.0;
+    final odo = snapshot.odometer ?? 0.0;
+    final battery = snapshot.batteryPercent ?? 100;
+    final rideMode = snapshot.rideMode ?? 'Eco';
+    _speedSamples.add(speed);
 
     state = BleTripState(
       status: BleTripStatus.riding,
       startTime: now,
-      startOdometer: snapshot.odometer,
-      currentOdometer: snapshot.odometer,
+      startOdometer: odo,
+      currentOdometer: odo,
       distance: 0.0,
       durationSeconds: 0,
-      currentSpeed: snapshot.speed,
-      averageSpeed: snapshot.speed,
-      maxSpeed: snapshot.speed,
-      startBattery: snapshot.batteryPercent,
-      currentBattery: snapshot.batteryPercent,
-      currentRideMode: snapshot.rideMode,
+      currentSpeed: speed,
+      averageSpeed: speed,
+      maxSpeed: speed,
+      startBattery: battery,
+      currentBattery: battery,
+      currentRideMode: rideMode,
       isGpsHandoff: false,
     );
+
+    // Auto-start background GPS location recording
+    try {
+      BackgroundLocationService().startTracking(
+        startOdometer: odo,
+        startTime: now,
+      );
+    } catch (e) {
+      debugPrint('Background location start tracking error: $e');
+    }
   }
 
   void _handleConnectionStateChange(BleConnectionState connectionState) {
@@ -135,21 +153,21 @@ class BleTripNotifier extends _$BleTripNotifier {
           isGpsHandoff: true,
         );
 
-        // Immediately trigger background GPS location service
+        // Trigger background GPS location service
         BackgroundLocationService().startTracking(
           startOdometer: state.startOdometer,
           startTime: state.startTime ?? DateTime.now(),
         );
 
-        // Start 60s grace timer on disconnection
-        _disconnectGraceTimer ??= Timer(const Duration(seconds: 60), () {
+        // Start 3-minute grace timer on disconnection
+        _disconnectGraceTimer ??= Timer(const Duration(minutes: 3), () {
           _finalizeTrip();
         });
       }
     } else if (connectionState == BleConnectionState.connected ||
         connectionState == BleConnectionState.authenticated) {
       if (state.isGpsHandoff) {
-        // Reconnected within 60s grace period -> resume tracking
+        // Reconnected within 3-minute grace period -> resume tracking
         _disconnectGraceTimer?.cancel();
         _disconnectGraceTimer = null;
 
@@ -290,6 +308,10 @@ class BleTripNotifier extends _$BleTripNotifier {
       }
 
       final rideDurationMinutes = (state.durationSeconds / 60).ceil();
+      final batteryUsedPercent = (state.startBattery - state.currentBattery).clamp(0, 100);
+      final energyKwh = AppConstants.defaultBatteryCapacityKwh * (batteryUsedPercent / 100.0);
+      final energyWh = energyKwh * 1000.0;
+      final whPerKm = finalDistance > 0 ? (energyWh / finalDistance) : 0.0;
 
       final rideToSave = Ride(
         id: now.millisecondsSinceEpoch.toString(),
@@ -307,7 +329,7 @@ class BleTripNotifier extends _$BleTripNotifier {
         durationMinutes: rideDurationMinutes > 0 ? rideDurationMinutes : 1,
         averageSpeed: finalAvgSpeed,
         maxSpeed: finalMaxSpeed,
-        notes: 'Auto-logged $rideSource Ride on ${startTime.toIso8601String().substring(0, 10)}',
+        notes: 'Auto-logged $rideSource Ride | ${whPerKm.toStringAsFixed(1)} Wh/km (${energyWh.toStringAsFixed(0)} Wh)',
         source: rideSource,
         routePolyline: polylineJson,
       );

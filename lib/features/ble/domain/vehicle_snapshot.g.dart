@@ -8,17 +8,17 @@ part of 'vehicle_snapshot.dart';
 
 _VehicleSnapshot _$VehicleSnapshotFromJson(Map<String, dynamic> json) =>
     _VehicleSnapshot(
-      batteryPercent: (json['batteryPercent'] as num).toInt(),
-      batteryVoltage: (json['batteryVoltage'] as num).toDouble(),
-      batteryCurrent: (json['batteryCurrent'] as num).toDouble(),
-      batteryTemp: (json['batteryTemp'] as num).toInt(),
-      motorTemp: (json['motorTemp'] as num).toInt(),
-      speed: (json['speed'] as num).toDouble(),
-      tripDistance: (json['tripDistance'] as num).toDouble(),
-      odometer: (json['odometer'] as num).toDouble(),
-      rideMode: json['rideMode'] as String,
-      range: (json['range'] as num).toDouble(),
-      power: (json['power'] as num).toDouble(),
+      batteryPercent: (json['batteryPercent'] as num?)?.toInt(),
+      batteryVoltage: (json['batteryVoltage'] as num?)?.toDouble(),
+      batteryCurrent: (json['batteryCurrent'] as num?)?.toDouble(),
+      batteryTemp: (json['batteryTemp'] as num?)?.toInt(),
+      motorTemp: (json['motorTemp'] as num?)?.toInt(),
+      speed: (json['speed'] as num?)?.toDouble(),
+      tripDistance: (json['tripDistance'] as num?)?.toDouble(),
+      odometer: (json['odometer'] as num?)?.toDouble(),
+      rideMode: json['rideMode'] as String?,
+      range: (json['range'] as num?)?.toDouble(),
+      power: (json['power'] as num?)?.toDouble(),
       faultCodes:
           (json['faultCodes'] as List<dynamic>?)
               ?.map((e) => e as String)
@@ -29,6 +29,9 @@ _VehicleSnapshot _$VehicleSnapshotFromJson(Map<String, dynamic> json) =>
       timestamp: json['timestamp'] == null
           ? null
           : DateTime.parse(json['timestamp'] as String),
+      source:
+          $enumDecodeNullable(_$TelemetrySourceEnumMap, json['source']) ??
+          TelemetrySource.ble,
     );
 
 Map<String, dynamic> _$VehicleSnapshotToJson(_VehicleSnapshot instance) =>
@@ -48,4 +51,11 @@ Map<String, dynamic> _$VehicleSnapshotToJson(_VehicleSnapshot instance) =>
       'batteryHealth': instance.batteryHealth,
       'gpsCoords': instance.gpsCoords,
       'timestamp': instance.timestamp?.toIso8601String(),
+      'source': _$TelemetrySourceEnumMap[instance.source]!,
     };
+
+const _$TelemetrySourceEnumMap = {
+  TelemetrySource.ble: 'ble',
+  TelemetrySource.cloud: 'cloud',
+  TelemetrySource.cached: 'cached',
+};

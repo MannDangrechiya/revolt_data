@@ -19,13 +19,13 @@ class SyncStateService {
 
   /// Saves the current sync state persistently with current ISO DateTime string.
   Future<void> saveSyncState({
-    required double odometer,
-    required int batteryPercent,
+    double? odometer,
+    int? batteryPercent,
   }) async {
     final now = DateTime.now();
-    await _prefs.setDouble(_kLastSyncedOdometerKey, odometer);
+    if (odometer != null) await _prefs.setDouble(_kLastSyncedOdometerKey, odometer);
     await _prefs.setString(_kLastSyncedAtKey, now.toIso8601String());
-    await _prefs.setInt(_kLastKnownBatteryPercentKey, batteryPercent);
+    if (batteryPercent != null) await _prefs.setInt(_kLastKnownBatteryPercentKey, batteryPercent);
   }
 
   /// Retrieves the last saved sync state, or `null` if none exists or data is incomplete.

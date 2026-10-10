@@ -1,40 +1,58 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../remote/data/revolt_remote_repository_provider.dart';
 import '../../../sync/data/sync_state_service.dart';
+import '../../data/telemetry_repository.dart';
 import '../../domain/vehicle_snapshot.dart';
 import 'ble_connection_provider.dart';
 
 part 'vehicle_snapshot_provider.g.dart';
 
-/// StreamProvider exposing live [VehicleSnapshot] telemetry from the connected RV400.
-///
-/// Every snapshot is persisted to disk (fire-and-forget) so the last-known
-/// state survives an app restart, not just an in-memory reconnect — the bike
-/// has no channel to push data to us without an active BLE connection, so
-/// "last synced at X" from disk is the honest equivalent of the official
-/// app's cloud-backed sync.
+/// Provider for the single instance of [TelemetryRepository].
+@Riverpod(keepAlive: true)
+TelemetryRepository telemetryRepository(Ref ref) {
+  final bleRepo = ref.watch(bleRepositoryProvider);
+  final remoteRepo = ref.watch(revoltRemoteRepositoryProvider);
+
+  final repo = TelemetryRepository(
+    bleRepository: bleRepo,
+    remoteRepository: remoteRepo,
+  );
+
+  ref.onDispose(() => repo.dispose());
+  return repo;
+}
+
+/// StreamProvider exposing live [VehicleSnapshot] telemetry from the hybrid dual-engine stream.
 @riverpod
 Stream<VehicleSnapshot> vehicleSnapshot(Ref ref) {
-  final repository = ref.watch(bleRepositoryProvider);
-  return repository.getVehicleSnapshotStream().map((snapshot) {
+  final repository = ref.watch(telemetryRepositoryProvider);
+  return repository.telemetryStream.map((snapshot) {
     ref.read(syncStateServiceProvider.future).then((s) => s.saveLastSnapshot(snapshot));
     return snapshot;
   });
 }
 
-/// Provider exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
+/// Notifier exposing the latest available [VehicleSnapshot], combining live stream with cached memory snapshot.
 @riverpod
-VehicleSnapshot? lastKnownVehicleSnapshot(Ref ref) {
-  final snapshotAsync = ref.watch(vehicleSnapshotProvider);
-  final repository = ref.watch(bleRepositoryProvider);
-  return snapshotAsync.value ?? repository.lastCachedSnapshot;
+class LastKnownVehicleSnapshot extends _$LastKnownVehicleSnapshot {
+  @override
+  VehicleSnapshot? build() {
+    final snapshotAsync = ref.watch(vehicleSnapshotProvider);
+    final telemetryRepo = ref.watch(telemetryRepositoryProvider);
+    final bleRepo = ref.watch(bleRepositoryProvider);
+    return snapshotAsync.value ?? telemetryRepo.lastSnapshot ?? bleRepo.lastCachedSnapshot;
+  }
 }
 
-/// The persisted-on-disk snapshot, for screens that want to show "last
-/// synced at X" even before any BLE connection this app session (survives
-/// app restart — [lastKnownVehicleSnapshotProvider] above does not).
+/// Notifier for the persisted-on-disk snapshot for screens showing last known data,
+/// tagged explicitly as [TelemetrySource.cached].
 @riverpod
-Future<VehicleSnapshot?> persistedVehicleSnapshot(Ref ref) async {
-  final service = await ref.watch(syncStateServiceProvider.future);
-  return service.getLastSnapshot();
+class PersistedVehicleSnapshot extends _$PersistedVehicleSnapshot {
+  @override
+  FutureOr<VehicleSnapshot?> build() async {
+    final service = await ref.watch(syncStateServiceProvider.future);
+    final snapshot = service.getLastSnapshot();
+    return snapshot?.copyWith(source: TelemetrySource.cached);
+  }
 }
