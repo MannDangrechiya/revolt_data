@@ -30,12 +30,22 @@ class LoggedPacket {
   });
 
   factory LoggedPacket.fromRawPacket(RawPacket packet) {
-    final hex = packet.value
+    var displayBytes = packet.value;
+    
+    // Redact PAIR token
+    if (packet.direction == PacketDirection.write && packet.value.length >= 4) {
+      final asciiStr = utf8.decode(packet.value, allowMalformed: true);
+      if (asciiStr.startsWith('PAIR') && asciiStr.length > 4) {
+         displayBytes = Uint8List.fromList([80, 65, 73, 82, 42, 42, 42, 42, 35]); // PAIR****#
+      }
+    }
+
+    final hex = displayBytes
         .map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase())
         .join(' ');
 
     String parsedJsonStr = 'N/A';
-    final snapshot = VehicleSnapshot.parseRawBytes(packet.value);
+    final snapshot = VehicleSnapshot.parseRawBytes(displayBytes);
     if (snapshot != null) {
       parsedJsonStr = const JsonEncoder.withIndent('  ').convert(snapshot.toJson());
     }
@@ -44,7 +54,7 @@ class LoggedPacket {
       timestamp: packet.timestamp,
       characteristicUuid: packet.characteristicUuid,
       direction: packet.direction,
-      rawBytes: packet.value,
+      rawBytes: displayBytes,
       hexString: hex,
       parsedJson: parsedJsonStr,
     );
