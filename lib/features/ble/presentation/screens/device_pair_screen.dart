@@ -97,10 +97,21 @@ class DevicePairScreen extends HookConsumerWidget {
                     enabled: !isLoading.value,
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'This is issued per-account by Revolt, not a fixed PIN — check '
-                    'the MyRevolt app or your account if you don\'t have it handy.',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Derived from Base64(Mobile:IMEI) - official MyRevolt token.',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => _showTokenGeneratorDialog(context, tokenController),
+                        icon: const Icon(LucideIcons.calculator, size: 14),
+                        label: const Text('Custom IMEI', style: TextStyle(fontSize: 12)),
+                      ),
+                    ],
                   ),
                   if (errorMessage.value != null) ...[
                     const SizedBox(height: 12),
@@ -202,4 +213,79 @@ class DevicePairScreen extends HookConsumerWidget {
       ),
     );
   }
+
+  void _showTokenGeneratorDialog(
+    BuildContext context,
+    TextEditingController tokenController,
+  ) {
+    final mobileController = TextEditingController(text: AppConstants.defaultMobileNumber);
+    final imeiController = TextEditingController(text: AppConstants.defaultEcuImei);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(LucideIcons.key, size: 20),
+            SizedBox(width: 8),
+            Text('Derive Pairing Token', style: TextStyle(fontSize: 16)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'MyRevolt computes the 13-character BLE token using Base64 of Registered Mobile : ECU IMEI.',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: mobileController,
+              decoration: const InputDecoration(
+                labelText: 'Mobile Number',
+                hintText: '10-digit mobile number',
+                prefixIcon: Icon(LucideIcons.phone, size: 18),
+                isDense: true,
+              ),
+              keyboardType: TextInputType.phone,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: imeiController,
+              decoration: const InputDecoration(
+                labelText: 'ECU IMEI',
+                hintText: '15-digit IMEI',
+                prefixIcon: Icon(LucideIcons.binary, size: 18),
+                isDense: true,
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final mobile = mobileController.text.trim();
+              final imei = imeiController.text.trim();
+              if (mobile.isNotEmpty && imei.isNotEmpty) {
+                final derived = AppConstants.deriveToken(
+                  mobileNumber: mobile,
+                  ecuImei: imei,
+                );
+                tokenController.text = derived;
+              }
+              Navigator.pop(ctx);
+            },
+            child: const Text('Calculate Token'),
+          ),
+        ],
+      ),
+    );
+  }
 }
+

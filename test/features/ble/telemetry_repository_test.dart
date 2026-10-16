@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:revolt_data/core/constants/app_constants.dart';
 import 'package:revolt_data/features/ble/data/revolt_ble_repository.dart';
 import 'package:revolt_data/features/ble/data/telemetry_repository.dart';
 import 'package:revolt_data/features/ble/domain/vehicle_snapshot.dart';
@@ -60,5 +61,16 @@ void main() {
       bleRepo.dispose();
       remoteRepo.dispose();
     });
+
+    test('AppConstants.deriveToken produces authentic 13-char Base64 token', () {
+      final token = AppConstants.deriveToken(
+        mobileNumber: '8866945430',
+        ecuImei: '864218069498106',
+      );
+      expect(token, equals('ODg2Njk0NTQzM'));
+      expect(token.length, equals(13));
+      expect(AppConstants.knownBlePairingToken, equals('ODg2Njk0NTQzM'));
+    });
   });
 }
+

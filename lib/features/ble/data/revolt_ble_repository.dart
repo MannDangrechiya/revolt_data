@@ -115,6 +115,10 @@ class RevoltBleRepository implements BleVehicleRepository {
     _updateState(BleConnectionState.connecting);
     try {
       await _client.connect(deviceId);
+      // Negotiate MTU 247 (matching official MyRevolt app) to avoid packet truncation
+      try {
+        await _client.requestMtu(247);
+      } catch (_) {}
       _consecutive133Failures = 0;
       _updateState(BleConnectionState.connected);
       _startListening();
