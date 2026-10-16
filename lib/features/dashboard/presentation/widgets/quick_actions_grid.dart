@@ -14,6 +14,9 @@ class _QuickAction {
 }
 
 const _quickActions = [
+  _QuickAction('Riding Cockpit', LucideIcons.gauge, Color(0xFFF97316), '/cockpit'),
+  _QuickAction('Battery Longevity', LucideIcons.batteryFull, Color(0xFF10B981), '/battery-health'),
+  _QuickAction('RV400 Care Guide', LucideIcons.bookOpen, Color(0xFF0EA5E9), '/maintenance/care-guide'),
   _QuickAction('Range Planner', LucideIcons.route, Color(0xFF2563EB), '/range-planner'),
   _QuickAction('15A Charging', LucideIcons.plugZap, Color(0xFF059669), '/home-charging'),
   _QuickAction('Security Shield', LucideIcons.shieldCheck, Color(0xFF0D9488), '/security'),

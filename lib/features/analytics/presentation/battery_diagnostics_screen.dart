@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../shared/ui/volt_app_bar.dart';
 import '../../ble/domain/vehicle_snapshot.dart';
@@ -50,6 +51,11 @@ class BatteryDiagnosticsScreen extends ConsumerWidget {
       appBar: VoltAppBar(
         title: 'Battery & BMS Diagnostics',
         actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.heartPulse),
+            tooltip: 'Battery Longevity & Health',
+            onPressed: () => context.push('/battery-health'),
+          ),
           IconButton(
             icon: const Icon(LucideIcons.refreshCw),
             tooltip: 'Refresh Telematics',
