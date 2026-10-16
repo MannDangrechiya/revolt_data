@@ -14,12 +14,15 @@ class _QuickAction {
 }
 
 const _quickActions = [
+  _QuickAction('Range Planner', LucideIcons.route, Color(0xFF2563EB), '/range-planner'),
+  _QuickAction('15A Charging', LucideIcons.plugZap, Color(0xFF059669), '/home-charging'),
   _QuickAction('Security Shield', LucideIcons.shieldCheck, Color(0xFF0D9488), '/security'),
   _QuickAction('Battery & BMS', LucideIcons.heartPulse, Color(0xFF10B981), '/battery-diagnostics'),
   _QuickAction('Sound Studio', LucideIcons.volume2, Color(0xFFE11D48), '/sound-studio'),
-  _QuickAction('Connect Bike', LucideIcons.bluetooth, Color(0xFF2563EB), '/device/scan'),
-  _QuickAction('Rides', LucideIcons.bike, Color(0xFF3B82F6), '/rides'),
-  _QuickAction('Charging', LucideIcons.batteryCharging, Color(0xFF059669), '/charging'),
+  _QuickAction('Device Hub', LucideIcons.cpu, Color(0xFF8B5CF6), '/device-hub'),
+  _QuickAction('Connect Bike', LucideIcons.bluetooth, Color(0xFF3B82F6), '/device/scan'),
+  _QuickAction('Rides', LucideIcons.bike, Color(0xFF2563EB), '/rides'),
+  _QuickAction('Charging', LucideIcons.batteryCharging, Color(0xFF10B981), '/charging'),
   _QuickAction('Expenses', LucideIcons.wallet, Color(0xFFF59E0B), '/expenses'),
   _QuickAction('Maintenance', LucideIcons.wrench, Color(0xFFEF4444), '/maintenance'),
   _QuickAction('Reminders', LucideIcons.bell, Color(0xFF8B5CF6), '/reminders'),

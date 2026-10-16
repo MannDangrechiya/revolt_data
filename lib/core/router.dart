@@ -36,6 +36,9 @@ import '../features/intelligence/presentation/coaches_screen.dart';
 import '../features/dashboard/presentation/sound_studio_screen.dart';
 import '../features/security/presentation/security_screen.dart';
 import '../features/analytics/presentation/battery_diagnostics_screen.dart';
+import '../features/intelligence/presentation/range_planner_screen.dart';
+import '../features/charging/presentation/home_charging_screen.dart';
+import '../features/settings/presentation/device_hub_screen.dart';
 
 /// Helper function to build custom page transition with Curves.easeInOutCirc fade.
 CustomTransitionPage buildPageWithDefaultTransition<T>({
@@ -373,6 +376,18 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/battery-diagnostics',
       builder: (context, state) => const BatteryDiagnosticsScreen(),
+    ),
+    GoRoute(
+      path: '/range-planner',
+      builder: (context, state) => const RangePlannerScreen(),
+    ),
+    GoRoute(
+      path: '/home-charging',
+      builder: (context, state) => const HomeChargingScreen(),
+    ),
+    GoRoute(
+      path: '/device-hub',
+      builder: (context, state) => const DeviceHubScreen(),
     ),
   ],
 );
