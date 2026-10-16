@@ -52,6 +52,11 @@ class BatteryDiagnosticsScreen extends ConsumerWidget {
         title: 'Battery & BMS Diagnostics',
         actions: [
           IconButton(
+            icon: const Icon(LucideIcons.scanLine),
+            tooltip: 'Full System Diagnostics Scan',
+            onPressed: () => context.push('/diagnostics-scan'),
+          ),
+          IconButton(
             icon: const Icon(LucideIcons.heartPulse),
             tooltip: 'Battery Longevity & Health',
             onPressed: () => context.push('/battery-health'),

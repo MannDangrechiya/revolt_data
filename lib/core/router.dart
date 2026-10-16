@@ -42,6 +42,7 @@ import '../features/settings/presentation/device_hub_screen.dart';
 import '../features/maintenance/presentation/rv400_care_guide_screen.dart';
 import '../features/dashboard/presentation/riding_cockpit_screen.dart';
 import '../features/analytics/presentation/battery_health_screen.dart';
+import '../features/analytics/presentation/vehicle_diagnostics_scan_screen.dart';
 
 /// Helper function to build custom page transition with Curves.easeInOutCirc fade.
 CustomTransitionPage buildPageWithDefaultTransition<T>({
@@ -403,6 +404,10 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/battery-health',
       builder: (context, state) => const BatteryHealthScreen(),
+    ),
+    GoRoute(
+      path: '/diagnostics-scan',
+      builder: (context, state) => const VehicleDiagnosticsScanScreen(),
     ),
   ],
 );
