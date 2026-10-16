@@ -8,6 +8,7 @@ import '../../../core/widgets/not_found_widget.dart';
 import '../data/rides_provider.dart';
 import '../domain/ride.dart';
 import 'widgets/ride_route_map_widget.dart';
+import 'widgets/ride_story_sheet.dart';
 
 class RideDetailsScreen extends ConsumerWidget {
   final String rideId;
@@ -44,6 +45,18 @@ class RideDetailsScreen extends ConsumerWidget {
                   padding: EdgeInsets.only(right: 8.0),
                   child: Icon(Icons.star, color: Colors.amber),
                 ),
+              IconButton(
+                icon: const Icon(LucideIcons.share2),
+                tooltip: 'Share Ride Story',
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => RideStorySheet(ride: ride),
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(LucideIcons.pencil),
                 tooltip: 'Edit',
@@ -101,7 +114,24 @@ class RideDetailsScreen extends ConsumerWidget {
                       Expanded(child: _buildMetricCard(context, 'Battery Used', '${ride.batteryConsumed}%', LucideIcons.batteryMedium)),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => RideStorySheet(ride: ride),
+                      );
+                    },
+                    icon: const Icon(LucideIcons.sparkles, size: 16),
+                    label: const Text('View Ride Story & Savings'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(44),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   
                   _buildSectionHeader('Route details', LucideIcons.map),
                   const SizedBox(height: 16),

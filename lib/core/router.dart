@@ -39,6 +39,7 @@ import '../features/analytics/presentation/battery_diagnostics_screen.dart';
 import '../features/intelligence/presentation/range_planner_screen.dart';
 import '../features/charging/presentation/home_charging_screen.dart';
 import '../features/settings/presentation/device_hub_screen.dart';
+import '../features/maintenance/presentation/rv400_care_guide_screen.dart';
 
 /// Helper function to build custom page transition with Curves.easeInOutCirc fade.
 CustomTransitionPage buildPageWithDefaultTransition<T>({
@@ -300,6 +301,10 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/maintenance/edit/:id',
       builder: (context, state) => MaintenanceEntryFormScreen(logId: state.pathParameters['id']),
+    ),
+    GoRoute(
+      path: '/maintenance/care-guide',
+      builder: (context, state) => const Rv400CareGuideScreen(),
     ),
     GoRoute(
       path: '/reminders',
