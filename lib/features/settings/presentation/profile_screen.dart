@@ -289,7 +289,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       onTap: () => showLicensePage(
                         context: context,
                         applicationName: 'Revolt Data',
-                        applicationVersion: '1.0.0',
+                        applicationVersion: '2.1.0',
                         applicationLegalese: '© 2026 Mann Dipakbhai Dangrechiya\nrevolt_ble_sdk (MIT)',
                       ),
                     ),

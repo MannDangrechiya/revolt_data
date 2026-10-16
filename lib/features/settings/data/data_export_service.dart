@@ -27,7 +27,7 @@ Future<String> exportAllData(Ref ref) async {
   final exportData = {
     'exportedAt': DateTime.now().toIso8601String(),
     'appName': 'Revolt Data',
-    'version': '1.0.0',
+    'version': '2.1.0',
     'rides': rides.map((r) => r.toDomain().toJson()).toList(),
     'chargeLogs': chargeLogs.map((r) => r.toDomain().toJson()).toList(),
     'expenses': expenses.map((r) => r.toDomain().toJson()).toList(),
