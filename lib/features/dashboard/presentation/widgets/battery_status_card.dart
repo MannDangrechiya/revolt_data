@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../ble/domain/vehicle_snapshot.dart';
@@ -62,8 +63,11 @@ class BatteryStatusCard extends StatelessWidget {
         ? '$healthValue%'
         : (hasLiveTelematics ? 'N/A' : 'Connect for health');
 
-    return Container(
-      padding: const EdgeInsets.all(20),
+    return InkWell(
+      onTap: () => context.push('/battery-diagnostics'),
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -319,6 +323,7 @@ class BatteryStatusCard extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

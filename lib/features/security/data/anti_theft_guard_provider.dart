@@ -23,6 +23,7 @@ class AntiTheftState {
   final DateTime? parkedTime;
   final double? distanceMovedMeters;
   final String? alertMessage;
+  final double geofenceRadiusMeters;
 
   const AntiTheftState({
     this.status = AntiTheftStatus.unarmed,
@@ -31,6 +32,7 @@ class AntiTheftState {
     this.parkedTime,
     this.distanceMovedMeters,
     this.alertMessage,
+    this.geofenceRadiusMeters = 50.0,
   });
 
   AntiTheftState copyWith({
@@ -40,6 +42,7 @@ class AntiTheftState {
     DateTime? parkedTime,
     double? distanceMovedMeters,
     String? alertMessage,
+    double? geofenceRadiusMeters,
   }) {
     return AntiTheftState(
       status: status ?? this.status,
@@ -48,6 +51,7 @@ class AntiTheftState {
       parkedTime: parkedTime ?? this.parkedTime,
       distanceMovedMeters: distanceMovedMeters ?? this.distanceMovedMeters,
       alertMessage: alertMessage ?? this.alertMessage,
+      geofenceRadiusMeters: geofenceRadiusMeters ?? this.geofenceRadiusMeters,
     );
   }
 }
@@ -111,10 +115,14 @@ class AntiTheftGuard extends _$AntiTheftGuard {
 
     state = state.copyWith(distanceMovedMeters: distanceMeters);
 
-    // Anti-theft trigger threshold: > 50 meters displacement while armed
-    if (distanceMeters > 50.0) {
+    // Anti-theft trigger threshold: displacement beyond configured geofence radius
+    if (distanceMeters > state.geofenceRadiusMeters) {
       _triggerAntiTheftAlert(distanceMeters, coords.$1, coords.$2);
     }
+  }
+
+  void setGeofenceRadius(double radiusMeters) {
+    state = state.copyWith(geofenceRadiusMeters: radiusMeters);
   }
 
   void _armWithCoords(String gpsCoordsStr) {
@@ -126,6 +134,7 @@ class AntiTheftGuard extends _$AntiTheftGuard {
         parkedLongitude: parsed.$2,
         parkedTime: DateTime.now(),
         distanceMovedMeters: 0.0,
+        geofenceRadiusMeters: state.geofenceRadiusMeters,
       );
     }
   }
@@ -137,11 +146,15 @@ class AntiTheftGuard extends _$AntiTheftGuard {
       parkedLongitude: lng ?? state.parkedLongitude ?? 77.2090,
       parkedTime: DateTime.now(),
       distanceMovedMeters: 0.0,
+      geofenceRadiusMeters: state.geofenceRadiusMeters,
     );
   }
 
   void disarmGuard() {
-    state = const AntiTheftState(status: AntiTheftStatus.unarmed);
+    state = AntiTheftState(
+      status: AntiTheftStatus.unarmed,
+      geofenceRadiusMeters: state.geofenceRadiusMeters,
+    );
   }
 
   void checkPositionAndEvaluate(double currentLat, double currentLng) {
@@ -157,8 +170,32 @@ class AntiTheftGuard extends _$AntiTheftGuard {
 
     state = state.copyWith(distanceMovedMeters: distanceMeters);
 
-    if (distanceMeters > 50.0) {
+    if (distanceMeters > state.geofenceRadiusMeters) {
       _triggerAntiTheftAlert(distanceMeters, currentLat, currentLng);
+    }
+  }
+
+  /// Sends a chirp/hazard command ('LOCATE#') to help find the bike in parking areas.
+  Future<bool> triggerLocateBike() async {
+    final bleRepo = ref.read(bleRepositoryProvider);
+    try {
+      await bleRepo.sendCommand('LOCATE#');
+      return true;
+    } catch (e) {
+      debugPrint('[AntiTheftGuard] triggerLocateBike error: $e');
+      return false;
+    }
+  }
+
+  /// Sends an emergency engine lock/immobilize command ('LOCK#') to the bike ECU.
+  Future<bool> remoteLockEngine() async {
+    final bleRepo = ref.read(bleRepositoryProvider);
+    try {
+      await bleRepo.sendCommand('LOCK#');
+      return true;
+    } catch (e) {
+      debugPrint('[AntiTheftGuard] remoteLockEngine error: $e');
+      return false;
     }
   }
 

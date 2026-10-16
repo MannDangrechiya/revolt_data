@@ -34,6 +34,8 @@ import '../features/ble/presentation/screens/ble_debug_screen.dart';
 import '../features/notifications/presentation/notification_history_screen.dart';
 import '../features/intelligence/presentation/coaches_screen.dart';
 import '../features/dashboard/presentation/sound_studio_screen.dart';
+import '../features/security/presentation/security_screen.dart';
+import '../features/analytics/presentation/battery_diagnostics_screen.dart';
 
 /// Helper function to build custom page transition with Curves.easeInOutCirc fade.
 CustomTransitionPage buildPageWithDefaultTransition<T>({
@@ -363,6 +365,14 @@ final routerDelegate = GoRouter(
     GoRoute(
       path: '/sound-studio',
       builder: (context, state) => const SoundStudioScreen(),
+    ),
+    GoRoute(
+      path: '/security',
+      builder: (context, state) => const SecurityScreen(),
+    ),
+    GoRoute(
+      path: '/battery-diagnostics',
+      builder: (context, state) => const BatteryDiagnosticsScreen(),
     ),
   ],
 );
