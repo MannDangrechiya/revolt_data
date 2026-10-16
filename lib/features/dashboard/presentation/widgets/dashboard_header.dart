@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../ble/domain/connection_state.dart';
+import '../../../ble/domain/vehicle_snapshot.dart';
 import '../../../ble/presentation/widgets/connection_status_badge.dart';
 import '../../../../core/widgets/animated_number.dart';
 
@@ -10,12 +11,14 @@ class DashboardHeader extends StatelessWidget {
   final String bikeName;
   final BleConnectionState connectionStatus;
   final num currentOdometer;
+  final TelemetrySource? telemetrySource;
 
   const DashboardHeader({
     super.key,
     required this.bikeName,
     required this.connectionStatus,
     required this.currentOdometer,
+    this.telemetrySource,
   });
 
   @override
@@ -46,6 +49,12 @@ class DashboardHeader extends StatelessWidget {
                       onTap: () => context.push('/device'),
                       child: ConnectionStatusBadge(
                         state: connectionStatus,
+                        source: (connectionStatus == BleConnectionState.connected ||
+                                connectionStatus == BleConnectionState.authenticated)
+                            ? TelemetrySource.ble
+                            : (telemetrySource == TelemetrySource.cloud
+                                ? TelemetrySource.cloud
+                                : null),
                       ),
                     ),
                   ),

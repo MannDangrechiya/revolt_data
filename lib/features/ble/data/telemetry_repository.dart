@@ -87,6 +87,12 @@ class TelemetryRepository {
     }
   }
 
+  /// Triggers an immediate cloud poll to refresh telematics when BLE is inactive.
+  Future<VehicleSnapshot?> refreshCloudTelemetry() async {
+    await _pollCloud();
+    return _lastSnapshot;
+  }
+
   /// Stream emitting unified telemetry snapshots from either BLE or Cloud origin.
   Stream<VehicleSnapshot> get telemetryStream => _telemetryController.stream;
 

@@ -59,7 +59,7 @@ class ConnectionStatusBadge extends StatelessWidget {
     if (source != null) {
       return switch (source!) {
         TelemetrySource.ble => (Colors.teal, 'Live BLE'),
-        TelemetrySource.cloud => (Colors.blue, 'Cloud Sync'),
+        TelemetrySource.cloud => (Colors.blue, '4G Cloud'),
         TelemetrySource.cached => (Colors.grey, 'Offline / Cached'),
       };
     }

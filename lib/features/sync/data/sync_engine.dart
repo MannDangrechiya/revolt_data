@@ -4,6 +4,7 @@ import '../../ble/data/revolt_ble_repository.dart';
 import '../../ble/domain/vehicle_snapshot.dart';
 import '../../rides/domain/ride.dart';
 import '../../tracking/data/background_location_service.dart';
+import '../../tracking/data/ride_merger.dart';
 import '../../tracking/domain/gps_tracking_state.dart';
 import '../domain/missed_ride_candidate.dart';
 import '../domain/sync_result.dart';
@@ -174,6 +175,9 @@ class SyncEngine {
         maxSpeed: scoredCandidate.gpsMaxSpeedKmh ?? 40.0,
         notes: 'Auto-synced ride via Smart Sync Engine',
         source: scoredCandidate.dataSource,
+        routePolyline: (scoredCandidate.gpsRoute != null && scoredCandidate.gpsRoute!.isNotEmpty)
+            ? RideMerger.encodeRoutePolyline(scoredCandidate.gpsRoute!)
+            : null,
       );
 
       await _db.into(_db.ridesTable).insert(autoRide.toCompanion());

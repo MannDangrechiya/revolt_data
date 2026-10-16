@@ -39,5 +39,26 @@ void main() {
       bleRepo.dispose();
       remoteRepo.dispose();
     });
+
+    test('refreshCloudTelemetry manually triggers poll and updates lastSnapshot', () async {
+      final bleRepo = RevoltBleRepository();
+      final remoteRepo = RevoltRemoteRepository();
+      remoteRepo.setDemoMode(true);
+
+      final telemetryRepo = TelemetryRepository(
+        bleRepository: bleRepo,
+        remoteRepository: remoteRepo,
+      );
+
+      final snapshot = await telemetryRepo.refreshCloudTelemetry();
+      expect(snapshot, isNotNull);
+      expect(snapshot!.batteryPercent, 88);
+      expect(snapshot.source, TelemetrySource.cloud);
+      expect(telemetryRepo.lastSnapshot?.odometer, 1420.5);
+
+      telemetryRepo.dispose();
+      bleRepo.dispose();
+      remoteRepo.dispose();
+    });
   });
 }

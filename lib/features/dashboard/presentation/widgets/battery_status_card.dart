@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../ble/domain/vehicle_snapshot.dart';
 import '../../domain/dashboard_data.dart';
 import '../../../../core/widgets/animated_number.dart';
 
@@ -17,17 +18,27 @@ class BatteryStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final liveSnapshot = data.liveSnapshot;
+    final isCloudActive = !isConnected &&
+        liveSnapshot != null &&
+        liveSnapshot.source == TelemetrySource.cloud;
+    final hasLiveTelematics = isConnected || isCloudActive;
 
-    final batteryPercent = (isConnected && liveSnapshot != null && liveSnapshot.batteryPercent != null)
+    final batteryPercent = (hasLiveTelematics &&
+            liveSnapshot != null &&
+            liveSnapshot.batteryPercent != null)
         ? liveSnapshot.batteryPercent!
         : data.latestBatteryPercentage;
 
-    // Direct telemetry range when connected; manual log calculation without multiplier when disconnected.
-    final rangeValue = (isConnected && liveSnapshot != null && liveSnapshot.range != null)
+    // Direct telemetry range when connected or cloud; manual log calculation without multiplier when disconnected.
+    final rangeValue = (hasLiveTelematics &&
+            liveSnapshot != null &&
+            liveSnapshot.range != null)
         ? liveSnapshot.range!
         : batteryPercent.toDouble();
 
-    final speedValue = (isConnected && liveSnapshot != null && liveSnapshot.speed != null)
+    final speedValue = (hasLiveTelematics &&
+            liveSnapshot != null &&
+            liveSnapshot.speed != null)
         ? liveSnapshot.speed!
         : 0.0;
 
@@ -42,12 +53,14 @@ class BatteryStatusCard extends StatelessWidget {
 
     final borderColor = isConnected
         ? Colors.green
-        : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2);
+        : (isCloudActive
+            ? Colors.blue
+            : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2));
 
     final healthValue = liveSnapshot?.batteryHealth;
     final healthText = healthValue != null && healthValue > 0
         ? '$healthValue%'
-        : (isConnected ? 'N/A' : 'Connect for health');
+        : (hasLiveTelematics ? 'N/A' : 'Connect for health');
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -64,7 +77,7 @@ class BatteryStatusCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: borderColor,
-          width: isConnected ? 2 : 1,
+          width: hasLiveTelematics ? 2 : 1,
         ),
         boxShadow: isConnected
             ? [
@@ -74,7 +87,15 @@ class BatteryStatusCard extends StatelessWidget {
                   spreadRadius: 2,
                 )
               ]
-            : null,
+            : (isCloudActive
+                ? [
+                    BoxShadow(
+                      color: Colors.blue.withValues(alpha: 0.25),
+                      blurRadius: 14,
+                      spreadRadius: 2,
+                    )
+                  ]
+                : null),
       ),
       child: Column(
         children: [
@@ -109,7 +130,7 @@ class BatteryStatusCard extends StatelessWidget {
                                     size: 10, color: Colors.white),
                                 SizedBox(width: 4),
                                 Text(
-                                  'LIVE',
+                                  'LIVE BLE',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 10,
@@ -119,23 +140,49 @@ class BatteryStatusCard extends StatelessWidget {
                               ],
                             ),
                           )
-                        : Container(
-                            key: const ValueKey('est_chip'),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.amber.shade800,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text(
-                              'ESTIMATED',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                        : (isCloudActive
+                            ? Container(
+                                key: const ValueKey('cloud_chip'),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade700,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(LucideIcons.cloud,
+                                        size: 10, color: Colors.white),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      '4G CLOUD',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container(
+                                key: const ValueKey('est_chip'),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.shade800,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text(
+                                  'ESTIMATED',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )),
                   ),
                 ],
               ),

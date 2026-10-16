@@ -19,17 +19,50 @@ class RevoltRemoteRepository {
   final String baseUrl;
   final http.Client _httpClient;
   String? _authToken;
+  String? _configuredVehicleId;
+  String? _customTelematicsUrl;
+  bool _isDemoModeEnabled = false;
 
   RevoltRemoteRepository({
     String? baseUrl,
     http.Client? httpClient,
     String? authToken,
+    String? configuredVehicleId,
+    String? customTelematicsUrl,
+    bool isDemoModeEnabled = false,
   })  : baseUrl = baseUrl ?? 'https://api.revoltmotors.com',
         _httpClient = httpClient ?? http.Client(),
-        _authToken = authToken;
+        _authToken = authToken,
+        _configuredVehicleId = configuredVehicleId,
+        _customTelematicsUrl = customTelematicsUrl,
+        _isDemoModeEnabled = isDemoModeEnabled;
 
   /// Returns true if an authentication token is currently set.
   bool get isAuthenticated => _authToken != null && _authToken!.isNotEmpty;
+
+  /// Gets the currently configured vehicle identifier.
+  String? get configuredVehicleId => _configuredVehicleId;
+
+  /// Sets the vehicle identifier for zero-login direct queries.
+  void setConfiguredVehicleId(String? vehicleId) {
+    _configuredVehicleId = vehicleId;
+  }
+
+  /// Gets the custom telematics URL, if configured.
+  String? get customTelematicsUrl => _customTelematicsUrl;
+
+  /// Sets a custom webhook or REST endpoint for bike telematics.
+  void setCustomTelematicsUrl(String? url) {
+    _customTelematicsUrl = url;
+  }
+
+  /// Whether demo/simulation telematics mode is active.
+  bool get isDemoModeEnabled => _isDemoModeEnabled;
+
+  /// Enables or disables simulation telematics for testing without physical bike.
+  void setDemoMode(bool enabled) {
+    _isDemoModeEnabled = enabled;
+  }
 
   /// Sets the authentication token for remote API requests.
   void setAuthToken(String token) {
@@ -79,12 +112,20 @@ class RevoltRemoteRepository {
     }
   }
 
-  /// Fetches live telematics vehicle state from Revolt Cloud REST API.
+  /// Fetches live telematics vehicle state from Revolt Cloud REST API or custom webhook.
   ///
   /// Returns a [VehicleSnapshot] tagged with [TelemetrySource.cloud].
   Future<VehicleSnapshot?> fetchVehicleState({String? vehicleId}) async {
+    final targetVehicleId = vehicleId ?? _configuredVehicleId;
+
+    if (_isDemoModeEnabled) {
+      return _generateDemoSnapshot(targetVehicleId);
+    }
+
     try {
-      final url = Uri.parse('$baseUrl/api/v1/vehicle/telematics/live${vehicleId != null ? "?vehicle_id=$vehicleId" : ""}');
+      final endpoint = _customTelematicsUrl ??
+          '$baseUrl/api/v1/vehicle/telematics/live${targetVehicleId != null ? "?vehicle_id=$targetVehicleId" : ""}';
+      final url = Uri.parse(endpoint);
       final headers = <String, String>{
         'Content-Type': 'application/json',
         if (_authToken != null) 'Authorization': 'Bearer $_authToken',
@@ -130,6 +171,28 @@ class RevoltRemoteRepository {
       debugPrint('[RevoltRemoteRepository] fetchVehicleState failed: $e');
       return null;
     }
+  }
+
+  /// Generates a realistic simulated Revolt RV400 telematics snapshot for demo testing.
+  VehicleSnapshot _generateDemoSnapshot(String? vehicleId) {
+    return VehicleSnapshot(
+      batteryPercent: 88,
+      batteryVoltage: 72.4,
+      batteryCurrent: 0.0,
+      batteryTemp: 32,
+      motorTemp: 38,
+      speed: 0.0,
+      tripDistance: 14.2,
+      odometer: 1420.5,
+      rideMode: 'Normal',
+      range: 75.0,
+      power: 0.0,
+      batteryHealth: 97,
+      gpsCoords: '18.5204,73.8567',
+      faultCodes: const [],
+      timestamp: DateTime.now(),
+      source: TelemetrySource.cloud,
+    );
   }
 
   void dispose() {

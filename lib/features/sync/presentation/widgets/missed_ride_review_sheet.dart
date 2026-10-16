@@ -1,8 +1,11 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/database/database_mappers.dart';
 import '../../../../core/database/database_provider.dart';
+import '../../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../../../rides/domain/ride.dart';
+import '../../../tracking/data/ride_merger.dart';
 import '../../domain/missed_ride_candidate.dart';
 import '../providers/sync_engine_notifier.dart';
 
@@ -72,13 +75,28 @@ class _MissedRideReviewSheetState
     final db = ref.read(databaseProvider);
     final durationMins = end.difference(start).inMinutes.clamp(1, 1440);
 
+    final latestRides = await (db.select(db.ridesTable)
+          ..orderBy([(t) => drift.OrderingTerm(expression: t.endOdometer, mode: drift.OrderingMode.desc)])
+          ..limit(1))
+        .get();
+    final baseOdometer = latestRides.isNotEmpty ? latestRides.first.endOdometer : 0.0;
+    final startOdo = baseOdometer;
+    final endOdo = baseOdometer + dist;
+
+    final lastSnapshot = ref.read(lastKnownVehicleSnapshotProvider);
+    final currentBattery = lastSnapshot?.batteryPercent ?? 100;
+
+    final polylineJson = candidate.gpsRoute != null && candidate.gpsRoute!.isNotEmpty
+        ? RideMerger.encodeRoutePolyline(candidate.gpsRoute!)
+        : null;
+
     final ride = Ride(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       date: start,
-      startOdometer: 0.0,
-      endOdometer: dist,
-      batteryBefore: 100,
-      batteryAfter: 100,
+      startOdometer: startOdo,
+      endOdometer: endOdo,
+      batteryBefore: currentBattery,
+      batteryAfter: currentBattery,
       rideMode: mode,
       roadCondition: RoadCondition.smooth,
       startTime: start,
@@ -87,6 +105,7 @@ class _MissedRideReviewSheetState
       maxSpeed: speed,
       notes: 'Reviewed Missed Ride (${candidate.confidence} confidence)',
       source: candidate.dataSource,
+      routePolyline: polylineJson,
     );
 
     await db.into(db.ridesTable).insert(ride.toCompanion());

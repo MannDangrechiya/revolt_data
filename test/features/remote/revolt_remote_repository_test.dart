@@ -85,5 +85,60 @@ void main() {
       expect(token, 'jwt-auth-token-123');
       expect(repo.isAuthenticated, isTrue);
     });
+
+    test('zero-login direct query attaches configuredVehicleId without token', () async {
+      late Uri requestedUri;
+      final client = MockClient((request) async {
+        requestedUri = request.url;
+        return http.Response(jsonEncode({'soc': 82, 'odo': 1300.0}), 200);
+      });
+
+      final repo = RevoltRemoteRepository(
+        httpClient: client,
+        configuredVehicleId: 'RV400-PUNE-001',
+      );
+
+      final snapshot = await repo.fetchVehicleState();
+
+      expect(snapshot, isNotNull);
+      expect(snapshot!.batteryPercent, 82);
+      expect(snapshot.odometer, 1300.0);
+      expect(requestedUri.queryParameters['vehicle_id'], 'RV400-PUNE-001');
+      expect(repo.isAuthenticated, isFalse);
+    });
+
+    test('custom telematics URL overrides default endpoint', () async {
+      late String requestedUrl;
+      final client = MockClient((request) async {
+        requestedUrl = request.url.toString();
+        return http.Response(jsonEncode({'soc': 91, 'gpsCoords': '18.5204,73.8567'}), 200);
+      });
+
+      final repo = RevoltRemoteRepository(httpClient: client);
+      repo.setCustomTelematicsUrl('https://mybike.telematics.local/api/live');
+
+      final snapshot = await repo.fetchVehicleState();
+
+      expect(snapshot, isNotNull);
+      expect(snapshot!.batteryPercent, 91);
+      expect(requestedUrl, 'https://mybike.telematics.local/api/live');
+    });
+
+    test('demo simulation mode generates realistic RV400 telematics offline', () async {
+      final repo = RevoltRemoteRepository();
+      repo.setDemoMode(true);
+
+      expect(repo.isDemoModeEnabled, isTrue);
+
+      final snapshot = await repo.fetchVehicleState();
+
+      expect(snapshot, isNotNull);
+      expect(snapshot!.batteryPercent, 88);
+      expect(snapshot.batteryVoltage, 72.4);
+      expect(snapshot.odometer, 1420.5);
+      expect(snapshot.gpsCoords, '18.5204,73.8567');
+      expect(snapshot.batteryHealth, 97);
+      expect(snapshot.source, TelemetrySource.cloud);
+    });
   });
 }

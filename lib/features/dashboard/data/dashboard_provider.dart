@@ -120,11 +120,8 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
       }
     }
 
-    // Override with live BLE snapshot if connected
-    final isConnected = connectionState == BleConnectionState.connected ||
-        connectionState == BleConnectionState.authenticated;
-
-    if (isConnected && liveSnapshot != null) {
+    // Override with live telemetry snapshot (Live BLE or 4G Cloud)
+    if (liveSnapshot != null) {
       if (liveSnapshot.batteryPercent != null) {
         latestBattery = liveSnapshot.batteryPercent!;
       }

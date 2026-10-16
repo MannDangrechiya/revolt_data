@@ -225,6 +225,7 @@ class DashboardScreen extends HookConsumerWidget {
                         bikeName: bikeName,
                         connectionStatus: data.connectionStatus,
                         currentOdometer: data.currentOdometer,
+                        telemetrySource: data.liveSnapshot?.source,
                       ),
                       const SizedBox(height: 16),
                       const SwipeToStartWidget(),
