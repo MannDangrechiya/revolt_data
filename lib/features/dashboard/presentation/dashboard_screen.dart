@@ -18,6 +18,7 @@ import 'widgets/dashboard_header.dart';
 import 'widgets/battery_status_card.dart';
 import 'widgets/dashboard_range_prediction_card.dart';
 import 'widgets/dashboard_fault_alert_card.dart';
+import 'widgets/swipe_to_start_widget.dart';
 import 'widgets/dashboard_health_score_card.dart';
 import 'widgets/dashboard_smart_alerts_card.dart';
 import 'widgets/dashboard_service_intelligence_card.dart';
@@ -29,6 +30,7 @@ import 'widgets/quick_actions_grid.dart';
 
 import '../../tracking/domain/gps_tracking_state.dart';
 import '../../tracking/presentation/providers/gps_ride_provider.dart';
+import '../../tracking/presentation/widgets/live_bike_map_widget.dart';
 
 import '../../sync/presentation/providers/sync_engine_notifier.dart';
 import '../../sync/presentation/widgets/sync_status_indicator.dart';
@@ -72,6 +74,11 @@ class DashboardScreen extends HookConsumerWidget {
             icon: const Icon(LucideIcons.bluetooth),
             onPressed: () => context.push('/device/scan'),
             tooltip: 'Connect Bike',
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.volume2),
+            onPressed: () => context.push('/sound-studio'),
+            tooltip: 'Sound Studio',
           ),
           IconButton(
             icon: const Icon(LucideIcons.settings),
@@ -219,6 +226,8 @@ class DashboardScreen extends HookConsumerWidget {
                         connectionStatus: data.connectionStatus,
                         currentOdometer: data.currentOdometer,
                       ),
+                      const SizedBox(height: 16),
+                      const SwipeToStartWidget(),
                       const SizedBox(height: 20),
                       FadeSlideIn(
                         index: 0,
@@ -226,6 +235,11 @@ class DashboardScreen extends HookConsumerWidget {
                           data: data,
                           isConnected: isConnected,
                         ),
+                      ),
+                      const SizedBox(height: 20),
+                      const FadeSlideIn(
+                        index: 1,
+                        child: LiveBikeMapWidget(),
                       ),
                       if (rangePredictionAsync.hasValue) ...[
                         const SizedBox(height: 12),

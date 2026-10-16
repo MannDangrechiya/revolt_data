@@ -61,9 +61,9 @@ class _DocumentAddScreenState extends ConsumerState<DocumentAddScreen> {
           type: FileType.custom,
           allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
         );
-        if (result.isNotEmpty && result.first.path != null) {
+        if (result != null && result.files.isNotEmpty && result.files.first.path != null) {
           setState(() {
-            _selectedFile = File(result.first.path!);
+            _selectedFile = File(result.files.first.path!);
           });
         }
       }

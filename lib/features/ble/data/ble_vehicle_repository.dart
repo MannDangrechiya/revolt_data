@@ -35,4 +35,7 @@ abstract class BleVehicleRepository {
 
   /// Clears the cached telemetry snapshot (e.g. on logout or app restart).
   Future<void> clearSnapshotCache();
+
+  /// Sends a raw string command (e.g. 'START#', 'STOP#', 'SOUND0#') to the bike's control characteristic.
+  Future<void> sendCommand(String command);
 }

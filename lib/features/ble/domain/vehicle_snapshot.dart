@@ -112,14 +112,79 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
   ///   [22] faultCodes, ';'-terminated — parsed if present
   ///
   /// UNCONFIRMED INDEX POSITIONS: odometer, motorTemp, power, batteryCurrent, range, gpsCoords
-  /// Unconfirmed fields safely evaluate to null.
+  /// Parses a comma-separated "LD,..." formatted string into [VehicleSnapshot].
+  ///
+  /// Supports:
+  /// 1. Standard 15-field live telemetry / charging frames:
+  ///    `LD,<soc>,<voltage>,<current>,<batTemp>,<motTemp>,<speed>,<odo>,<mode>,<range>,<status>,<chargeFlag>,<health/sig>,<lat>,<lon>`
+  /// 2. Extended diagnostic frames (>= 20 fields) from firmware diagnostic dumps.
   static VehicleSnapshot? parseLdString(String rawString) {
     if (!rawString.startsWith('LD,')) return null;
 
     final parts = rawString.split(',');
-    if (parts.length < 20) return null;
+    if (parts.length < 15) return null;
 
     try {
+      // Branch 1: Standard 15-to-19 field live telemetry frame
+      if (parts.length < 20) {
+        final batteryPercent = int.tryParse(parts[1]);
+        final batteryVoltage = double.tryParse(parts[2]);
+        final batteryCurrent = double.tryParse(parts[3]);
+        final batteryTemp = int.tryParse(parts[4]);
+        final motorTemp = int.tryParse(parts[5]);
+        final speed = double.tryParse(parts[6]);
+        final odometer = double.tryParse(parts[7]);
+
+        String? rideMode;
+        final rawMode = parts[8].trim();
+        final numericMode = int.tryParse(rawMode);
+        if (numericMode != null) {
+          rideMode = switch (numericMode) {
+            1 => 'Eco',
+            2 => 'Normal',
+            3 => 'Sport',
+            _ => null,
+          };
+        } else if (rawMode.isNotEmpty) {
+          rideMode = rawMode;
+        }
+
+        final range = double.tryParse(parts[9]);
+
+        double? power;
+        if (batteryVoltage != null && batteryCurrent != null) {
+          power = (batteryVoltage * batteryCurrent.abs()) / 1000.0;
+        }
+
+        final batteryHealth = int.tryParse(parts[12]);
+
+        String? gpsCoords;
+        final lat = double.tryParse(parts[13]);
+        final lon = double.tryParse(parts[14]);
+        if (lat != null && lon != null) {
+          gpsCoords = '$lat,$lon';
+        }
+
+        return VehicleSnapshot(
+          batteryPercent: batteryPercent,
+          batteryVoltage: batteryVoltage,
+          batteryCurrent: batteryCurrent,
+          batteryTemp: batteryTemp,
+          motorTemp: motorTemp,
+          speed: speed,
+          tripDistance: null,
+          odometer: odometer,
+          rideMode: rideMode,
+          range: range,
+          power: power,
+          faultCodes: const [],
+          batteryHealth: batteryHealth,
+          gpsCoords: gpsCoords,
+          timestamp: DateTime.now(),
+        );
+      }
+
+      // Branch 2: Extended diagnostic frame (>= 20 fields)
       final batteryVoltage = double.tryParse(parts[14]);
       final batteryPercent = int.tryParse(parts[15]);
       final batteryHealth = int.tryParse(parts[16]);
@@ -153,15 +218,15 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
       return VehicleSnapshot(
         batteryPercent: batteryPercent,
         batteryVoltage: batteryVoltage,
-        batteryCurrent: null, // Unconfirmed ASCII field -> null
+        batteryCurrent: null, // Unconfirmed in extended frame
         batteryTemp: batteryTemp,
-        motorTemp: null, // Unconfirmed ASCII field -> null
+        motorTemp: null, // Unconfirmed in extended frame
         speed: speed,
         tripDistance: tripDistance,
-        odometer: null, // Unconfirmed ASCII field -> null
+        odometer: null, // Unconfirmed in extended frame
         rideMode: rideMode,
-        range: null, // Unconfirmed ASCII field -> null
-        power: null, // Unconfirmed ASCII field -> null
+        range: null, // Unconfirmed in extended frame
+        power: null, // Unconfirmed in extended frame
         faultCodes: faultCodes,
         batteryHealth: batteryHealth,
         timestamp: timestamp ?? DateTime.now(),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:revolt_ble_sdk/revolt_ble_sdk.dart';
 
@@ -204,6 +205,17 @@ class RevoltBleRepository implements BleVehicleRepository {
   @override
   Stream<VehicleSnapshot> getVehicleSnapshotStream() =>
       _snapshotController.stream;
+
+  @override
+  Future<void> sendCommand(String command) async {
+    final controlUuid = _client.controlCharacteristicUuid;
+    if (controlUuid == null) {
+      throw const RevoltConnectionException(
+        'No control characteristic discovered. Ensure the bike is connected.',
+      );
+    }
+    await _client.write(controlUuid, utf8.encode(command));
+  }
 
   void dispose() {
     _telemetryPollTimer?.cancel();

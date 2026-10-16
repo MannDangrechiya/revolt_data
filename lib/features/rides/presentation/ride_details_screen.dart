@@ -7,6 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/widgets/not_found_widget.dart';
 import '../data/rides_provider.dart';
 import '../domain/ride.dart';
+import 'widgets/ride_route_map_widget.dart';
 
 class RideDetailsScreen extends ConsumerWidget {
   final String rideId;
@@ -103,6 +104,8 @@ class RideDetailsScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   
                   _buildSectionHeader('Route details', LucideIcons.map),
+                  const SizedBox(height: 16),
+                  RideRouteMapWidget(routePolylineJson: ride.routePolyline),
                   const SizedBox(height: 16),
                   _buildInfoRow('Start Odometer', '${ride.startOdometer} km'),
                   _buildInfoRow('End Odometer', '${ride.endOdometer} km'),
