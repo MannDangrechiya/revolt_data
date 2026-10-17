@@ -28,6 +28,7 @@ abstract class Bike with _$Bike {
     String? tyreInfo,
     String? customNotes,
     String? photoPath,
+    @Default(19920.0) double? initialOdometer,
   }) = _Bike;
 
   factory Bike.fromJson(Map<String, dynamic> json) => _$BikeFromJson(json);

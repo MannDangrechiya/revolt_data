@@ -72,12 +72,17 @@ class _LiveBikeMapWidgetState extends ConsumerState<LiveBikeMapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final liveSnapshot = ref.watch(vehicleSnapshotProvider).value;
-    final persistedSnapshot = ref.watch(persistedVehicleSnapshotProvider).value;
-    final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
+    final coordsString = ref.watch(vehicleSnapshotProvider.select((s) => s.value?.gpsCoords)) ??
+        ref.watch(lastKnownVehicleSnapshotProvider.select((s) => s?.gpsCoords)) ??
+        ref.watch(persistedVehicleSnapshotProvider.select((s) => s.value?.gpsCoords));
 
-    final snapshot = liveSnapshot ?? lastSnapshot ?? persistedSnapshot;
-    final coordsString = snapshot?.gpsCoords;
+    final batteryPercent = ref.watch(vehicleSnapshotProvider.select((s) => s.value?.batteryPercent)) ??
+        ref.watch(lastKnownVehicleSnapshotProvider.select((s) => s?.batteryPercent)) ??
+        ref.watch(persistedVehicleSnapshotProvider.select((s) => s.value?.batteryPercent));
+
+    final rangeKm = ref.watch(vehicleSnapshotProvider.select((s) => s.value?.range)) ??
+        ref.watch(lastKnownVehicleSnapshotProvider.select((s) => s?.range)) ??
+        ref.watch(persistedVehicleSnapshotProvider.select((s) => s.value?.range));
 
     LatLng? bikePosition;
     bool isFromBikeEcu = false;
@@ -96,8 +101,6 @@ class _LiveBikeMapWidgetState extends ConsumerState<LiveBikeMapWidget> {
 
     // Proximity fallback to smartphone GPS if bike GPS is empty/no fix
     final effectivePosition = bikePosition ?? _deviceLocation;
-    final batteryPercent = snapshot?.batteryPercent;
-    final rangeKm = snapshot?.range;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,59 +213,61 @@ class _LiveBikeMapWidgetState extends ConsumerState<LiveBikeMapWidget> {
                   )
                 : Stack(
                     children: [
-                      FlutterMap(
-                        mapController: _mapController,
-                        options: MapOptions(
-                          initialCenter: effectivePosition,
-                          initialZoom: 15.5,
-                          interactionOptions: const InteractionOptions(
-                            flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                      RepaintBoundary(
+                        child: FlutterMap(
+                          mapController: _mapController,
+                          options: MapOptions(
+                            initialCenter: effectivePosition,
+                            initialZoom: 15.5,
+                            interactionOptions: const InteractionOptions(
+                              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                            ),
                           ),
-                        ),
-                        children: [
-                          TileLayer(
-                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'com.revolt.platform',
-                          ),
-                          CircleLayer(
-                            circles: [
-                              CircleMarker(
-                                point: effectivePosition,
-                                radius: 80,
-                                useRadiusInMeter: true,
-                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
-                                borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-                                borderStrokeWidth: 1.5,
-                              ),
-                            ],
-                          ),
-                          MarkerLayer(
-                            markers: [
-                              Marker(
-                                point: effectivePosition,
-                                width: 44,
-                                height: 44,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: isFromBikeEcu
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Colors.blue.shade700,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 2.5),
-                                    boxShadow: const [
-                                      BoxShadow(color: Colors.black38, blurRadius: 6, offset: Offset(0, 2)),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    LucideIcons.bike,
-                                    color: Colors.white,
-                                    size: 22,
+                          children: [
+                            TileLayer(
+                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'com.revolt.platform',
+                            ),
+                            CircleLayer(
+                              circles: [
+                                CircleMarker(
+                                  point: effectivePosition,
+                                  radius: 80,
+                                  useRadiusInMeter: true,
+                                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                                  borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+                                  borderStrokeWidth: 1.5,
+                                ),
+                              ],
+                            ),
+                            MarkerLayer(
+                              markers: [
+                                Marker(
+                                  point: effectivePosition,
+                                  width: 44,
+                                  height: 44,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: isFromBikeEcu
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Colors.blue.shade700,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 2.5),
+                                      boxShadow: const [
+                                        BoxShadow(color: Colors.black38, blurRadius: 6, offset: Offset(0, 2)),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      LucideIcons.bike,
+                                      color: Colors.white,
+                                      size: 22,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                       Positioned(
                         bottom: 10,

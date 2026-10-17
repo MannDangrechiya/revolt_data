@@ -49,6 +49,7 @@ class BikesTable extends Table {
   TextColumn get tyreInfo => text().nullable()();
   TextColumn get customNotes => text().nullable()();
   TextColumn get photoPath => text().nullable()();
+  RealColumn get initialOdometer => real().withDefault(const Constant(19920.0))();
 }
 
 class RidesTable extends Table {
@@ -264,7 +265,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -353,6 +354,9 @@ class AppDatabase extends _$AppDatabase {
       if (from < 9) {
         await m.createTable(syncLogsTable);
         await m.createTable(pendingRidesTable);
+      }
+      if (from < 10) {
+        await m.addColumn(bikesTable, bikesTable.initialOdometer);
       }
     },
     beforeOpen: (details) async {

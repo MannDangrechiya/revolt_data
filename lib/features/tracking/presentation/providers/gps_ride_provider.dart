@@ -7,6 +7,7 @@ import '../../../rides/domain/ride.dart';
 import '../../data/background_location_service.dart';
 import '../../data/ride_merger.dart';
 import '../../domain/gps_tracking_state.dart';
+import '../../../sync/data/sync_state_service.dart';
 
 part 'gps_ride_provider.g.dart';
 
@@ -60,8 +61,10 @@ class GpsRideNotifier extends _$GpsRideNotifier {
 
       final snapshot = ref.read(lastKnownVehicleSnapshotProvider);
       final persistedSnapshot = ref.read(persistedVehicleSnapshotProvider).value;
+      final syncState = ref.read(syncStateServiceProvider).value;
+      final baselineOdo = syncState?.getCalibratedOdometer() ?? 19920.0;
       final batteryPercent = snapshot?.batteryPercent ?? persistedSnapshot?.batteryPercent ?? 100;
-      final startOdo = snapshot?.odometer ?? persistedSnapshot?.odometer ?? 0.0;
+      final startOdo = snapshot?.odometer ?? persistedSnapshot?.odometer ?? baselineOdo;
 
       final ride = Ride(
         id: now.millisecondsSinceEpoch.toString(),

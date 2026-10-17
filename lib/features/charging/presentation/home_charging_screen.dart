@@ -15,7 +15,7 @@ class HomeChargingScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
-  double _electricityTariffPerKwh = 8.0; // ₹8.0 per unit default in India
+  double _electricityTariffPerKwh = 6.50; // Gujarat UGVCL / Torrent Power residential default
   bool _notifyAt80Percent = true;
 
   @override
@@ -46,8 +46,11 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
 
     // Energy needed & Cost Calculation
     final kwhNeededToFull = (socLeftTo100 / 100.0) * 3.24;
+    final kwhNeededTo80 = (socLeftTo80 / 100.0) * 3.24;
     final sessionCostRs = kwhNeededToFull * _electricityTariffPerKwh;
-    final petrolSavedRs = (socLeftTo100 * 1.0) / 60.0 * 105.0; // 60 km/L ICE comparison
+    final costTo80Rs = kwhNeededTo80 * _electricityTariffPerKwh;
+    final dailyCommuteChargeCostRs = (55.0 / 150.0 * 3.24) * _electricityTariffPerKwh; // ~₹13.00 for 55 km
+    final monthlyIceSavings = (105.0 - dailyCommuteChargeCostRs) * 26; // ~₹2,400 monthly savings vs petrol
 
     final chargingPowerKw = (voltage * current.abs() / 1000.0).clamp(0.0, 1.2);
 
@@ -377,13 +380,69 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
                         });
                       },
                     ),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('₹4.0 (Subsidized)', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                        Text('₹8.0 (Average)', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                        Text('₹15.0 (Commercial)', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                      ],
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ChoiceChip(
+                            label: const Text('Gujarat (₹6.5/u)', style: TextStyle(fontSize: 11)),
+                            selected: (_electricityTariffPerKwh - 6.5).abs() < 0.1,
+                            onSelected: (_) => setState(() => _electricityTariffPerKwh = 6.5),
+                          ),
+                          const SizedBox(width: 6),
+                          ChoiceChip(
+                            label: const Text('Delhi (₹4.5/u)', style: TextStyle(fontSize: 11)),
+                            selected: (_electricityTariffPerKwh - 4.5).abs() < 0.1,
+                            onSelected: (_) => setState(() => _electricityTariffPerKwh = 4.5),
+                          ),
+                          const SizedBox(width: 6),
+                          ChoiceChip(
+                            label: const Text('Maharashtra (₹8.5/u)', style: TextStyle(fontSize: 11)),
+                            selected: (_electricityTariffPerKwh - 8.5).abs() < 0.1,
+                            onSelected: (_) => setState(() => _electricityTariffPerKwh = 8.5),
+                          ),
+                          const SizedBox(width: 6),
+                          ChoiceChip(
+                            label: const Text('Commercial (₹12/u)', style: TextStyle(fontSize: 11)),
+                            selected: (_electricityTariffPerKwh - 12.0).abs() < 0.1,
+                            onSelected: (_) => setState(() => _electricityTariffPerKwh = 12.0),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Night Charging Coach routine panel (8:30 PM - 10:30 PM @ 80%)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.teal.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(LucideIcons.moon, size: 16, color: Colors.tealAccent),
+                              SizedBox(width: 6),
+                              Text(
+                                'Night 15A Home Charging Coach (8:30 – 10:30 PM)',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.tealAccent,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Charge to 80% cutoff for cell longevity. Daily 55 km commute recharge consumes ~2.0 units (₹${dailyCommuteChargeCostRs.toStringAsFixed(1)}/day) saving ~₹${monthlyIceSavings.toStringAsFixed(0)}/month compared to petrol.',
+                            style: const TextStyle(fontSize: 11, color: Colors.white70, height: 1.35),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const Divider(height: 1),
@@ -392,24 +451,24 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _buildCostColumn(
-                          label: 'Session Cost',
+                          label: 'Cost to 80%',
+                          value: '₹${costTo80Rs.toStringAsFixed(1)}',
+                          subtext: '${kwhNeededTo80.toStringAsFixed(2)} units',
+                          color: Colors.teal,
+                        ),
+                        Container(width: 1, height: 40, color: Colors.grey.withValues(alpha: 0.3)),
+                        _buildCostColumn(
+                          label: 'Cost to 100%',
                           value: '₹${sessionCostRs.toStringAsFixed(1)}',
-                          subtext: '${kwhNeededToFull.toStringAsFixed(2)} units (kWh)',
+                          subtext: '${kwhNeededToFull.toStringAsFixed(2)} units',
                           color: Colors.green,
                         ),
                         Container(width: 1, height: 40, color: Colors.grey.withValues(alpha: 0.3)),
                         _buildCostColumn(
-                          label: 'Petrol Equivalent',
-                          value: '₹${petrolSavedRs.toStringAsFixed(0)}',
-                          subtext: 'Petrol @ ₹105/L',
+                          label: 'Monthly Savings',
+                          value: '₹${monthlyIceSavings.toStringAsFixed(0)}',
+                          subtext: 'vs ₹105/day ICE',
                           color: Colors.orange,
-                        ),
-                        Container(width: 1, height: 40, color: Colors.grey.withValues(alpha: 0.3)),
-                        _buildCostColumn(
-                          label: 'Net Savings',
-                          value: '₹${(petrolSavedRs - sessionCostRs).toStringAsFixed(0)}',
-                          subtext: 'Saved in wallet',
-                          color: Colors.teal,
                         ),
                       ],
                     ),

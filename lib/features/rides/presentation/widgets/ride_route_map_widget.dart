@@ -289,23 +289,25 @@ class _RideRouteMapWidgetState extends State<RideRouteMapWidget> {
         ),
         child: Stack(
           children: [
-            FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                initialCenter: centerPoint,
-                initialZoom: 14.0,
-                interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+            RepaintBoundary(
+              child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: centerPoint,
+                  initialZoom: 14.0,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                  ),
                 ),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.revolt.platform',
+                  ),
+                  PolylineLayer(polylines: polylines),
+                  MarkerLayer(markers: markers),
+                ],
               ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.revolt.platform',
-                ),
-                PolylineLayer(polylines: polylines),
-                MarkerLayer(markers: markers),
-              ],
             ),
 
             // Top Status Badges: Point Count & Speed Heatmap Legend

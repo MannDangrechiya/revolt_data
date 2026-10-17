@@ -16,6 +16,7 @@ import '../../../core/widgets/fade_slide_in.dart';
 
 import 'widgets/dashboard_header.dart';
 import 'widgets/battery_status_card.dart';
+import 'widgets/commute_readiness_card.dart';
 import 'widgets/dashboard_range_prediction_card.dart';
 import 'widgets/dashboard_fault_alert_card.dart';
 import 'widgets/swipe_to_start_widget.dart';
@@ -293,8 +294,15 @@ class DashboardScreen extends HookConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const FadeSlideIn(
+                      FadeSlideIn(
                         index: 1,
+                        child: CommuteReadinessCard(
+                          currentSoc: data.latestBatteryPercentage,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const FadeSlideIn(
+                        index: 2,
                         child: LiveBikeMapWidget(),
                       ),
                       if (rangePredictionAsync.hasValue) ...[

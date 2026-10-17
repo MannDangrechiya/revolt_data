@@ -241,6 +241,18 @@ class $BikesTableTable extends BikesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _initialOdometerMeta = const VerificationMeta(
+    'initialOdometer',
+  );
+  @override
+  late final GeneratedColumn<double> initialOdometer = GeneratedColumn<double>(
+    'initial_odometer',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(19920.0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -265,6 +277,7 @@ class $BikesTableTable extends BikesTable
     tyreInfo,
     customNotes,
     photoPath,
+    initialOdometer,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -441,6 +454,15 @@ class $BikesTableTable extends BikesTable
         photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
       );
     }
+    if (data.containsKey('initial_odometer')) {
+      context.handle(
+        _initialOdometerMeta,
+        initialOdometer.isAcceptableOrUnknown(
+          data['initial_odometer']!,
+          _initialOdometerMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -538,6 +560,10 @@ class $BikesTableTable extends BikesTable
         DriftSqlType.string,
         data['${effectivePrefix}photo_path'],
       ),
+      initialOdometer: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}initial_odometer'],
+      )!,
     );
   }
 
@@ -570,6 +596,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
   final String? tyreInfo;
   final String? customNotes;
   final String? photoPath;
+  final double initialOdometer;
   const BikesTableData({
     required this.id,
     required this.name,
@@ -593,6 +620,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
     this.tyreInfo,
     this.customNotes,
     this.photoPath,
+    required this.initialOdometer,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -651,6 +679,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
     if (!nullToAbsent || photoPath != null) {
       map['photo_path'] = Variable<String>(photoPath);
     }
+    map['initial_odometer'] = Variable<double>(initialOdometer);
     return map;
   }
 
@@ -708,6 +737,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
       photoPath: photoPath == null && nullToAbsent
           ? const Value.absent()
           : Value(photoPath),
+      initialOdometer: Value(initialOdometer),
     );
   }
 
@@ -741,6 +771,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
       tyreInfo: serializer.fromJson<String?>(json['tyreInfo']),
       customNotes: serializer.fromJson<String?>(json['customNotes']),
       photoPath: serializer.fromJson<String?>(json['photoPath']),
+      initialOdometer: serializer.fromJson<double>(json['initialOdometer']),
     );
   }
   @override
@@ -769,6 +800,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
       'tyreInfo': serializer.toJson<String?>(tyreInfo),
       'customNotes': serializer.toJson<String?>(customNotes),
       'photoPath': serializer.toJson<String?>(photoPath),
+      'initialOdometer': serializer.toJson<double>(initialOdometer),
     };
   }
 
@@ -795,6 +827,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
     Value<String?> tyreInfo = const Value.absent(),
     Value<String?> customNotes = const Value.absent(),
     Value<String?> photoPath = const Value.absent(),
+    double? initialOdometer,
   }) => BikesTableData(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -824,6 +857,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
     tyreInfo: tyreInfo.present ? tyreInfo.value : this.tyreInfo,
     customNotes: customNotes.present ? customNotes.value : this.customNotes,
     photoPath: photoPath.present ? photoPath.value : this.photoPath,
+    initialOdometer: initialOdometer ?? this.initialOdometer,
   );
   BikesTableData copyWithCompanion(BikesTableCompanion data) {
     return BikesTableData(
@@ -867,6 +901,9 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
           ? data.customNotes.value
           : this.customNotes,
       photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      initialOdometer: data.initialOdometer.present
+          ? data.initialOdometer.value
+          : this.initialOdometer,
     );
   }
 
@@ -894,7 +931,8 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
           ..write('topSpeed: $topSpeed, ')
           ..write('tyreInfo: $tyreInfo, ')
           ..write('customNotes: $customNotes, ')
-          ..write('photoPath: $photoPath')
+          ..write('photoPath: $photoPath, ')
+          ..write('initialOdometer: $initialOdometer')
           ..write(')'))
         .toString();
   }
@@ -923,6 +961,7 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
     tyreInfo,
     customNotes,
     photoPath,
+    initialOdometer,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -949,7 +988,8 @@ class BikesTableData extends DataClass implements Insertable<BikesTableData> {
           other.topSpeed == this.topSpeed &&
           other.tyreInfo == this.tyreInfo &&
           other.customNotes == this.customNotes &&
-          other.photoPath == this.photoPath);
+          other.photoPath == this.photoPath &&
+          other.initialOdometer == this.initialOdometer);
 }
 
 class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
@@ -975,6 +1015,7 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
   final Value<String?> tyreInfo;
   final Value<String?> customNotes;
   final Value<String?> photoPath;
+  final Value<double> initialOdometer;
   const BikesTableCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -998,6 +1039,7 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
     this.tyreInfo = const Value.absent(),
     this.customNotes = const Value.absent(),
     this.photoPath = const Value.absent(),
+    this.initialOdometer = const Value.absent(),
   });
   BikesTableCompanion.insert({
     this.id = const Value.absent(),
@@ -1022,6 +1064,7 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
     this.tyreInfo = const Value.absent(),
     this.customNotes = const Value.absent(),
     this.photoPath = const Value.absent(),
+    this.initialOdometer = const Value.absent(),
   }) : name = Value(name),
        brand = Value(brand),
        model = Value(model),
@@ -1050,6 +1093,7 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
     Expression<String>? tyreInfo,
     Expression<String>? customNotes,
     Expression<String>? photoPath,
+    Expression<double>? initialOdometer,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1074,6 +1118,7 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
       if (tyreInfo != null) 'tyre_info': tyreInfo,
       if (customNotes != null) 'custom_notes': customNotes,
       if (photoPath != null) 'photo_path': photoPath,
+      if (initialOdometer != null) 'initial_odometer': initialOdometer,
     });
   }
 
@@ -1100,6 +1145,7 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
     Value<String?>? tyreInfo,
     Value<String?>? customNotes,
     Value<String?>? photoPath,
+    Value<double>? initialOdometer,
   }) {
     return BikesTableCompanion(
       id: id ?? this.id,
@@ -1124,6 +1170,7 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
       tyreInfo: tyreInfo ?? this.tyreInfo,
       customNotes: customNotes ?? this.customNotes,
       photoPath: photoPath ?? this.photoPath,
+      initialOdometer: initialOdometer ?? this.initialOdometer,
     );
   }
 
@@ -1196,6 +1243,9 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
     if (photoPath.present) {
       map['photo_path'] = Variable<String>(photoPath.value);
     }
+    if (initialOdometer.present) {
+      map['initial_odometer'] = Variable<double>(initialOdometer.value);
+    }
     return map;
   }
 
@@ -1223,7 +1273,8 @@ class BikesTableCompanion extends UpdateCompanion<BikesTableData> {
           ..write('topSpeed: $topSpeed, ')
           ..write('tyreInfo: $tyreInfo, ')
           ..write('customNotes: $customNotes, ')
-          ..write('photoPath: $photoPath')
+          ..write('photoPath: $photoPath, ')
+          ..write('initialOdometer: $initialOdometer')
           ..write(')'))
         .toString();
   }
@@ -9186,6 +9237,7 @@ typedef $$BikesTableTableCreateCompanionBuilder =
       Value<String?> tyreInfo,
       Value<String?> customNotes,
       Value<String?> photoPath,
+      Value<double> initialOdometer,
     });
 typedef $$BikesTableTableUpdateCompanionBuilder =
     BikesTableCompanion Function({
@@ -9211,6 +9263,7 @@ typedef $$BikesTableTableUpdateCompanionBuilder =
       Value<String?> tyreInfo,
       Value<String?> customNotes,
       Value<String?> photoPath,
+      Value<double> initialOdometer,
     });
 
 class $$BikesTableTableFilterComposer
@@ -9329,6 +9382,11 @@ class $$BikesTableTableFilterComposer
 
   ColumnFilters<String> get photoPath => $composableBuilder(
     column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get initialOdometer => $composableBuilder(
+    column: $table.initialOdometer,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -9451,6 +9509,11 @@ class $$BikesTableTableOrderingComposer
     column: $table.photoPath,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<double> get initialOdometer => $composableBuilder(
+    column: $table.initialOdometer,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BikesTableTableAnnotationComposer
@@ -9545,6 +9608,11 @@ class $$BikesTableTableAnnotationComposer
 
   GeneratedColumn<String> get photoPath =>
       $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<double> get initialOdometer => $composableBuilder(
+    column: $table.initialOdometer,
+    builder: (column) => column,
+  );
 }
 
 class $$BikesTableTableTableManager
@@ -9600,6 +9668,7 @@ class $$BikesTableTableTableManager
                 Value<String?> tyreInfo = const Value.absent(),
                 Value<String?> customNotes = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
+                Value<double> initialOdometer = const Value.absent(),
               }) => BikesTableCompanion(
                 id: id,
                 name: name,
@@ -9623,6 +9692,7 @@ class $$BikesTableTableTableManager
                 tyreInfo: tyreInfo,
                 customNotes: customNotes,
                 photoPath: photoPath,
+                initialOdometer: initialOdometer,
               ),
           createCompanionCallback:
               ({
@@ -9648,6 +9718,7 @@ class $$BikesTableTableTableManager
                 Value<String?> tyreInfo = const Value.absent(),
                 Value<String?> customNotes = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
+                Value<double> initialOdometer = const Value.absent(),
               }) => BikesTableCompanion.insert(
                 id: id,
                 name: name,
@@ -9671,6 +9742,7 @@ class $$BikesTableTableTableManager
                 tyreInfo: tyreInfo,
                 customNotes: customNotes,
                 photoPath: photoPath,
+                initialOdometer: initialOdometer,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

@@ -31,6 +31,7 @@ _Bike _$BikeFromJson(Map<String, dynamic> json) => _Bike(
   tyreInfo: json['tyreInfo'] as String?,
   customNotes: json['customNotes'] as String?,
   photoPath: json['photoPath'] as String?,
+  initialOdometer: (json['initialOdometer'] as num?)?.toDouble() ?? 19920.0,
 );
 
 Map<String, dynamic> _$BikeToJson(_Bike instance) => <String, dynamic>{
@@ -56,4 +57,5 @@ Map<String, dynamic> _$BikeToJson(_Bike instance) => <String, dynamic>{
   'tyreInfo': instance.tyreInfo,
   'customNotes': instance.customNotes,
   'photoPath': instance.photoPath,
+  'initialOdometer': instance.initialOdometer,
 };

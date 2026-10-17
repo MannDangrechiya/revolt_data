@@ -41,7 +41,7 @@ final class AntiTheftGuardProvider
   }
 }
 
-String _$antiTheftGuardHash() => r'eb714fbcd8612d12775696ebf91eca7facdb2c45';
+String _$antiTheftGuardHash() => r'96c694b4786f0fc82fb51938188701fc68cbf290';
 
 abstract class _$AntiTheftGuard extends $Notifier<AntiTheftState> {
   AntiTheftState build();

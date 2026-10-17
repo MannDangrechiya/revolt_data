@@ -78,5 +78,14 @@ void main() {
       expect(await service.getLastSyncState(), isNull);
       expect(await service.isFirstConnectToday(), isTrue);
     });
+
+    test('getCalibratedOdometer returns 19920.0 default when unset', () {
+      expect(service.getCalibratedOdometer(), equals(19920.0));
+    });
+
+    test('setCalibratedOdometer persists new baseline odometer', () async {
+      await service.setCalibratedOdometer(19950.5);
+      expect(service.getCalibratedOdometer(), equals(19950.5));
+    });
   });
 }

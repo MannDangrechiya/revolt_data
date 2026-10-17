@@ -290,6 +290,7 @@ extension BikeDataMapper on BikesTableData {
       tyreInfo: tyreInfo,
       customNotes: customNotes,
       photoPath: photoPath,
+      initialOdometer: initialOdometer,
     );
   }
 }
@@ -319,6 +320,7 @@ extension BikeMapper on Bike {
       tyreInfo: Value(tyreInfo),
       customNotes: Value(customNotes),
       photoPath: Value(photoPath),
+      initialOdometer: Value(initialOdometer ?? 19920.0),
     );
   }
 }

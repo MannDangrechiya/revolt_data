@@ -39,6 +39,15 @@ android {
         versionName = flutter.versionName
     }
 
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86_64")
+            isUniversalApk = false
+        }
+    }
+
     signingConfigs {
         if (keystorePropertiesFile.exists()) {
             create("release") {
@@ -52,6 +61,12 @@ android {
 
     buildTypes {
         release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             // TODO: falls back to debug signing until KEYSTORE_BASE64/KEYSTORE_PASSWORD/
             // KEY_PASSWORD/KEY_ALIAS secrets are added (see .github/workflows/flutter_build.yml).
             signingConfig = if (keystorePropertiesFile.exists()) {

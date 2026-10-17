@@ -10,10 +10,11 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/ui/volt_app_bar.dart';
 import '../../../../shared/ui/volt_card.dart';
 import '../providers/ble_connection_provider.dart';
+import '../providers/ev_protocol_provider.dart';
 import '../providers/scanned_devices_provider.dart';
 import '../widgets/scan_result_tile.dart';
 
-/// Screen allowing users to scan for nearby Revolt RV400 BLE devices and connect.
+/// Screen allowing users to scan for nearby EV BLE devices and connect across universal EV protocols.
 class DeviceScanScreen extends HookConsumerWidget {
   const DeviceScanScreen({super.key});
 
@@ -29,7 +30,7 @@ class DeviceScanScreen extends HookConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Please turn on Bluetooth to scan for your RV400 bike.',
+              'Please turn on Bluetooth to scan for your EV.',
             ),
           ),
         );
@@ -56,7 +57,7 @@ class DeviceScanScreen extends HookConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Bluetooth and location permissions are required to scan for nearby RV400 bikes.',
+              'Bluetooth and location permissions are required to scan for nearby EVs.',
             ),
           ),
         );
@@ -67,6 +68,7 @@ class DeviceScanScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scannedDevicesAsync = ref.watch(scannedDevicesProvider);
+    final activeProtocol = ref.watch(activeEvProtocolTypeProvider);
     final repo = ref.read(bleRepositoryProvider);
     final bikesOnly = useState(true);
 
@@ -84,7 +86,7 @@ class DeviceScanScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: VoltAppBar(
-        title: 'Scan for RV400',
+        title: 'Universal EV Scanner',
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.refreshCw),
@@ -98,16 +100,51 @@ class DeviceScanScreen extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const VoltCard(
-              padding: EdgeInsets.all(16),
+            // Active EV Protocol Mode Selector
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: EvProtocolType.values.map((proto) {
+                  final isSelected = proto == activeProtocol;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: ChoiceChip(
+                      avatar: Icon(
+                        isSelected ? LucideIcons.check : LucideIcons.cpu,
+                        size: 14,
+                      ),
+                      label: Text(
+                        proto.name,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        if (selected) {
+                          ref.read(activeEvProtocolTypeProvider.notifier).setProtocol(proto);
+                          if (proto != EvProtocolType.revoltBle) {
+                            bikesOnly.value = false;
+                          }
+                        }
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            VoltCard(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               child: Row(
                 children: [
-                  Icon(LucideIcons.info, color: Colors.blue),
-                  SizedBox(width: 12),
+                  const Icon(LucideIcons.radio, color: Colors.blue, size: 20),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Select your Revolt RV400 bike from the list below to connect via Bluetooth Low Energy.',
-                      style: TextStyle(fontSize: 13),
+                      '${activeProtocol.brand} • ${activeProtocol.description}',
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ),
                 ],
@@ -119,7 +156,7 @@ class DeviceScanScreen extends HookConsumerWidget {
               children: [
                 FilterChip(
                   avatar: const Icon(LucideIcons.bike, size: 16),
-                  label: const Text('RV400 Bikes Only'),
+                  label: Text(activeProtocol == EvProtocolType.revoltBle ? 'RV400 Bikes Only' : '${activeProtocol.brand} Only'),
                   selected: bikesOnly.value,
                   onSelected: (val) => bikesOnly.value = true,
                 ),

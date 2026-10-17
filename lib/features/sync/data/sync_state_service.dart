@@ -12,10 +12,29 @@ class SyncStateService {
   static const String _kLastSyncedAtKey = 'sync_last_synced_at';
   static const String _kLastKnownBatteryPercentKey = 'sync_last_known_battery_percent';
   static const String _kLastSnapshotKey = 'sync_last_snapshot_json';
+  static const String _kCalibratedOdometerKey = 'sync_calibrated_odometer_baseline';
+
+  static const double kDefaultCalibratedOdometer = 19920.0;
 
   final SharedPreferences _prefs;
 
   SyncStateService(this._prefs);
+
+  /// Retrieves the calibrated odometer baseline (defaults to 19,920.0 km if unset).
+  double getCalibratedOdometer() {
+    return _prefs.getDouble(_kCalibratedOdometerKey) ??
+        _prefs.getDouble(_kLastSyncedOdometerKey) ??
+        kDefaultCalibratedOdometer;
+  }
+
+  /// Sets and persists a new calibrated odometer baseline.
+  Future<void> setCalibratedOdometer(double odo) async {
+    await _prefs.setDouble(_kCalibratedOdometerKey, odo);
+    final currentLast = _prefs.getDouble(_kLastSyncedOdometerKey) ?? 0.0;
+    if (currentLast < odo) {
+      await _prefs.setDouble(_kLastSyncedOdometerKey, odo);
+    }
+  }
 
   /// Saves the current sync state persistently with current ISO DateTime string.
   Future<void> saveSyncState({
@@ -65,6 +84,7 @@ class SyncStateService {
     await _prefs.remove(_kLastSyncedAtKey);
     await _prefs.remove(_kLastKnownBatteryPercentKey);
     await _prefs.remove(_kLastSnapshotKey);
+    await _prefs.remove(_kCalibratedOdometerKey);
   }
 
   /// Persists the full last-known telemetry snapshot so it survives app

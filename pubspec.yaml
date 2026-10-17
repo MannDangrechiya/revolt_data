@@ -2,7 +2,7 @@ name: revolt_data
 
 description: Production-grade electric bike logbook app with premium features
 
-version: 2.1.0+2
+version: 2.2.0+3
 
 publish_to: none
 

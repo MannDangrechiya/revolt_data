@@ -105,5 +105,16 @@ Future<List<String>> smartAlerts(Ref ref) async {
     }
   }
 
+  // Weekend Idle Battery Guard (Friday evening / weekend with battery < 20%)
+  final now = DateTime.now();
+  final isWeekendOrFridayEve = (now.weekday == DateTime.friday && now.hour >= 18) ||
+      now.weekday == DateTime.saturday ||
+      now.weekday == DateTime.sunday;
+  final liveSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
+  final currentBattery = liveSnapshot?.batteryPercent;
+  if (isWeekendOrFridayEve && currentBattery != null && currentBattery < 20) {
+    alerts.add('Battery at $currentBattery%. Top up to 45% for healthy weekend storage.');
+  }
+
   return alerts;
 }

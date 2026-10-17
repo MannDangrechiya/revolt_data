@@ -104,6 +104,27 @@ void main() {
       expect(service.state, isA<GpsTrackingStateCompleted>());
     });
 
+    test('onLocationUpdate discards noisy points with accuracy > 20 meters', () async {
+      final now = DateTime.now();
+      await service.startTracking(startOdometer: 1000.0, startTime: now);
+
+      final noisyPos = Position(
+        latitude: 12.9756,
+        longitude: 77.6066,
+        timestamp: now,
+        altitude: 900.0,
+        altitudeAccuracy: 1.0,
+        heading: 0.0,
+        headingAccuracy: 1.0,
+        accuracy: 35.0, // Inaccurate noisy point
+        speed: 10.0,
+        speedAccuracy: 1.0,
+      );
+      service.onLocationUpdate(noisyPos);
+
+      expect(service.getRecordedPoints(), isEmpty);
+    });
+
     test('stopTracking sets state to completed', () async {
       final now = DateTime.now();
       await service.startTracking(startOdometer: 1000.0, startTime: now);

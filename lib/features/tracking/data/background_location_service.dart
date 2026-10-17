@@ -169,6 +169,9 @@ class BackgroundLocationService {
   void onLocationUpdate(Position position) {
     if (_state is! GpsTrackingStateActive) return;
 
+    // Discard inaccurate GPS multipath reflections (> 20 meters accuracy radius)
+    if (position.accuracy > 20.0) return;
+
     final rawSpeedKmh = (position.speed * 3.6).clamp(0.0, 200.0);
     // Apply speed exponential moving average: smoothedSpeed = (last * 0.7) + (new * 0.3)
     final smoothedSpeedKmh = _lastSpeedKmh == 0.0

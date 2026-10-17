@@ -154,7 +154,7 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
     final liveSnapshot = ref.watch(vehicleSnapshotProvider).value;
     final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
     final snapshot = liveSnapshot ?? lastSnapshot;
-    final effectiveOdo = snapshot?.odometer;
+    final effectiveOdo = snapshot?.odometer ?? 19920.0;
 
     final currentSpeed = snapshot?.speed ?? 0.0;
     if (currentSpeed > _sessionMaxSpeed) {
@@ -235,197 +235,208 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
               ),
               const Spacer(),
 
-              // Center: Giant Speedometer Display
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _getSpeedZoneLabel(currentSpeed),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2.0,
-                      color: speedColor,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      currentSpeed.toStringAsFixed(0),
+              // Center: Giant Speedometer Display (Isolated 120 FPS Render Layer)
+              RepaintBoundary(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _getSpeedZoneLabel(currentSpeed),
                       style: TextStyle(
-                        fontSize: 96,
-                        height: 1.0,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2.0,
                         color: speedColor,
-                        shadows: [
-                          Shadow(
-                            color: speedColor.withValues(alpha: 0.5),
-                            blurRadius: 20,
-                          ),
-                        ],
                       ),
                     ),
-                  ),
-                  const Text(
-                    'KM / H',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 3.0,
-                      color: Colors.white70,
+                    const SizedBox(height: 4),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        currentSpeed.toStringAsFixed(0),
+                        style: TextStyle(
+                          fontSize: 96,
+                          height: 1.0,
+                          fontWeight: FontWeight.w900,
+                          color: speedColor,
+                          shadows: [
+                            Shadow(
+                              color: speedColor.withValues(alpha: 0.5),
+                              blurRadius: 20,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    const Text(
+                      'KM / H',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 3.0,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const Spacer(),
 
-              // Live Power / Regenerative Braking Meter
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isRegen
-                      ? const Color(0xFF10B981).withValues(alpha: 0.15)
-                      : (powerKw > 3.0
-                          ? const Color(0xFFEF4444).withValues(alpha: 0.15)
-                          : const Color(0xFF1E293B)),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
+              // Live Power / Regenerative Braking Meter (Isolated Render Layer)
+              RepaintBoundary(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
                     color: isRegen
-                        ? const Color(0xFF10B981)
-                        : (powerKw > 3.0 ? const Color(0xFFEF4444) : Colors.white24),
+                        ? const Color(0xFF10B981).withValues(alpha: 0.15)
+                        : (powerKw > 3.0
+                            ? const Color(0xFFEF4444).withValues(alpha: 0.15)
+                            : const Color(0xFF1E293B)),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isRegen
+                          ? const Color(0xFF10B981)
+                          : (powerKw > 3.0 ? const Color(0xFFEF4444) : Colors.white24),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            isRegen ? LucideIcons.batteryCharging : LucideIcons.zap,
+                            size: 18,
+                            color: isRegen ? const Color(0xFF10B981) : Colors.amber,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            isRegen
+                                ? 'REGEN BRAKING'
+                                : (powerKw > 0.1 ? 'DISCHARGING' : 'IDLE'),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.0,
+                              color: isRegen ? const Color(0xFF10B981) : Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '${isRegen ? "-" : "+"}${powerKw.abs().toStringAsFixed(2)} kW',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isRegen ? const Color(0xFF10B981) : Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              const SizedBox(height: 16),
+
+              // Mode Projections Row (Isolated Render Layer)
+              RepaintBoundary(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF111827),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildModeRange(
+                        label: 'MODE 1 (ECO)',
+                        rangeKm: '$ecoRange km',
+                        color: const Color(0xFF10B981),
+                        isActive: (snapshot?.rideMode ?? 'eco').toLowerCase() == 'eco',
+                      ),
+                      Container(width: 1, height: 24, color: Colors.white12),
+                      _buildModeRange(
+                        label: 'MODE 2 (NORM)',
+                        rangeKm: '$normalRange km',
+                        color: const Color(0xFF3B82F6),
+                        isActive: (snapshot?.rideMode ?? '').toLowerCase() == 'normal',
+                      ),
+                      Container(width: 1, height: 24, color: Colors.white12),
+                      _buildModeRange(
+                        label: 'MODE 3 (SPORT)',
+                        rangeKm: '$sportRange km',
+                        color: const Color(0xFFEF4444),
+                        isActive: (snapshot?.rideMode ?? '').toLowerCase() == 'sport',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Bottom 4-Card Performance Cluster (Isolated Render Layer)
+              RepaintBoundary(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          isRegen ? LucideIcons.batteryCharging : LucideIcons.zap,
-                          size: 18,
-                          color: isRegen ? const Color(0xFF10B981) : Colors.amber,
+                        Expanded(
+                          child: _buildCockpitStatCard(
+                            label: 'BATTERY',
+                            value: '$batteryPercent%',
+                            sub: '${voltage.toStringAsFixed(1)} V | ${current.toStringAsFixed(1)} A',
+                            icon: LucideIcons.batteryMedium,
+                            color: batteryPercent > 20 ? const Color(0xFF10B981) : const Color(0xFFEF4444),
+                          ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          isRegen
-                              ? 'REGEN BRAKING'
-                              : (powerKw > 0.1 ? 'DISCHARGING' : 'IDLE'),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
-                            color: isRegen ? const Color(0xFF10B981) : Colors.white70,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildCockpitStatCard(
+                            label: 'PACK / MOTOR',
+                            value: snapshot?.batteryTemp != null
+                                ? '${snapshot!.batteryTemp}°C'
+                                : '--°C',
+                            sub: snapshot?.motorTemp != null
+                                ? 'Motor ${snapshot!.motorTemp}°C'
+                                : 'Motor --°C',
+                            icon: LucideIcons.thermometer,
+                            color: (snapshot?.batteryTemp ?? 30) < 45
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFEF4444),
                           ),
                         ),
                       ],
                     ),
-                    Text(
-                      '${isRegen ? "-" : "+"}${powerKw.abs().toStringAsFixed(2)} kW',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: isRegen ? const Color(0xFF10B981) : Colors.white,
-                      ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildCockpitStatCard(
+                            label: 'SESSION TIME',
+                            value: _formatDuration(_elapsedTime),
+                            sub: 'Top ${_sessionMaxSpeed.toStringAsFixed(0)} km/h',
+                            icon: LucideIcons.clock,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildCockpitStatCard(
+                            label: 'ODOMETER',
+                            value: '${effectiveOdo.toStringAsFixed(1)} km',
+                            sub: 'Trip ${(snapshot?.tripDistance ?? 0.0).toStringAsFixed(1)} km',
+                            icon: LucideIcons.navigation,
+                            color: Colors.purpleAccent,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // Mode Projections Row
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF111827),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildModeRange(
-                      label: 'MODE 1 (ECO)',
-                      rangeKm: '$ecoRange km',
-                      color: const Color(0xFF10B981),
-                      isActive: (snapshot?.rideMode ?? 'eco').toLowerCase() == 'eco',
-                    ),
-                    Container(width: 1, height: 24, color: Colors.white12),
-                    _buildModeRange(
-                      label: 'MODE 2 (NORM)',
-                      rangeKm: '$normalRange km',
-                      color: const Color(0xFF3B82F6),
-                      isActive: (snapshot?.rideMode ?? '').toLowerCase() == 'normal',
-                    ),
-                    Container(width: 1, height: 24, color: Colors.white12),
-                    _buildModeRange(
-                      label: 'MODE 3 (SPORT)',
-                      rangeKm: '$sportRange km',
-                      color: const Color(0xFFEF4444),
-                      isActive: (snapshot?.rideMode ?? '').toLowerCase() == 'sport',
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Bottom 4-Card Performance Cluster
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildCockpitStatCard(
-                      label: 'BATTERY',
-                      value: '$batteryPercent%',
-                      sub: '${voltage.toStringAsFixed(1)} V | ${current.toStringAsFixed(1)} A',
-                      icon: LucideIcons.batteryMedium,
-                      color: batteryPercent > 20 ? const Color(0xFF10B981) : const Color(0xFFEF4444),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildCockpitStatCard(
-                      label: 'PACK / MOTOR',
-                      value: snapshot?.batteryTemp != null
-                          ? '${snapshot!.batteryTemp}°C'
-                          : '--°C',
-                      sub: snapshot?.motorTemp != null
-                          ? 'Motor ${snapshot!.motorTemp}°C'
-                          : 'Motor --°C',
-                      icon: LucideIcons.thermometer,
-                      color: (snapshot?.batteryTemp ?? 30) < 45
-                          ? const Color(0xFF10B981)
-                          : const Color(0xFFEF4444),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildCockpitStatCard(
-                      label: 'SESSION TIME',
-                      value: _formatDuration(_elapsedTime),
-                      sub: 'Top ${_sessionMaxSpeed.toStringAsFixed(0)} km/h',
-                      icon: LucideIcons.clock,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildCockpitStatCard(
-                      label: 'ODOMETER',
-                      value: effectiveOdo != null
-                          ? '${effectiveOdo.toStringAsFixed(1)} km'
-                          : '-- km',
-                      sub: 'Trip ${(snapshot?.tripDistance ?? 0.0).toStringAsFixed(1)} km',
-                      icon: LucideIcons.navigation,
-                      color: Colors.purpleAccent,
-                    ),
-                  ),
-                ],
               ),
               const SizedBox(height: 8),
             ],

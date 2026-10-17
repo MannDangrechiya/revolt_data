@@ -61,6 +61,9 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
     final monthStart = DateTime(now.year, now.month, 1);
 
     // 1. Rides
+    final bikes = await db.select(db.bikesTable).get();
+    final double baselineOdo = bikes.isNotEmpty ? bikes.first.initialOdometer : 19920.0;
+
     final ridesRows = await (db.select(db.ridesTable)
           ..orderBy(
               [(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
@@ -72,7 +75,7 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
     double todayDistance = 0;
     double weeklyDistance = 0;
     double monthlyDistance = 0;
-    double maxOdometer = 0;
+    double maxOdometer = baselineOdo;
     int latestBattery = 100;
 
     for (final ride in rides) {

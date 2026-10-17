@@ -147,7 +147,7 @@ void main() {
     });
 
     test('Database Schema Version & Table Integrity', () async {
-      expect(database.schemaVersion, equals(9));
+      expect(database.schemaVersion, equals(10));
 
       final bikeId = await database.into(database.bikesTable).insert(
             const BikesTableCompanion(
