@@ -286,7 +286,7 @@ class BatteryStatusCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Batt: ${liveSnapshot.batteryTemp}°C  •  Motor: ${liveSnapshot.motorTemp}°C',
+                  'Batt: ${liveSnapshot.batteryTemp != null ? '${liveSnapshot.batteryTemp}°C' : '--'}  •  Motor: ${liveSnapshot.motorTemp != null ? '${liveSnapshot.motorTemp}°C' : '--'}',
                   style: TextStyle(
                     fontSize: 11,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,

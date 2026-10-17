@@ -3,11 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Smart Range Planner Logic Tests', () {
     test('Round-trip distance calculation doubles one-way km', () {
-      const oneWayKm = 35.0;
-      const isRoundTrip = true;
-      final totalKm = isRoundTrip ? oneWayKm * 2 : oneWayKm;
-
-      expect(totalKm, 70.0);
+      double computeTotal(double km, bool roundTrip) => roundTrip ? km * 2 : km;
+      expect(computeTotal(35.0, true), 70.0);
+      expect(computeTotal(35.0, false), 35.0);
     });
 
     test('Mode-specific consumption rates project accurate SOC needed', () {

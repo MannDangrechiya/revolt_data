@@ -184,13 +184,26 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
         );
       }
 
-      // Branch 2: Extended diagnostic frame (>= 20 fields)
+      // Branch 2: Extended telemetry frame (>= 20 fields)
+      // Confirmed layout from HCI snoop captures & official MyRevolt app decompilation:
+      //   [4]  Timestamp "yyyy-MM-dd HH:mm:ss"
+      //   [6]  Latitude
+      //   [7]  Longitude
+      //   [14] Battery pack voltage (e.g. 74.0 V / 80.0 V)
+      //   [15] Battery State of Charge (SOC %)
+      //   [16] Battery State of Health (SOH %)
+      //   [17] Battery pack temperature (°C)
+      //   [18] Ride Mode code (1 = Eco, 2 = Normal, 3 = Sport)
+      //   [20] Speed (km/h)
+      //   [21] Trip distance (km)
+      //   [22] Fault code (';'-terminated)
       final batteryVoltage = double.tryParse(parts[14]);
       final batteryPercent = int.tryParse(parts[15]);
       final batteryHealth = int.tryParse(parts[16]);
       final batteryTemp = int.tryParse(parts[17]);
-      final rideModeCode = int.tryParse(parts[18]);
-      final rideMode = switch (rideModeCode) {
+
+      final rawModeCode = int.tryParse(parts[18]) ?? int.tryParse(parts[10]);
+      final rideMode = switch (rawModeCode) {
         1 => 'Eco',
         2 => 'Normal',
         3 => 'Sport',
@@ -199,15 +212,25 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
 
       double? speed;
       double? tripDistance;
-      List<String> faultCodes = [];
       if (parts.length > 20) speed = double.tryParse(parts[20]);
       if (parts.length > 21) tripDistance = double.tryParse(parts[21]);
+
+      List<String> faultCodes = [];
       if (parts.length > 22) {
-        final faultField = parts[22].replaceAll(';', '');
+        final faultField = parts[22].replaceAll(';', '').trim();
         if (faultField.isNotEmpty &&
             faultField != '0' &&
             faultField.toUpperCase() != 'NONE') {
           faultCodes = [faultField];
+        }
+      }
+
+      String? gpsCoords;
+      if (parts.length > 7) {
+        final lat = double.tryParse(parts[6].trim());
+        final lon = double.tryParse(parts[7].trim());
+        if (lat != null && lon != null && lat != 0.0 && lon != 0.0) {
+          gpsCoords = '$lat,$lon';
         }
       }
 
@@ -218,17 +241,18 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
       return VehicleSnapshot(
         batteryPercent: batteryPercent,
         batteryVoltage: batteryVoltage,
-        batteryCurrent: null, // Unconfirmed in extended frame
+        batteryCurrent: null,
         batteryTemp: batteryTemp,
-        motorTemp: null, // Unconfirmed in extended frame
+        motorTemp: null,
         speed: speed,
         tripDistance: tripDistance,
-        odometer: null, // Unconfirmed in extended frame
+        odometer: null,
         rideMode: rideMode,
-        range: null, // Unconfirmed in extended frame
-        power: null, // Unconfirmed in extended frame
+        range: null,
+        power: null,
         faultCodes: faultCodes,
         batteryHealth: batteryHealth,
+        gpsCoords: gpsCoords,
         timestamp: timestamp ?? DateTime.now(),
       );
     } catch (_) {

@@ -35,15 +35,15 @@ void main() {
     });
 
     test('Fault codes parsing detects normal vs DTC error states', () {
-      final cleanSnapshot = VehicleSnapshot(
+      final cleanSnapshot = const VehicleSnapshot(
         batteryPercent: 90,
-        faultCodes: const [],
+        faultCodes: [],
       );
       expect(cleanSnapshot.faultCodes, isEmpty);
 
-      final errorSnapshot = VehicleSnapshot(
+      final errorSnapshot = const VehicleSnapshot(
         batteryPercent: 40,
-        faultCodes: const ['BMS_OVERHEAT_ERR', 'CELL_UNDERVOLTAGE_04'],
+        faultCodes: ['BMS_OVERHEAT_ERR', 'CELL_UNDERVOLTAGE_04'],
       );
       expect(errorSnapshot.faultCodes.length, 2);
       expect(errorSnapshot.faultCodes, contains('BMS_OVERHEAT_ERR'));

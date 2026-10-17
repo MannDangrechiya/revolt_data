@@ -78,7 +78,8 @@ class SyncStateService {
     final raw = _prefs.getString(_kLastSnapshotKey);
     if (raw == null) return null;
     try {
-      return VehicleSnapshot.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      final json = jsonDecode(raw) as Map<String, dynamic>;
+      return VehicleSnapshot.fromJson(json);
     } catch (_) {
       return null;
     }

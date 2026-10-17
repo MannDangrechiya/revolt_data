@@ -154,6 +154,7 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
     final liveSnapshot = ref.watch(vehicleSnapshotProvider).value;
     final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
     final snapshot = liveSnapshot ?? lastSnapshot;
+    final effectiveOdo = snapshot?.odometer;
 
     final currentSpeed = snapshot?.speed ?? 0.0;
     if (currentSpeed > _sessionMaxSpeed) {
@@ -386,10 +387,14 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
                   Expanded(
                     child: _buildCockpitStatCard(
                       label: 'PACK / MOTOR',
-                      value: '${snapshot?.batteryTemp ?? 32}°C',
-                      sub: 'Motor ${snapshot?.motorTemp ?? 45}°C',
+                      value: snapshot?.batteryTemp != null
+                          ? '${snapshot!.batteryTemp}°C'
+                          : '--°C',
+                      sub: snapshot?.motorTemp != null
+                          ? 'Motor ${snapshot!.motorTemp}°C'
+                          : 'Motor --°C',
                       icon: LucideIcons.thermometer,
-                      color: (snapshot?.batteryTemp ?? 32) < 45
+                      color: (snapshot?.batteryTemp ?? 30) < 45
                           ? const Color(0xFF10B981)
                           : const Color(0xFFEF4444),
                     ),
@@ -412,7 +417,9 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
                   Expanded(
                     child: _buildCockpitStatCard(
                       label: 'ODOMETER',
-                      value: '${snapshot?.odometer?.toStringAsFixed(1) ?? '--'} km',
+                      value: effectiveOdo != null
+                          ? '${effectiveOdo.toStringAsFixed(1)} km'
+                          : '-- km',
                       sub: 'Trip ${(snapshot?.tripDistance ?? 0.0).toStringAsFixed(1)} km',
                       icon: LucideIcons.navigation,
                       color: Colors.purpleAccent,

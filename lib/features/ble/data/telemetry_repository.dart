@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../remote/data/revolt_remote_repository.dart';
 import '../domain/connection_state.dart';
 import '../domain/vehicle_snapshot.dart';
@@ -32,9 +33,21 @@ class TelemetryRepository {
   void _init() {
     _bleStateSub = bleRepository.connectionStateStream.listen(_handleConnectionStateChange);
 
-    _bleSnapshotSub = bleRepository.getVehicleSnapshotStream().listen((snapshot) {
+    _bleSnapshotSub = bleRepository.getVehicleSnapshotStream().listen((snapshot) async {
       if (isBleActive(bleRepository.currentConnectionState)) {
-        final bleSnapshot = snapshot.copyWith(source: TelemetrySource.ble);
+        var bleSnapshot = snapshot.copyWith(source: TelemetrySource.ble);
+        // If bike on-board GPS has no satellite lock (indoor/garage), fall back to phone's location
+        if (bleSnapshot.gpsCoords == null) {
+          try {
+            final pos = await Geolocator.getLastKnownPosition() ??
+                await Geolocator.getCurrentPosition(
+                  timeLimit: const Duration(seconds: 3),
+                );
+            bleSnapshot = bleSnapshot.copyWith(
+              gpsCoords: '${pos.latitude},${pos.longitude}',
+            );
+          } catch (_) {}
+        }
         _lastSnapshot = bleSnapshot;
         if (!_telemetryController.isClosed) {
           _telemetryController.add(bleSnapshot);

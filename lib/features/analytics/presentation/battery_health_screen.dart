@@ -20,14 +20,14 @@ class BatteryHealthScreen extends ConsumerWidget {
     final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
     final snapshot = liveSnapshot ?? lastSnapshot;
 
-    final currentOdo = snapshot?.odometer ?? 1250.0;
+    final currentOdo = snapshot?.odometer ?? 0.0;
     // Estimated cycles based on ~33 Wh/km over odometer
     final totalKwhCharged = (currentOdo * 33.0) / 1000.0;
-    final equivalentCycles = (totalKwhCharged / 3.24).clamp(1.0, 3000.0);
+    final equivalentCycles = currentOdo > 0 ? (totalKwhCharged / 3.24).clamp(1.0, 3000.0) : 0.0;
 
     // SOH estimate (NMC cells retain ~80% after 1500 cycles)
     final sohPercent = snapshot?.batteryHealth?.toDouble() ??
-        (100.0 - (equivalentCycles * 0.012)).clamp(75.0, 100.0);
+        (currentOdo > 0 ? (100.0 - (equivalentCycles * 0.012)).clamp(75.0, 100.0) : 100.0);
 
     final currentCapacityAh = (45.0 * (sohPercent / 100.0)).toStringAsFixed(1);
 
