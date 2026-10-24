@@ -67,7 +67,7 @@ void main() {
       CrashReportingService.instance.recordError(
         e,
         stackTrace,
-        reason: 'VoltLog initialization failed',
+        reason: 'My Revolt initialization failed',
         fatal: true,
       );
 

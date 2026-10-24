@@ -43,7 +43,7 @@ class _LocationPermissionHandlerState
           builder: (ctx) => AlertDialog(
             title: const Text('Background Location Access Needed'),
             content: const Text(
-              'VoltLog uses background location to seamlessly continue tracking your ride if Bluetooth disconnects or the app is in the background.',
+              'My Revolt uses background location to seamlessly continue tracking your ride if Bluetooth disconnects or the app is in the background.',
             ),
             actions: [
               TextButton(

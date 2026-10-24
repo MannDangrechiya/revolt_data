@@ -11,7 +11,7 @@ import 'features/tracking/domain/gps_tracking_state.dart';
 import 'features/tracking/presentation/providers/gps_ride_provider.dart';
 
 class AppWidget extends ConsumerStatefulWidget {
-  final String organization = "VoltLog Engineering";
+  final String organization = "My Revolt";
 
   const AppWidget({super.key});
 

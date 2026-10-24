@@ -55,7 +55,18 @@ class DashboardScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: VoltAppBar(
-        title: 'EV Companion',
+        title: 'My Revolt',
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              'assets/images/my_revolt_logo.png',
+              fit: BoxFit.contain,
+              errorBuilder: (_, _, _) => const Icon(LucideIcons.zap),
+            ),
+          ),
+        ),
         actions: [
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),

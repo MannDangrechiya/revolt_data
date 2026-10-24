@@ -13,8 +13,8 @@ void main() {
       // Wait for app to render and providers to initialize
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
-      // Check for EV Companion title
-      expect(find.text('EV Companion'), findsWidgets);
+      // Check for My Revolt title
+      expect(find.text('My Revolt'), findsWidgets);
 
       // Verify quick action buttons exist
       expect(find.text('Rides'), findsWidgets);
