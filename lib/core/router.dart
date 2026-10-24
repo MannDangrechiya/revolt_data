@@ -399,7 +399,9 @@ final routerDelegate = GoRouter(
     ),
     GoRoute(
       path: '/cockpit',
-      builder: (context, state) => const RidingCockpitScreen(),
+      builder: (context, state) => RidingCockpitScreen(
+        autoStartTracking: state.uri.queryParameters['autostart'] == '1',
+      ),
     ),
     GoRoute(
       path: '/battery-health',

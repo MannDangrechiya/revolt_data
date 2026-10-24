@@ -9,12 +9,18 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../ble/presentation/providers/ble_connection_provider.dart';
 import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
 import '../../ble/domain/connection_state.dart';
+import '../../tracking/domain/gps_tracking_state.dart';
+import '../../tracking/presentation/providers/gps_ride_provider.dart';
+import '../data/dashboard_provider.dart';
 
 /// Full-screen high-contrast OLED riding cockpit designed for handlebar phone mounts.
 /// Keeps screen awake with WakelockPlus, displays giant speed typography, live power &
 /// regenerative braking rates (kW), multi-mode range estimates, and thermal safety meters.
 class RidingCockpitScreen extends ConsumerStatefulWidget {
-  const RidingCockpitScreen({super.key});
+  /// Begin GPS tracking on open (commute notification / banner entry point).
+  final bool autoStartTracking;
+
+  const RidingCockpitScreen({super.key, this.autoStartTracking = false});
 
   @override
   ConsumerState<RidingCockpitScreen> createState() => _RidingCockpitScreenState();
@@ -33,6 +39,14 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
     try {
       WakelockPlus.enable();
     } catch (_) {}
+
+    if (widget.autoStartTracking) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(gpsRideProvider.notifier).startCommuteTracking();
+        }
+      });
+    }
 
     _sessionStartTime = DateTime.now();
     _sessionTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -153,29 +167,35 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
   Widget build(BuildContext context) {
     final liveSnapshot = ref.watch(vehicleSnapshotProvider).value;
     final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
+    final dashboardData = ref.watch(dashboardDataProvider).value;
     final snapshot = liveSnapshot ?? lastSnapshot;
-    final effectiveOdo = snapshot?.odometer ?? 19920.0;
+    final effectiveOdo = snapshot?.odometer ?? dashboardData?.currentOdometer ?? 19920.0;
 
-    final currentSpeed = snapshot?.speed ?? 0.0;
+    final bleState = ref.watch(bleConnectionStateProvider).value;
+    final isBleConnected = bleState == BleConnectionState.connected ||
+        bleState == BleConnectionState.authenticated;
+    final gpsState = ref.watch(gpsRideProvider);
+    // Without a live BLE link the snapshot speed is stale or zero; fall back
+    // to the phone's GPS speed while a GPS ride is being recorded.
+    final currentSpeed = !isBleConnected && gpsState is GpsTrackingStateActive
+        ? gpsState.currentSpeedKmh
+        : (snapshot?.speed ?? 0.0);
     if (currentSpeed > _sessionMaxSpeed) {
       _sessionMaxSpeed = currentSpeed;
     }
 
-    final batteryPercent = snapshot?.batteryPercent ?? 0;
+    final batteryPercent = snapshot?.batteryPercent ?? dashboardData?.latestBatteryPercentage ?? 0;
     final voltage = snapshot?.batteryVoltage ?? 72.0;
     final current = snapshot?.batteryCurrent ?? 0.0;
     final powerKw = (voltage * current) / 1000.0;
     final isRegen = current < -0.1;
 
     final speedColor = _getSpeedColor(currentSpeed);
-    final bleState = ref.watch(bleConnectionStateProvider).value;
-    final isBleConnected = bleState == BleConnectionState.connected ||
-        bleState == BleConnectionState.authenticated;
 
-    // Range estimates
-    final ecoRange = (batteryPercent * 1.4).toStringAsFixed(0);
+    // Range estimates: consistent 1.5x (Eco), 1.0x (Normal), 0.8x (Sport)
+    final ecoRange = (batteryPercent * 1.5).toStringAsFixed(0);
     final normalRange = (batteryPercent * 1.0).toStringAsFixed(0);
-    final sportRange = (batteryPercent * 0.75).toStringAsFixed(0);
+    final sportRange = (batteryPercent * 0.8).toStringAsFixed(0);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -515,6 +535,8 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
           Text(
             sub,
@@ -522,6 +544,8 @@ class _RidingCockpitScreenState extends ConsumerState<RidingCockpitScreen> {
               fontSize: 11,
               color: Colors.white54,
             ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ],
       ),

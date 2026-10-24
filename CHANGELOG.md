@@ -5,6 +5,28 @@ All notable changes to the `revolt_data` application will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0+4] — 2026-10-24
+
+### Added
+- **Morning Commute Intelligence & Automatic Schedule**:
+  - Implemented `CommuteReminderService` scheduling weekday 8:00 AM local time "Morning Commute Ready" notifications with persistent reboot survival (`ScheduledNotificationReceiver` + `RECEIVE_BOOT_COMPLETED`).
+  - Added notification tap deep-link `/cockpit?autostart=1` initiating GPS tracking via `GpsRideNotifier.startCommuteTracking()` with automatic location permission verification.
+  - Added non-intrusive weekday morning (07:30–09:30) resume banner offering a 1-tap "Start Commute" action without silent surprise tracking.
+  - Initialized `flutter_timezone` on app startup to guarantee reminders fire in local device timezone rather than UTC.
+
+### Fixed & Improved
+- **Resilient BLE Link Loss & Disconnect Lifecycle**:
+  - Added `connectionStateStream` and `reauthenticatedStream` to `RevoltBleClient` in `revolt_ble_sdk`.
+  - Wired `RevoltBleRepository` to react immediately to link dropouts: halts telemetry polling, emits `BleConnectionState.disconnected`, initiates GPS handoff, and activates cloud telematics fallback.
+  - Created app-lifetime `bleSessionCoordinatorProvider` to eagerly initialize `BleTripNotifier` at app bootstrap, ensuring trip auto-detection and mid-ride GPS handoffs function across all screens.
+- **Smart Sync Engine Automation**:
+  - Linked `SyncEngineNotifier.onBleConnected()` into the session coordinator on authenticated transitions with fresh telemetry detection, resolving orphaned sync logic.
+- **Cockpit HUD & GPS Ride Accuracy**:
+  - Added seamless GPS speed fallback to `RidingCockpitScreen` during BLE disconnections.
+  - Updated GPS-only ride energy consumption estimation to 30 Wh/km against the 3.24 kWh battery pack (~9% SOC drop per 10 km).
+- **Cleanup**:
+  - Purged unused `workmanager` background dependency from `pubspec.yaml` and cleaned up repo root scratch scripts.
+
 ## [2.2.0+3] — 2026-10-17
 
 ### Added

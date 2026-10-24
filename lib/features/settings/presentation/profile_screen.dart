@@ -362,7 +362,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
       trailing: const Icon(LucideIcons.chevronRight, size: 20),
-      onTap: () => context.push(route),
+      onTap: () {
+        if (route == '/rides' || route == '/charging' || route == '/analytics' || route == '/') {
+          context.go(route);
+        } else {
+          context.push(route);
+        }
+      },
     );
   }
 
@@ -442,9 +448,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _launchUrl(String urlString) async {
-    final uri = Uri.parse(urlString);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    try {
+      final uri = Uri.parse(urlString);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not open link: $urlString')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error opening link: $e')),
+        );
+      }
     }
   }
 }

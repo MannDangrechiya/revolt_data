@@ -51,10 +51,17 @@ class SyncEngineNotifier extends _$SyncEngineNotifier {
       syncHistoryLog: syncLogService,
     );
 
-    final result = await syncEngine.performSync(
-      currentSnapshot: snapshot,
-      connectedAt: DateTime.now(),
-    );
+    final SyncResult result;
+    try {
+      result = await syncEngine.performSync(
+        currentSnapshot: snapshot,
+        connectedAt: DateTime.now(),
+      );
+    } catch (_) {
+      // Never leave the UI stuck on "syncing" if the engine throws.
+      state = const SyncEngineState.idle();
+      rethrow;
+    }
 
     result.when(
       nothingToSync: () => state = const SyncEngineState.idle(),

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../shared/ui/volt_app_bar.dart';
 import '../../ble/domain/vehicle_snapshot.dart';
 import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
+import '../../dashboard/data/dashboard_provider.dart';
 
 /// Deep Battery Diagnostics & BMS Health Screen for Revolt RV400
 class BatteryDiagnosticsScreen extends ConsumerWidget {
@@ -17,10 +18,12 @@ class BatteryDiagnosticsScreen extends ConsumerWidget {
     final liveSnapshot = ref.watch(vehicleSnapshotProvider).value;
     final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
     final persistedSnapshot = ref.watch(persistedVehicleSnapshotProvider).value;
+    final dashboardData = ref.watch(dashboardDataProvider).value;
 
     final snapshot = liveSnapshot ?? lastSnapshot ?? persistedSnapshot;
 
-    final soc = snapshot?.batteryPercent ?? 88;
+    // Use live snapshot, or fall back to dashboardData's latestBatteryPercentage from SQLite database
+    final soc = snapshot?.batteryPercent ?? dashboardData?.latestBatteryPercentage ?? 85;
     final voltage = snapshot?.batteryVoltage ?? 72.4;
     final current = snapshot?.batteryCurrent ?? 0.0;
     final batTemp = snapshot?.batteryTemp ?? 32;
@@ -106,19 +109,25 @@ class BatteryDiagnosticsScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            isCharging ? LucideIcons.batteryCharging : LucideIcons.batteryMedium,
-                            color: isCharging ? Colors.green : Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            isCharging ? 'CHARGING VIA BMS' : 'LITHIUM-ION PACK',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                          ),
-                        ],
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Icon(
+                              isCharging ? LucideIcons.batteryCharging : LucideIcons.batteryMedium,
+                              color: isCharging ? Colors.green : Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                isCharging ? 'CHARGING VIA BMS' : 'LITHIUM-ION PACK',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
@@ -129,7 +138,9 @@ class BatteryDiagnosticsScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          snapshot?.source.label ?? 'Telematics',
+                          snapshot != null
+                              ? snapshot.source.label
+                              : (dashboardData != null ? 'Saved History' : 'Telematics'),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -178,27 +189,32 @@ class BatteryDiagnosticsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildMiniMetric(
-                        context,
-                        label: 'Capacity',
-                        value: '3.24 kWh',
-                        icon: LucideIcons.zap,
+                      Expanded(
+                        child: _buildMiniMetric(
+                          context,
+                          label: 'Capacity',
+                          value: '3.24 kWh',
+                          icon: LucideIcons.zap,
+                        ),
                       ),
-                      _buildMiniMetric(
-                        context,
-                        label: 'Health (SOH)',
-                        value: '$health%',
-                        icon: LucideIcons.heartPulse,
-                        color: health > 90 ? Colors.teal : Colors.orange,
+                      Expanded(
+                        child: _buildMiniMetric(
+                          context,
+                          label: 'Health (SOH)',
+                          value: '$health%',
+                          icon: LucideIcons.heartPulse,
+                          color: health > 90 ? Colors.teal : Colors.orange,
+                        ),
                       ),
-                      _buildMiniMetric(
-                        context,
-                        label: 'Pack Temp ($tempStatus)',
-                        value: '$batTemp°C',
-                        icon: LucideIcons.thermometer,
-                        color: tempColor,
+                      Expanded(
+                        child: _buildMiniMetric(
+                          context,
+                          label: 'Pack Temp ($tempStatus)',
+                          value: '$batTemp°C',
+                          icon: LucideIcons.thermometer,
+                          color: tempColor,
+                        ),
                       ),
                     ],
                   ),
@@ -471,20 +487,26 @@ class BatteryDiagnosticsScreen extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              mode,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-            ),
-          ],
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  mode,
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: 8),
         Text(
           '~$km km',
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color),

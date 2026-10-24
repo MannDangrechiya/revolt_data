@@ -62,7 +62,13 @@ class QuickActionsGrid extends StatelessWidget {
 
   Widget _buildMenuCard(BuildContext context, _QuickAction action) {
     return InkWell(
-      onTap: () => context.push(action.route),
+      onTap: () {
+        if (action.route == '/rides' || action.route == '/charging' || action.route == '/analytics' || action.route == '/') {
+          context.go(action.route);
+        } else {
+          context.push(action.route);
+        }
+      },
       borderRadius: BorderRadius.circular(16),
       child: Ink(
         decoration: BoxDecoration(

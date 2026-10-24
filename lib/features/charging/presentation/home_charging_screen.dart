@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../shared/ui/volt_app_bar.dart';
 import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
+import '../../dashboard/data/dashboard_provider.dart';
 
 /// Live 15A Household Charging Monitor with ETA, Cost in ₹, and 80% Longevity Alert
 class HomeChargingScreen extends ConsumerStatefulWidget {
@@ -23,10 +24,11 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
     final liveSnapshot = ref.watch(vehicleSnapshotProvider).value;
     final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
     final persistedSnapshot = ref.watch(persistedVehicleSnapshotProvider).value;
+    final dashboardData = ref.watch(dashboardDataProvider).value;
 
     final snapshot = liveSnapshot ?? lastSnapshot ?? persistedSnapshot;
 
-    final currentSoc = snapshot?.batteryPercent ?? 65;
+    final currentSoc = snapshot?.batteryPercent ?? dashboardData?.latestBatteryPercentage ?? 85;
     final voltage = snapshot?.batteryVoltage ?? 72.4;
     final current = snapshot?.batteryCurrent ?? 8.5; // positive or negative
     final isCharging = current.abs() > 0.5 || (snapshot?.batteryCurrent != null && snapshot!.batteryCurrent! > 0);
@@ -246,12 +248,16 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
                                   children: [
                                     Icon(LucideIcons.batteryCharging, size: 16, color: Colors.teal),
                                     SizedBox(width: 6),
-                                    Text(
-                                      'Target 80% (Ideal)',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.teal,
+                                    Expanded(
+                                      child: Text(
+                                        'Target 80% (Ideal)',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.teal,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
                                       ),
                                     ),
                                   ],
@@ -286,12 +292,16 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
                                   children: [
                                     Icon(LucideIcons.batteryFull, size: 16, color: Colors.blue),
                                     SizedBox(width: 6),
-                                    Text(
-                                      'Target 100% (Full)',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue,
+                                    Expanded(
+                                      child: Text(
+                                        'Target 100% (Full)',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.blue,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
                                       ),
                                     ),
                                   ],
@@ -426,12 +436,16 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
                             children: [
                               Icon(LucideIcons.moon, size: 16, color: Colors.tealAccent),
                               SizedBox(width: 6),
-                              Text(
-                                'Night 15A Home Charging Coach (8:30 – 10:30 PM)',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.tealAccent,
+                              Expanded(
+                                child: Text(
+                                  'Night 15A Home Charging Coach (8:30 – 10:30 PM)',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.tealAccent,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
                               ),
                             ],
@@ -450,25 +464,31 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildCostColumn(
-                          label: 'Cost to 80%',
-                          value: '₹${costTo80Rs.toStringAsFixed(1)}',
-                          subtext: '${kwhNeededTo80.toStringAsFixed(2)} units',
-                          color: Colors.teal,
+                        Expanded(
+                          child: _buildCostColumn(
+                            label: 'Cost to 80%',
+                            value: '₹${costTo80Rs.toStringAsFixed(1)}',
+                            subtext: '${kwhNeededTo80.toStringAsFixed(2)} units',
+                            color: Colors.teal,
+                          ),
                         ),
                         Container(width: 1, height: 40, color: Colors.grey.withValues(alpha: 0.3)),
-                        _buildCostColumn(
-                          label: 'Cost to 100%',
-                          value: '₹${sessionCostRs.toStringAsFixed(1)}',
-                          subtext: '${kwhNeededToFull.toStringAsFixed(2)} units',
-                          color: Colors.green,
+                        Expanded(
+                          child: _buildCostColumn(
+                            label: 'Cost to 100%',
+                            value: '₹${sessionCostRs.toStringAsFixed(1)}',
+                            subtext: '${kwhNeededToFull.toStringAsFixed(2)} units',
+                            color: Colors.green,
+                          ),
                         ),
                         Container(width: 1, height: 40, color: Colors.grey.withValues(alpha: 0.3)),
-                        _buildCostColumn(
-                          label: 'Monthly Savings',
-                          value: '₹${monthlyIceSavings.toStringAsFixed(0)}',
-                          subtext: 'vs ₹105/day ICE',
-                          color: Colors.orange,
+                        Expanded(
+                          child: _buildCostColumn(
+                            label: 'Monthly Savings',
+                            value: '₹${monthlyIceSavings.toStringAsFixed(0)}',
+                            subtext: 'vs ₹105/day ICE',
+                            color: Colors.orange,
+                          ),
                         ),
                       ],
                     ),
@@ -520,6 +540,8 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
         Text(
           label,
           style: const TextStyle(fontSize: 11, color: Colors.grey),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         const SizedBox(height: 4),
         Text(
@@ -529,10 +551,14 @@ class _HomeChargingScreenState extends ConsumerState<HomeChargingScreen> {
             fontWeight: FontWeight.bold,
             color: color,
           ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         Text(
           subtext,
           style: const TextStyle(fontSize: 10, color: Colors.grey),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
       ],
     );

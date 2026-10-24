@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../shared/ui/volt_app_bar.dart';
 import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
+import '../../dashboard/data/dashboard_provider.dart';
 
 /// Smart Round-Trip Range & Reachability Planner for Revolt RV400
 class RangePlannerScreen extends ConsumerStatefulWidget {
@@ -30,9 +31,10 @@ class _RangePlannerScreenState extends ConsumerState<RangePlannerScreen> {
     final liveSnapshot = ref.watch(vehicleSnapshotProvider).value;
     final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
     final persistedSnapshot = ref.watch(persistedVehicleSnapshotProvider).value;
+    final dashboardData = ref.watch(dashboardDataProvider).value;
 
     final snapshot = liveSnapshot ?? lastSnapshot ?? persistedSnapshot;
-    final currentSoc = snapshot?.batteryPercent ?? 85;
+    final currentSoc = snapshot?.batteryPercent ?? dashboardData?.latestBatteryPercentage ?? 85;
 
     final totalTripKm = _isRoundTrip ? _oneWayDistanceKm * 2 : _oneWayDistanceKm;
 

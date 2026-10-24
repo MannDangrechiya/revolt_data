@@ -120,33 +120,41 @@ class _VehicleDiagnosticsScanScreenState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(
-                          hasFaults
-                              ? LucideIcons.alertTriangle
-                              : LucideIcons.checkCircle2,
-                          color: hasFaults
-                              ? Colors.redAccent
-                              : const Color(0xFF10B981),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'SYSTEM HEALTH STATUS',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            hasFaults
+                                ? LucideIcons.alertTriangle
+                                : LucideIcons.checkCircle2,
                             color: hasFaults
                                 ? Colors.redAccent
-                                : (isDark
-                                    ? const Color(0xFF34D399)
-                                    : const Color(0xFF059669)),
+                                : const Color(0xFF10B981),
+                            size: 20,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'SYSTEM HEALTH STATUS',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                                color: hasFaults
+                                    ? Colors.redAccent
+                                    : (isDark
+                                        ? const Color(0xFF34D399)
+                                        : const Color(0xFF059669)),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,

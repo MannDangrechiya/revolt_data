@@ -32,6 +32,9 @@ void main() {
       expect(find.text('PACK / MOTOR'), findsOneWidget);
       expect(find.text('SESSION TIME'), findsOneWidget);
       expect(find.text('ODOMETER'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
     });
   });
 
@@ -75,6 +78,9 @@ void main() {
       expect(find.text('Prevent Deep Discharges'), findsOneWidget);
       expect(find.text('Post-Ride Cool Down'), findsOneWidget);
       expect(find.text('Storage Strategy (50% - 60% SOC)'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
     });
   });
 }

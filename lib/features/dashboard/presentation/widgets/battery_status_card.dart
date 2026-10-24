@@ -106,17 +106,21 @@ class BatteryStatusCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Battery & Range',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w600,
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        'Battery & Range',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  AnimatedSwitcher(
+                    const SizedBox(width: 8),
+                    AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: isConnected
                         ? Container(
@@ -190,7 +194,8 @@ class BatteryStatusCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (isConnected && liveSnapshot != null)
+            ),
+            if (isConnected && liveSnapshot != null)
                 Text(
                   'Mode: ${liveSnapshot.formattedRideMode}',
                   style: TextStyle(
@@ -285,13 +290,17 @@ class BatteryStatusCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Batt: ${liveSnapshot.batteryTemp != null ? '${liveSnapshot.batteryTemp}°C' : '--'}  •  Motor: ${liveSnapshot.motorTemp != null ? '${liveSnapshot.motorTemp}°C' : '--'}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                Expanded(
+                  child: Text(
+                    'Batt: ${liveSnapshot.batteryTemp != null ? '${liveSnapshot.batteryTemp}°C' : '--'}  •  Motor: ${liveSnapshot.motorTemp != null ? '${liveSnapshot.motorTemp}°C' : '--'}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   'Health: $healthText',
                   style: TextStyle(

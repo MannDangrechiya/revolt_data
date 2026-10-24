@@ -18,6 +18,8 @@ class RevoltBleRepository implements BleVehicleRepository {
 
   BleConnectionState _currentState = BleConnectionState.disconnected;
   StreamSubscription<RawPacket>? _packetSubscription;
+  StreamSubscription<BluetoothConnectionState>? _linkStateSubscription;
+  StreamSubscription<void>? _reauthSubscription;
   VehicleSnapshot? _lastSnapshot;
   Timer? _telemetryPollTimer;
   int _consecutive133Failures = 0;
@@ -30,6 +32,32 @@ class RevoltBleRepository implements BleVehicleRepository {
               onLog: (msg) => debugPrint('[RevoltBLE] $msg'),
             ) {
     _updateState(BleConnectionState.disconnected);
+    _linkStateSubscription =
+        _client.connectionStateStream.listen(_handleLinkStateChange);
+    _reauthSubscription =
+        _client.reauthenticatedStream.listen((_) => _handleReauthenticated());
+  }
+
+  /// Reacts to the physical link dropping (bike off / out of range) so the
+  /// app never sits in a stale "authenticated" state: stops telemetry polling
+  /// and emits [BleConnectionState.disconnected], which triggers the GPS
+  /// handoff and cloud-telemetry fallback downstream.
+  void _handleLinkStateChange(BluetoothConnectionState linkState) {
+    if (linkState != BluetoothConnectionState.disconnected) return;
+    final wasLive = _currentState == BleConnectionState.connected ||
+        _currentState == BleConnectionState.authenticating ||
+        _currentState == BleConnectionState.authenticated;
+    if (!wasLive) return;
+    _telemetryPollTimer?.cancel();
+    _telemetryPollTimer = null;
+    _updateState(BleConnectionState.disconnected);
+  }
+
+  /// The SDK auto-reconnected and re-paired; resume the authenticated session.
+  void _handleReauthenticated() {
+    if (_currentState != BleConnectionState.disconnected) return;
+    _updateState(BleConnectionState.authenticated);
+    _startTelemetryPolling();
   }
 
   void _updateState(BleConnectionState newState) {
@@ -224,6 +252,8 @@ class RevoltBleRepository implements BleVehicleRepository {
   void dispose() {
     _telemetryPollTimer?.cancel();
     _packetSubscription?.cancel();
+    _linkStateSubscription?.cancel();
+    _reauthSubscription?.cancel();
     _connectionStateController.close();
     _snapshotController.close();
     _rawPacketController.close();

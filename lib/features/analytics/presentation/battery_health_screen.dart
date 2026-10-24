@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../ble/presentation/providers/vehicle_snapshot_provider.dart';
+import '../../dashboard/data/dashboard_provider.dart';
 
 /// Screen presenting lifetime battery health, State of Health (SOH %),
 /// equivalent full cycle calculations, cell degradation trends, and
@@ -18,9 +19,11 @@ class BatteryHealthScreen extends ConsumerWidget {
 
     final liveSnapshot = ref.watch(vehicleSnapshotProvider).value;
     final lastSnapshot = ref.watch(lastKnownVehicleSnapshotProvider);
+    final dashboardData = ref.watch(dashboardDataProvider).value;
     final snapshot = liveSnapshot ?? lastSnapshot;
 
-    final currentOdo = snapshot?.odometer ?? 0.0;
+    // Use live snapshot odometer if available, otherwise fall back to dashboard calibrated cluster odometer
+    final currentOdo = snapshot?.odometer ?? dashboardData?.currentOdometer ?? 19920.0;
     // Estimated cycles based on ~33 Wh/km over odometer
     final totalKwhCharged = (currentOdo * 33.0) / 1000.0;
     final equivalentCycles = currentOdo > 0 ? (totalKwhCharged / 3.24).clamp(1.0, 3000.0) : 0.0;
@@ -80,21 +83,27 @@ class BatteryHealthScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(LucideIcons.shieldCheck, color: Color(0xFF10B981), size: 18),
-                        const SizedBox(width: 6),
-                        Text(
-                          'STATE OF HEALTH (SOH)',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
-                            color: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const Icon(LucideIcons.shieldCheck, color: Color(0xFF10B981), size: 18),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              'STATE OF HEALTH (SOH)',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                                color: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(

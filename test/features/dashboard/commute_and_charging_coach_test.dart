@@ -47,7 +47,7 @@ void main() {
       expect(find.text('Vastral ↔ Kudasan'), findsOneWidget);
       expect(find.text('Charge Needed'), findsOneWidget);
       expect(find.textContaining('Insufficient range for 55 km round-trip'), findsOneWidget);
-      expect(find.text('Top Up 15A Socket'), findsOneWidget);
+      expect(find.text('Top Up 15A'), findsOneWidget);
     });
   });
 

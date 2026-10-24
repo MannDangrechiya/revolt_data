@@ -47,6 +47,8 @@ class DashboardRangePredictionCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.teal,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),

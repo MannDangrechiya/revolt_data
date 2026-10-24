@@ -14,11 +14,12 @@ class DashboardQuickStatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildStatBox(context, 'Today', data.todayDistance, ' km', 1),
-        _buildStatBox(context, 'Week', data.weeklyDistance, ' km', 1),
-        _buildStatBox(context, 'Month', data.monthlyDistance, ' km', 1),
+        Expanded(child: _buildStatBox(context, 'Today', data.todayDistance, ' km', 1)),
+        const SizedBox(width: 10),
+        Expanded(child: _buildStatBox(context, 'Week', data.weeklyDistance, ' km', 1)),
+        const SizedBox(width: 10),
+        Expanded(child: _buildStatBox(context, 'Month', data.monthlyDistance, ' km', 1)),
       ],
     );
   }
@@ -31,7 +32,6 @@ class DashboardQuickStatsRow extends StatelessWidget {
     int fractionDigits,
   ) {
     return Container(
-      width: (MediaQuery.of(context).size.width - 40 - 24) / 3,
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,

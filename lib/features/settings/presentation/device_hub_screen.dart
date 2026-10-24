@@ -129,37 +129,44 @@ class _DeviceHubScreenState extends ConsumerState<DeviceHubScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: (isDemoMode ? Colors.blue : Colors.grey).withValues(alpha: 0.15),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                LucideIcons.flaskConical,
-                                color: isDemoMode ? Colors.blue : Colors.grey,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Demo Simulation Mode',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: (isDemoMode ? Colors.blue : Colors.grey).withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
                                 ),
-                                SizedBox(height: 2),
-                                Text(
-                                  'Inject simulated live telemetry without bike',
-                                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                                child: Icon(
+                                  LucideIcons.flaskConical,
+                                  color: isDemoMode ? Colors.blue : Colors.grey,
+                                  size: 24,
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Demo Simulation Mode',
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 2),
+                                    Text(
+                                      'Inject simulated live telemetry without bike',
+                                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Switch(
                           value: isDemoMode,
                           activeTrackColor: Colors.blue,

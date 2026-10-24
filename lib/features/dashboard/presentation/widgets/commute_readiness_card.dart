@@ -69,43 +69,51 @@ class CommuteReadinessCard extends StatelessWidget {
           children: [
             // Header Row: Route & Status Badge
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(LucideIcons.route, color: statusColor, size: 20),
                       ),
-                      child: Icon(LucideIcons.route, color: statusColor, size: 20),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Vastral ↔ Kudasan',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.3,
-                          ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Vastral ↔ Kudasan',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.3,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(
+                              '55 km Daily • SP Ring Rd',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
                         ),
-                        Text(
-                          '55.0 km Daily Commute • SP Ring Rd',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
@@ -209,35 +217,60 @@ class CommuteReadinessCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(LucideIcons.gauge, size: 15),
-                    label: const Text('Cockpit HUD', style: TextStyle(fontSize: 12)),
+                  child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     onPressed: () => context.push('/cockpit'),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(LucideIcons.gauge, size: 14),
+                        SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            'Cockpit HUD',
+                            style: TextStyle(fontSize: 12),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(LucideIcons.zap, size: 15),
-                    label: Text(
-                      needsCharge ? 'Top Up 15A Socket' : '15A Night Coach',
-                      style: const TextStyle(fontSize: 12),
-                    ),
+                  child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: needsCharge ? Colors.redAccent : const Color(0xFF0F766E),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     onPressed: () => context.push('/home-charging'),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(LucideIcons.zap, size: 14),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            needsCharge ? 'Top Up 15A' : '15A Night Coach',
+                            style: const TextStyle(fontSize: 12),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -256,7 +289,7 @@ class CommuteReadinessCard extends StatelessWidget {
     required bool isDark,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0F172A) : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(10),
@@ -275,11 +308,12 @@ class CommuteReadinessCard extends StatelessWidget {
                 child: Text(
                   label,
                   style: const TextStyle(
-                    fontSize: 9,
+                    fontSize: 8.5,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey,
                   ),
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
             ],
@@ -288,17 +322,20 @@ class CommuteReadinessCard extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 12.5,
               fontWeight: FontWeight.bold,
             ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
           Text(
             sub,
             style: const TextStyle(
-              fontSize: 9,
+              fontSize: 8.5,
               color: Colors.grey,
             ),
             overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ],
       ),
