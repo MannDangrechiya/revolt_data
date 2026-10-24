@@ -17,3 +17,6 @@
 # Bluetooth Low Energy SDK
 -keep class com.revolt.** { *; }
 -keep class com.boskokg.flutter_blue_plus.** { *; }
+
+# Play Core & Flutter Deferred Components
+-dontwarn com.google.android.play.core.**

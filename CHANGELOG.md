@@ -5,6 +5,15 @@ All notable changes to the `revolt_data` application will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1+5] — 2026-10-24
+
+### Added & Rebranded
+- **Official "My Revolt" Rebranding**:
+  - Updated Android launcher application label to **"My Revolt"** so it appears cleanly across device home screens and app launchers.
+  - Sized and installed high-resolution automotive-grade **My Revolt** app launcher icons across all Android mipmap buckets (`mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`) and iOS icon catalog (`20x20` through `1024x1024`).
+  - Added official logo asset to `assets/images/my_revolt_logo.png` and integrated into the top app bar on the Dashboard.
+  - Updated application organization title, location permission rationales, and diagnostics logging to "My Revolt".
+
 ## [2.3.0+4] — 2026-10-24
 
 ### Added
