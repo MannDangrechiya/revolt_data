@@ -124,6 +124,54 @@ void main() {
       expect(requestedUrl, 'https://mybike.telematics.local/api/live');
     });
 
+    test('official Revolt apix endpoint parses bikes telematics array correctly', () async {
+      late Uri requestedUri;
+      final client = MockClient((request) async {
+        requestedUri = request.url;
+        return http.Response(
+          jsonEncode({
+            'status': true,
+            'bikes': [
+              {
+                'batteryPercentage': '84',
+                'odometerValueKm': '1580.4',
+                'tripAValueKm': '18.7',
+                'estimateKms': '78',
+                'bikeLatitude': '28.6139',
+                'bikeLongitude': '77.2090',
+                'currentMode': '2',
+                'batteryHealth': '96',
+                'batteryTemp': '33',
+                'syncTime': '2026-08-07 14:45:00',
+              }
+            ]
+          }),
+          200,
+        );
+      });
+
+      final repo = RevoltRemoteRepository(
+        baseUrl: 'https://apix.revoltmotors.com',
+        httpClient: client,
+        configuredVehicleId: 'ECU987654321',
+      );
+
+      final snapshot = await repo.fetchVehicleState();
+
+      expect(snapshot, isNotNull);
+      expect(snapshot!.batteryPercent, 84);
+      expect(snapshot.odometer, 1580.4);
+      expect(snapshot.tripDistance, 18.7);
+      expect(snapshot.range, 78.0);
+      expect(snapshot.rideMode, 'Normal');
+      expect(snapshot.batteryHealth, 96);
+      expect(snapshot.batteryTemp, 33);
+      expect(snapshot.gpsCoords, '28.6139,77.2090');
+      expect(snapshot.source, TelemetrySource.cloud);
+      expect(requestedUri.path, '/api/v1/ecu/dataByEcuNo');
+      expect(requestedUri.queryParameters['ecu_no'], 'ECU987654321');
+    });
+
     test('demo simulation mode generates realistic RV400 telematics offline', () async {
       final repo = RevoltRemoteRepository();
       repo.setDemoMode(true);

@@ -30,6 +30,25 @@ void main() {
 
       // Test command validation
       expect(() => adapter.sendCommand('INVALID_CMD'), throwsArgumentError);
+      // Valid commands pass validation and throw connection exception when disconnected
+      expect(() => adapter.sendCommand('CLUSTER1#'), throwsA(isA<Exception>()));
+      expect(() => adapter.sendCommand('CLUSTER2#'), throwsA(isA<Exception>()));
+      expect(() => adapter.sendCommand('TRIPA0#'), throwsA(isA<Exception>()));
+      expect(() => adapter.sendCommand('TRIPB0#'), throwsA(isA<Exception>()));
+      expect(() => adapter.sendCommand('HAZARD#'), throwsA(isA<Exception>()));
+
+      // Test CD cluster packet parsing (28 fields)
+      const testCd = 'CD,0,0,0,32,88,88,0,2,0,3,Range,km,85,Wh/km,28.5,A,km,14250.5,km/h,42.0,18.5,0,1,1,4,1,2,12:45;';
+      final cdSnapshot = adapter.ingestAsciiPacket(testCd);
+      expect(cdSnapshot, isNotNull);
+      expect(cdSnapshot!.batteryPercent, 88);
+      expect(cdSnapshot.batteryTemp, 32);
+      expect(cdSnapshot.range, 85.0);
+      expect(cdSnapshot.odometer, 14250.5);
+      expect(cdSnapshot.speed, 42.0);
+      expect(cdSnapshot.batteryCurrent, 18.5);
+      expect(cdSnapshot.rideMode, 'Normal');
+
       adapter.dispose();
     });
 

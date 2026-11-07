@@ -42,6 +42,32 @@ void main() {
       expect(snapshot.gpsCoords, isNull);
     });
 
+    test('parseCdString accurately parses continuous 28-field cluster stream and modes', () {
+      // 28-field cluster frame with Reverse mode (4)
+      const cdFrame = 'CD,0,0,0,35,92,92,0,1,0,4,Range,km,95,Wh/km,30.0,B,km,15600.0,km/h,52.0,22.4,0,1,1,4,1,4,14:20;';
+      final snap = VehicleSnapshot.parseCdString(cdFrame);
+
+      expect(snap, isNotNull);
+      expect(snap!.batteryPercent, 92);
+      expect(snap.batteryTemp, 35);
+      expect(snap.range, 95.0);
+      expect(snap.odometer, 15600.0);
+      expect(snap.speed, 52.0);
+      expect(snap.batteryCurrent, 22.4);
+      expect(snap.rideMode, 'Reverse');
+      // Power = (30.0 * 52.0) / 1000 = 1.56 kW
+      expect(snap.power, closeTo(1.56, 0.01));
+
+      // Test Eco (1), Normal (2), Sport (3)
+      expect(VehicleSnapshot.parseCdString('CD,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0;')!.rideMode, 'Eco');
+      expect(VehicleSnapshot.parseCdString('CD,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0;')!.rideMode, 'Normal');
+      expect(VehicleSnapshot.parseCdString('CD,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0;')!.rideMode, 'Sport');
+
+      // Test malformed
+      expect(VehicleSnapshot.parseCdString('CD,1,2,3'), isNull);
+      expect(VehicleSnapshot.parseCdString('NOT_CD,1,2,3'), isNull);
+    });
+
     test('parseLdString maps ride mode codes and returns null for malformed input', () {
       expect(
         VehicleSnapshot.parseLdString(

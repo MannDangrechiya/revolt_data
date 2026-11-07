@@ -124,7 +124,9 @@ class RevoltRemoteRepository {
 
     try {
       final endpoint = _customTelematicsUrl ??
-          '$baseUrl/api/v1/vehicle/telematics/live${targetVehicleId != null ? "?vehicle_id=$targetVehicleId" : ""}';
+          (baseUrl.contains('apix.revoltmotors.com')
+              ? '$baseUrl/api/v1/ecu/dataByEcuNo?ecu_no=${targetVehicleId ?? ""}'
+              : '$baseUrl/api/v1/vehicle/telematics/live${targetVehicleId != null ? "?vehicle_id=$targetVehicleId" : ""}');
       final url = Uri.parse(endpoint);
       final headers = <String, String>{
         'Content-Type': 'application/json',
@@ -137,28 +139,127 @@ class RevoltRemoteRepository {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> json = jsonDecode(response.body) as Map<String, dynamic>;
-        final telematicsData = (json['data'] as Map<String, dynamic>?) ?? json;
+        final Map<String, dynamic> telematicsData;
+        if (json['bikes'] is List && (json['bikes'] as List).isNotEmpty) {
+          telematicsData = (json['bikes'] as List).first as Map<String, dynamic>;
+        } else {
+          telematicsData = (json['data'] as Map<String, dynamic>?) ?? json;
+        }
+
+        int? parseNumToInt(dynamic v) {
+          if (v == null) return null;
+          if (v is int) return v;
+          if (v is num) return v.toInt();
+          return int.tryParse(v.toString());
+        }
+
+        double? parseNumToDouble(dynamic v) {
+          if (v == null) return null;
+          if (v is double) return v;
+          if (v is num) return v.toDouble();
+          return double.tryParse(v.toString());
+        }
+
+        final batteryPercent = parseNumToInt(
+          telematicsData['batteryPercent'] ??
+              telematicsData['batteryPercentage'] ??
+              telematicsData['soc'] ??
+              telematicsData['battery_percent'],
+        );
+
+        final batteryVoltage = parseNumToDouble(
+          telematicsData['batteryVoltage'] ??
+              telematicsData['voltage'] ??
+              telematicsData['battery_voltage'],
+        );
+
+        final batteryCurrent = parseNumToDouble(
+          telematicsData['batteryCurrent'] ?? telematicsData['current'],
+        );
+
+        final batteryTemp = parseNumToInt(
+          telematicsData['batteryTemp'] ?? telematicsData['battery_temp'],
+        );
+
+        final motorTemp = parseNumToInt(
+          telematicsData['motorTemp'] ?? telematicsData['motor_temp'],
+        );
+
+        final speed = parseNumToDouble(telematicsData['speed']);
+
+        final tripDistance = parseNumToDouble(
+          telematicsData['tripDistance'] ??
+              telematicsData['tripAValueKm'] ??
+              telematicsData['trip'],
+        );
+
+        final odometer = parseNumToDouble(
+          telematicsData['odometer'] ??
+              telematicsData['odometerValueKm'] ??
+              telematicsData['odo'],
+        );
+
+        final rawMode = telematicsData['rideMode'] ??
+            telematicsData['currentMode'] ??
+            telematicsData['mode'];
+        final String? rideMode = switch (rawMode?.toString()) {
+          '1' => 'Eco',
+          '2' => 'Normal',
+          '3' => 'Sport',
+          '4' => 'Reverse',
+          _ => rawMode?.toString(),
+        };
+
+        final range = parseNumToDouble(
+          telematicsData['range'] ??
+              telematicsData['estimateKms'] ??
+              telematicsData['remainingMileage'] ??
+              telematicsData['est_range'],
+        );
+
+        final power = parseNumToDouble(telematicsData['power']);
+
+        final batteryHealth = parseNumToInt(
+          telematicsData['batteryHealth'] ?? telematicsData['soh'],
+        );
+
+        String? gpsCoords;
+        if (telematicsData['bikeLatitude'] != null &&
+            telematicsData['bikeLongitude'] != null) {
+          final lat = telematicsData['bikeLatitude'].toString().trim();
+          final lon = telematicsData['bikeLongitude'].toString().trim();
+          if (lat.isNotEmpty && lon.isNotEmpty) {
+            gpsCoords = '$lat,$lon';
+          }
+        } else {
+          gpsCoords = (telematicsData['gpsCoords'] ?? telematicsData['location'])
+              ?.toString();
+        }
+
+        DateTime? timestamp;
+        final rawTs = telematicsData['timestamp'] ?? telematicsData['syncTime'];
+        if (rawTs != null) {
+          timestamp = DateTime.tryParse(rawTs.toString().replaceFirst(' ', 'T'));
+        }
 
         final snapshot = VehicleSnapshot(
-          batteryPercent: (telematicsData['batteryPercent'] ?? telematicsData['soc'] ?? telematicsData['battery_percent']) as int?,
-          batteryVoltage: (telematicsData['batteryVoltage'] ?? telematicsData['voltage'] ?? telematicsData['battery_voltage'])?.toDouble(),
-          batteryCurrent: (telematicsData['batteryCurrent'] ?? telematicsData['current'])?.toDouble(),
-          batteryTemp: (telematicsData['batteryTemp'] ?? telematicsData['battery_temp']) as int?,
-          motorTemp: (telematicsData['motorTemp'] ?? telematicsData['motor_temp']) as int?,
-          speed: (telematicsData['speed'])?.toDouble(),
-          tripDistance: (telematicsData['tripDistance'] ?? telematicsData['trip'])?.toDouble(),
-          odometer: (telematicsData['odometer'] ?? telematicsData['odo'])?.toDouble(),
-          rideMode: telematicsData['rideMode'] as String? ?? telematicsData['mode'] as String?,
-          range: (telematicsData['range'] ?? telematicsData['est_range'])?.toDouble(),
-          power: (telematicsData['power'])?.toDouble(),
-          batteryHealth: (telematicsData['batteryHealth'] ?? telematicsData['soh']) as int?,
-          gpsCoords: telematicsData['gpsCoords'] as String? ?? telematicsData['location'] as String?,
+          batteryPercent: batteryPercent,
+          batteryVoltage: batteryVoltage,
+          batteryCurrent: batteryCurrent,
+          batteryTemp: batteryTemp,
+          motorTemp: motorTemp,
+          speed: speed,
+          tripDistance: tripDistance,
+          odometer: odometer,
+          rideMode: rideMode,
+          range: range,
+          power: power,
+          batteryHealth: batteryHealth,
+          gpsCoords: gpsCoords,
           faultCodes: telematicsData['faultCodes'] != null
               ? List<String>.from(telematicsData['faultCodes'] as List)
               : const [],
-          timestamp: telematicsData['timestamp'] != null
-              ? DateTime.tryParse(telematicsData['timestamp'] as String) ?? DateTime.now()
-              : DateTime.now(),
+          timestamp: timestamp ?? DateTime.now(),
           source: TelemetrySource.cloud,
         );
 

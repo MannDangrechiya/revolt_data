@@ -91,6 +91,9 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
       if (rawString.startsWith('LD,')) {
         return parseLdString(rawString);
       }
+      if (rawString.startsWith('CD,')) {
+        return parseCdString(rawString);
+      }
     } catch (_) {
       // Fall through to binary parsing
     }
@@ -118,6 +121,119 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
   /// 1. Standard 15-field live telemetry / charging frames:
   ///    `LD,<soc>,<voltage>,<current>,<batTemp>,<motTemp>,<speed>,<odo>,<mode>,<range>,<status>,<chargeFlag>,<health/sig>,<lat>,<lon>`
   /// 2. Extended diagnostic frames (>= 20 fields) from firmware diagnostic dumps.
+  /// Parses a comma-separated "CD,..." cluster data frame into [VehicleSnapshot].
+  ///
+  /// Confirmed layout from official MyRevolt app (ClusterScreenViewModel):
+  ///   [0]     "CD"
+  ///   [4]     Ambient temp (°C)
+  ///   [5/6]   Battery SOC %
+  ///   [7]     Warning / Fault code
+  ///   [8]     Charging flag (1 = charging, 2 = not charging)
+  ///   [10]    Controller temp bar
+  ///   [13]    Range (km/mi)
+  ///   [15]    Power consumption (Wh/km)
+  ///   [18]    Odometer (km/mi)
+  ///   [20]    Speed (km/h)
+  ///   [21/22] Battery current / Amperes (A)
+  ///   [27]    Ride Mode (1 = Eco, 2 = Normal, 3 = Sport, 4 = Reverse)
+  static VehicleSnapshot? parseCdString(String rawString) {
+    if (!rawString.startsWith('CD,')) return null;
+
+    final cleaned = rawString.replaceAll(';', '').trim();
+    final parts = cleaned.split(',');
+    if (parts.length < 21) return null;
+
+    try {
+      final ambientTemp = int.tryParse(parts[4].trim());
+
+      // Battery SOC %: parts[6] or parts[5]
+      int? batteryPercent;
+      if (parts.length > 6) {
+        final p6 = int.tryParse(parts[6].trim());
+        if (p6 != null && p6 >= 0 && p6 <= 100) {
+          batteryPercent = p6;
+        }
+      }
+      batteryPercent ??= int.tryParse(parts[5].trim());
+
+      // Range
+      double? range;
+      if (parts.length > 13) {
+        range = double.tryParse(parts[13].trim());
+      }
+
+      // Odometer
+      double? odometer;
+      if (parts.length > 18) {
+        odometer = double.tryParse(parts[18].trim());
+      }
+
+      // Speed
+      double? speed;
+      if (parts.length > 20) {
+        speed = double.tryParse(parts[20].trim());
+      }
+
+      // Battery current (Amperes)
+      double? batteryCurrent;
+      if (parts.length > 21) {
+        batteryCurrent = double.tryParse(parts[21].trim());
+      }
+
+      // Power calculation
+      double? power;
+      if (parts.length > 15) {
+        final whKm = double.tryParse(parts[15].trim());
+        if (whKm != null && speed != null && speed > 0) {
+          power = (whKm * speed) / 1000.0;
+        }
+      }
+
+      // Ride Mode (1 = Eco, 2 = Normal, 3 = Sport, 4 = Reverse)
+      String? rideMode;
+      if (parts.length > 27) {
+        final modeCode = int.tryParse(parts[27].trim());
+        rideMode = switch (modeCode) {
+          1 => 'Eco',
+          2 => 'Normal',
+          3 => 'Sport',
+          4 => 'Reverse',
+          _ => null,
+        };
+      }
+
+      // Fault codes
+      List<String> faultCodes = [];
+      if (parts.length > 7) {
+        final fault = parts[7].trim();
+        if (fault.isNotEmpty && fault != '0' && fault.toUpperCase() != 'NONE' && fault != ' ') {
+          faultCodes = [fault];
+        }
+      }
+
+      return VehicleSnapshot(
+        batteryPercent: batteryPercent,
+        batteryVoltage: null,
+        batteryCurrent: batteryCurrent,
+        batteryTemp: ambientTemp,
+        motorTemp: null,
+        speed: speed,
+        tripDistance: null,
+        odometer: odometer,
+        rideMode: rideMode,
+        range: range,
+        power: power,
+        faultCodes: faultCodes,
+        batteryHealth: null,
+        gpsCoords: null,
+        timestamp: DateTime.now(),
+        source: TelemetrySource.ble,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   static VehicleSnapshot? parseLdString(String rawString) {
     if (!rawString.startsWith('LD,')) return null;
 

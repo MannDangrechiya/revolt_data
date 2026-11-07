@@ -45,10 +45,16 @@ class RevoltBleAdapter implements EvProtocolAdapter {
       'LOCK#',
       'UNLOCK#',
       'FIND#',
-      'SOUND0#',
-      'SOUND1#',
-      'SOUND2#',
-      'SOUND3#',
+      'HAZARD#',
+      'CLUSTER1#',
+      'CLUSTER2#',
+      'BATTERY#',
+      'STATUS#',
+      'LOCATION#',
+      'ODO#',
+      'TRIPA0#',
+      'TRIPB0#',
+      'ERASE#',
       'LIGHT#',
     };
 
@@ -76,9 +82,12 @@ class RevoltBleAdapter implements EvProtocolAdapter {
     await _bleRepo.disconnect();
   }
 
-  /// Manually feeds a raw ASCII string packet (e.g. "LD,...") into the adapter pipeline.
+  /// Manually feeds a raw ASCII string packet (e.g. "LD,..." or "CD,...") into the adapter pipeline.
   VehicleSnapshot? ingestAsciiPacket(String packet) {
-    final snapshot = VehicleSnapshot.parseLdString(packet.trim());
+    final trimmed = packet.trim();
+    final snapshot = trimmed.startsWith('CD,')
+        ? VehicleSnapshot.parseCdString(trimmed)
+        : VehicleSnapshot.parseLdString(trimmed);
     if (snapshot != null && !_telemetryController.isClosed) {
       _telemetryController.add(snapshot);
     }
