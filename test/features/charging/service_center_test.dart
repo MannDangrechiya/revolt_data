@@ -39,7 +39,7 @@ void main() {
     });
 
     test('distanceTo calculates geodesic proximity accurately', () {
-      final center = ServiceCenter(
+      final center = const ServiceCenter(
         hubId: 1,
         hubName: 'Delhi Hub',
         dealerAddress: 'Connaught Place',

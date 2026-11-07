@@ -128,7 +128,7 @@ class DashboardDataNotifier extends _$DashboardDataNotifier {
       if (liveSnapshot.batteryPercent != null) {
         latestBattery = liveSnapshot.batteryPercent!;
       }
-      if (liveSnapshot.odometer != null && liveSnapshot.odometer! > maxOdometer) {
+      if (liveSnapshot.odometer != null) {
         maxOdometer = liveSnapshot.odometer!;
       }
     }

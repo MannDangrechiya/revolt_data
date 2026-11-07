@@ -57,6 +57,9 @@ class RevoltBleRepository implements BleVehicleRepository {
   void _handleReauthenticated() {
     if (_currentState != BleConnectionState.disconnected) return;
     _updateState(BleConnectionState.authenticated);
+    try {
+      _client.startClusterStream().catchError((Object _) {});
+    } catch (_) {}
     _startTelemetryPolling();
   }
 
@@ -180,6 +183,10 @@ class RevoltBleRepository implements BleVehicleRepository {
       final success = await _client.authenticate(token);
       if (success) {
         _updateState(BleConnectionState.authenticated);
+        try {
+          await _client.startClusterStream();
+          debugPrint('[RevoltBLE] Cluster stream started (CLUSTER1#)');
+        } catch (_) {}
         _startTelemetryPolling();
       } else {
         _updateState(BleConnectionState.connected);
@@ -197,10 +204,15 @@ class RevoltBleRepository implements BleVehicleRepository {
   /// whatever arrived once at pairing time.
   void _startTelemetryPolling() {
     _telemetryPollTimer?.cancel();
+    int cycle = 0;
     _telemetryPollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      cycle++;
       _client.requestTelemetry().catchError((Object err) {
         debugPrint('Telemetry poll failed: $err');
       });
+      if (cycle % 4 == 0) {
+        _client.startClusterStream().catchError((Object _) {});
+      }
     });
   }
 
@@ -223,9 +235,11 @@ class RevoltBleRepository implements BleVehicleRepository {
       if (packet.direction == PacketDirection.notify) {
         final snapshot = VehicleSnapshot.parseRawBytes(packet.value);
         if (snapshot != null) {
-          _lastSnapshot = snapshot;
+          _lastSnapshot = _lastSnapshot == null
+              ? snapshot
+              : _lastSnapshot!.merge(snapshot);
           if (!_snapshotController.isClosed) {
-            _snapshotController.add(snapshot);
+            _snapshotController.add(_lastSnapshot!);
           }
         }
       }

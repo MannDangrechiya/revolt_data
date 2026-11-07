@@ -79,6 +79,28 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
   String get formattedPower =>
       power != null ? '${power!.toStringAsFixed(2)} kW' : '-- kW';
 
+  /// Merges another snapshot into this one, giving precedence to non-null fields in [other].
+  VehicleSnapshot merge(VehicleSnapshot other) {
+    return copyWith(
+      batteryPercent: other.batteryPercent ?? batteryPercent,
+      batteryVoltage: other.batteryVoltage ?? batteryVoltage,
+      batteryCurrent: other.batteryCurrent ?? batteryCurrent,
+      batteryTemp: other.batteryTemp ?? batteryTemp,
+      motorTemp: other.motorTemp ?? motorTemp,
+      speed: other.speed ?? speed,
+      tripDistance: other.tripDistance ?? tripDistance,
+      odometer: other.odometer ?? odometer,
+      rideMode: other.rideMode ?? rideMode,
+      range: other.range ?? range,
+      power: other.power ?? power,
+      faultCodes: other.faultCodes.isNotEmpty ? other.faultCodes : faultCodes,
+      batteryHealth: other.batteryHealth ?? batteryHealth,
+      gpsCoords: other.gpsCoords ?? gpsCoords,
+      timestamp: other.timestamp ?? timestamp,
+      source: other.source,
+    );
+  }
+
   String get formattedBatteryHealth =>
       batteryHealth != null ? '$batteryHealth%' : '--%';
 
@@ -164,7 +186,13 @@ abstract class VehicleSnapshot with _$VehicleSnapshot {
 
       // Odometer
       double? odometer;
-      if (parts.length > 18) {
+      for (int i = 0; i < parts.length - 2; i++) {
+        if (parts[i].trim().toUpperCase() == 'B' && parts[i + 1].trim().toLowerCase() == 'km') {
+          odometer = double.tryParse(parts[i + 2].trim());
+          if (odometer != null) break;
+        }
+      }
+      if (odometer == null && parts.length > 18) {
         odometer = double.tryParse(parts[18].trim());
       }
 
